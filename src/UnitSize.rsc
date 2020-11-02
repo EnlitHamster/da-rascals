@@ -23,4 +23,18 @@ list[int] getUnitsLoc(list[Declaration] asts) {
 		case Declarations decl: \method(_,_,_,_,_): uSize += decl.end.line - decl.begin.line;
 		case Declarations decl: \constructor(_,_,_,_): uSize += decl.end.line - decl.begin.line;
 	}
+	return uSize;
+}
+
+map[str,int] rankSizeRisk(list[int] sizes) {
+	return rankRisk(sizes, 30, 65, 100);
+}
+
+int rankUnitSize(map[str,int] risks, bool print) {
+	return scoreRank( risks,
+					  <20, 03, 00>,
+					  <30, 05, 00>,
+					  <40, 10, 03>,
+					  <50, 20, 05>,
+					  print );
 }
