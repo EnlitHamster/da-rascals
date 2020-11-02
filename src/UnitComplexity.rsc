@@ -17,11 +17,6 @@ import lang::java::m3::AST;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-public str LOW_RISK = "low";
-public str MID_RISK = "medium";
-public str HIGH_RISK = "high";
-public str VERY_HIGH_RISK = "very high";
-
 int getCyclomaticComplexity(Statement stmt, bool expHndl) {
 	// Starts from 1 for 1 path's necessary
 	int pi = 1;
@@ -66,62 +61,15 @@ list[int] calcAllCC(list[Declaration] asts, bool expHndl) {
 	return CCs;
 }
 
-map[str, int] rankCCsRisk(list[int] ccs, int low, int mid, int high) {
-	map[str, int] risks = (	LOW_RISK:0, 
-							MID_RISK:0, 
-							HIGH_RISK:0, 
-							VERY_HIGH_RISK: 0 );
-	for (cc <- ccs) {
-		if (cc <= low) risks[LOW_RISK] += 1;
-		else if (cc <= mid) risks[MID_RISK] += 1;
-		else if (cc <= high) risks[HIGH_RISK] += 1;
-		else risks[VERY_HIGH_RISK] += 1;
-	}
-	return risks;
-}
-
 map[str,int] rankCCsRisk(list[int] ccs) {
-	return rankCCsRisk(ccs, 10, 20, 50);
-}
-
-public alias RiskRank = tuple[int mid, int high, int vhigh];
-
-bool checkRiskRank(int mid, int high, int vhigh, RiskRank rank) {
-	return mid <= rank.mid && high <= rank.high && vhigh <= rank.vhigh;
-}
-
-int rankComplexity(map[str,int] ranks, RiskRank top, RiskRank midtop, RiskRank mid, RiskRank midbot, bool print) {
-	int total = ranks[LOW_RISK] + ranks[MID_RISK] + ranks[HIGH_RISK] + ranks[VERY_HIGH_RISK];
-	int lowRisk = ranks[LOW_RISK] * 100 / total;
-	int midRisk = ranks[MID_RISK] * 100 / total;
-	int highRisk = ranks[HIGH_RISK] * 100 / total;
-	int vhighRisk = ranks[VERY_HIGH_RISK] * 100 / total;
-	
-	//if (print) println("Total: <total>\nLow Risk: <lowRisk>\nMedium Risk: <midRisk>\nHigh Risk: <highRisk>\nVery High Risk: <vhighRisk>");
-	
-	if (checkRiskRank(midRisk, highRisk, vhighRisk, top)) {
-		if (print) println("Complexity Risk Ranking: ++");
-	 	return 2;
-	} else if (checkRiskRank(midRisk, highRisk, vhighRisk, midtop)) {
-		if (print) println("Complexity Risk Ranking: +");
-		return 1;
-	} else if (checkRiskRank(midRisk, highRisk, vhighRisk, mid)) {
-		if (print) println("Complexity Risk Ranking: o");
-		return 0;
-	} else if (checkRiskRank(midRisk, highRisk, vhighRisk, midbot)) {
-		if (print) println("Complexity Risk Ranking: -");
-		return -1;
-	} else {
-		if (print) println("Complexity Risk Ranking: --");
-		return -2;
-	}
+	return rankRisk(ccs, 10, 20, 50);
 }
 
 int rankComplexity(map[str,int] ranks, bool print) {
-	return rankComplexity( ranks,
-						   <25, 00, 00>,
-						   <30, 05, 00>,
-						   <40, 10, 00>,
-						   <50, 15, 05>,
-						   print );
+	return scoreRank( ranks,
+					  <25, 00, 00>,
+					  <30, 05, 00>,
+					  <40, 10, 00>,
+					  <50, 15, 05>,
+					  print );
 }
