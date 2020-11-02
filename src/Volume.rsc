@@ -29,7 +29,7 @@ tuple[int, int, int, int] countLines(loc fileLoc, bool print) {
 		if (!inCom) {
 			if ((/^\s*$/ := line)) {
 				empty += 1;
-				println("EMPTY :: <line>");
+				if (print) println("EMPTY :: <line>");
 			} else if ((/^\s*\/\/.*/ := line) || (/\/\*.*?\*\// := line)) {
 				comment += 1;
 				if (print) println("COMMENT :: <line>");
