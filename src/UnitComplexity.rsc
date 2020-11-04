@@ -32,7 +32,9 @@ import lang::java::jdt::m3::AST;
 // this thesis as these do not add linearly independent paths for the same reasons as per continue and
 // break.
 
-int getCyclomaticComplexity(Statement stmt, bool expHndl) {
+public alias CC = tuple[int pi, int piExp];
+
+CC getCyclomaticComplexity(Statement stmt) {
 	// Starts from 1 for 1 path's necessary
 	int pi = 1;
 	// CC for exception handling
@@ -59,25 +61,27 @@ int getCyclomaticComplexity(Statement stmt, bool expHndl) {
 		case \try(_,_,_): piExp += 1;
 	}
 	
-	if (expHndl) return pi + piExp;
-	else return pi;
+	return <pi, piExp>;
 }
 
-int getCyclomaticComplexity(Statement stmt, list[Expression] exps, bool expHndl) {
-	return (expHndl ? size(exps) : 0) + getCyclomaticComplexity(stmt,expHndl);
+CC getCyclomaticComplexity(Statement stmt, list[Expression] exps) {
+	CC cc = getCyclomaticComplexity(stmt);
+	return <cc.pi, size(exps) + cc.piExp>;
 } 
 
-list[int] calcAllCC(list[Declaration] asts, bool expHndl) {
+list[CC] calcAllCC(list[Declaration] asts) {
 	list[int] CCs = [];
 	visit (asts) {
-		case \method(_,_,_,exps,impl): CCs += getCyclomaticComplexity(impl,exps,expHndl);
-		case \constructor(_,_,exps,impl): CCs += getCyclomaticComplexity(impl,exps,expHndl);
+		case \method(_,_,_,exps,impl): CCs += getCyclomaticComplexity(impl,exps);
+		case \constructor(_,_,exps,impl): CCs += getCyclomaticComplexity(impl,exps);
 	}
 	return CCs;
 }
 
-map[str,int] rankCCsRisk(list[int] ccs) {
-	return rankRisk(ccs, 10, 20, 50);
+map[str,int] rankCCsRisk(list[CC] ccs, bool expHndl) {
+	list[int] rankCCs = [];
+	for (cc <- ccs) rankCC += expHndl ? (cc.pi + cc.piExp) : cc.pi;
+	return rankRisk(rankCCs, 10, 20, 50);
 }
 
 int rankComplexity(map[str,int] ranks, bool print) {
