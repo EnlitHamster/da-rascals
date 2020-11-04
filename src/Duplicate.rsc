@@ -147,21 +147,7 @@ real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
 	Get the rank for the duplication of the project.
 }
 int getDuplicationRank(real dp, bool print) {
-	if (dp <= 3.0) {
-		if (print) println("++");
-		return 2;
-	} else 	if (dp <= 5.0) {
-		if (print) println("+");
-		return 1;
-	} else 	if (dp <= 10.0) {
-		if (print) println("o");
-		return 0;
-	} else 	if (dp <= 20.0) {
-		if (print) println("-");
-		return -1;
-	}
-	if (print) println("--");
-	return -2;
+	return scoreRank(dp, 3.0, 5.0, 10.0, 20.0, print);
 }
 
 loc small = |project://smallsql0.21_src|;

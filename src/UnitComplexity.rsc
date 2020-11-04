@@ -70,7 +70,7 @@ CC getCyclomaticComplexity(Statement stmt, list[Expression] exps) {
 } 
 
 list[CC] calcAllCC(list[Declaration] asts) {
-	list[int] CCs = [];
+	list[CC] CCs = [];
 	visit (asts) {
 		case \method(_,_,_,exps,impl): CCs += getCyclomaticComplexity(impl,exps);
 		case \constructor(_,_,exps,impl): CCs += getCyclomaticComplexity(impl,exps);
@@ -80,15 +80,15 @@ list[CC] calcAllCC(list[Declaration] asts) {
 
 map[str,int] rankCCsRisk(list[CC] ccs, bool expHndl) {
 	list[int] rankCCs = [];
-	for (cc <- ccs) rankCC += expHndl ? (cc.pi + cc.piExp) : cc.pi;
+	for (cc <- ccs) rankCCs += expHndl ? (cc.pi + cc.piExp) : cc.pi;
 	return rankRisk(rankCCs, 10, 20, 50);
 }
 
 int rankComplexity(map[str,int] ranks, bool print) {
 	return scoreRank( ranks,
-					  <25, 00, 00>,
-					  <30, 05, 00>,
-					  <40, 10, 00>,
-					  <50, 15, 05>,
+					  <0.25, 0.00, 0.00>,
+					  <0.30, 0.05, 0.00>,
+					  <0.40, 0.10, 0.00>,
+					  <0.50, 0.15, 0.05>,
 					  print );
 }
