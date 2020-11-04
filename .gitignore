@@ -23,3 +23,12 @@
 hs_err_pid*
 
 .project
+/bin/
+
+.settings/org.eclipse.core.resources.prefs
+
+.classpath
+
+build.properties
+
+META-INF/
