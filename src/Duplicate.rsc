@@ -2,6 +2,7 @@ module Duplicate
 
 // Project imports
 import Utility;
+import Volume;
 
 // Rascal base imports
 import Set;
@@ -11,6 +12,9 @@ import Map;
 import IO;
 import String;
 import DateTime;
+import Snippet;
+
+import util::Math;
  
 // M3 imports
 import lang::java::m3::Core;
@@ -20,15 +24,18 @@ import lang::java::jdt::m3::AST;
 
 @doc {
 	.Synopsis
-	Get all the files from the project, without any whitespace as one huge string
+	Get all the files from the project, without any whitespace as one huge list of snippets
+	.Params
+	fileLocs :: list of filelocations
+	skip :: Whether or not to skip codelines that consists of  a closing curly bracket, as this could be considered to not be a valid codeline" 
 }
-tuple[list[str], int] getHugeList(list[loc] fileLocs) {
-	list[str] conc = [];
+tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
+	list[Snippet] codeSnippets = [];
 	bool inCom = false;
 	int len = 0;
-	for (fileLoc <- fileLocs) {
-		for (line <- (readFileLines(fileLoc))) {
-			line = escape(line, (" ": "", "\t": ""));
+	for (fileLoc <- toSet(fileLocs)) {
+		for (snip <- (readFileSnippets(fileLoc))) {
+			line = escape(snip.block, (" ": "", "\t": ""));
 			if (inCom) {
 				end = contains(line, "*/");
 				if (end) {
@@ -36,49 +43,98 @@ tuple[list[str], int] getHugeList(list[loc] fileLocs) {
 				}
 				continue;
 			}
-			accend = startsWith(line, "}");
-			if ((/^\s*$/ := line) || (/^\s*\/\/.*/ := line) || (/\/\*.*?\*\// := line) || accend) {
+			accend = startsWith(line, "}") &&  skip;
+			if ((/^\s*$/ := line) || (/^\s*\/\/.*/ := line) || (/\/\*.*?\*\// := line || accend)) {
 				continue;
 			}
 			if (/^\s*\/\*.*/ := line) {
 				inCom = true;
 				continue;
 			}
-			//println(line);
-			conc += line;
+			snip.block = line;
+			codeSnippets += snip;
 			len += 1;
 		}
+		// Add a file delimiter to eliminate making codeblocks from seperate files.
+		Snippet delim = <"-0-0-0-", fileLoc>;
+		for (_ <- [0..5]) {
+			codeSnippets += delim;	
+		}
 	}
-	return <conc, len>;
+	return <codeSnippets, len>;
 }
 
 @doc {
 	.Synopsis
 	Create a map with blocks of 6 lines as keys, with ocurrences as 
 }
-map[list[str], int] createMap(list[str] lines, int len) {
-	list[str] block = [];
-	map[list[str], int] blockCounts = ();
+map[list[str], tuple[int, list[loc]]] createMap(list[Snippet] snippets, int len) {
+	list[str] blockList = [];
+	map[list[str], tuple[int, list[loc]]] blockCounts = ();
 	for (int i <- [0 .. len-5]) {
-		block = [lines[n] | n <- [i .. (i+6)]];
-		blockCounts[block]?0 += 1;
+		blockList = [snippets[n].block | n <- [i .. (i+6)]];
+		if (blockList in blockCounts) {
+			blockCounts[blockList] = addBlockList(blockCounts[blockList], snippets[i].src);
+		} else {
+			blockCounts[blockList] = <1, [snippets[i].src]>;
+		}
 	}
 	return blockCounts;
 }
 
 @doc {
 	.Synopsis
+	Add a duplicate block to the dictionary by counting it and adding the location to the list.
+}
+tuple[int, list[loc]] addBlockList(tuple[int, list[loc]] prev, loc new) {
+	return <prev[0]+1, prev[1] + new>;
+} 
+
+@doc {
+	.Synopsis
 	Get the number of duplicated lines in a project.
 }
-int getDuplicateLineCount(loc projectLoc) {
+int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	list[loc] files = getFiles(projectLoc);
-	tuple[list[str], int] huge = getHugeList(files);
+	tuple[list[Snippet], int] huge = getHugeList(files, skip);
 	blockCounts = createMap(huge[0], huge[1]);
-	return 6* sum([blockCounts[bc] | bc <- blockCounts, blockCounts[bc] > 1]);
+	if (print) {
+		printDuplicateLocs(blockCounts);
+	}
+	return size(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
+}
+
+@doc {
+	.Synopsis
+	Print the locations where duplicated codeblocks of 6 or more lines have been found.
+}
+void printDuplicateLocs(map[list[str], tuple[int, list[loc]]] blockCounts) {
+	uniqueBlocks = toSet([ub | ub <- blockCounts]);
+	for (bc <- uniqueBlocks) {
+		if (blockCounts[bc][0] > 1) {
+			if ("-0-0-0-" notin bc) {
+				println("The following locations contain duplicate code: ");
+				for (loci <- blockCounts[bc][1]) {
+					println(loci);
+				}
+				println();
+			}
+		}
+	}
 }
 
 // Duplication (D): += 6,   (D/LOC) = duplication%
-/* duplication (%) 
+@doc {
+	.Synopsis
+	Get the percentage of duplication in a project.
+}
+real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
+	real dups = toReal(getDuplicateLines(projectLoc, skip, print));
+	real lines = toReal(LOC(projectLoc));
+	//println("<dups>, <lines>");
+	return  dups / lines; 
+}
+/* duplication(%) :  rank
 		(0-3)	:	++
 		(3-5)	:	+
 		(5-10)	:	o
@@ -86,11 +142,26 @@ int getDuplicateLineCount(loc projectLoc) {
 		(20-100):	--  
 					
 */
-
-list[str] linurs = ["1",  "2",  "3",  "4",  "5",  "6",  "7",  "1",	 "2",  "3",  "4", "5",	 "6", "0",	"1", "2",  "3",  "4", "5", "6"];
-
-void testDup() {
-	println(createMap(linurs, size(linurs)));
+@doc {
+	.Synopsis
+	Get the rank for the duplication of the project.
+}
+int getDuplicationRank(real dp, bool print) {
+	if (dp <= 3.0) {
+		if (print) println("++");
+		return 2;
+	} else 	if (dp <= 5.0) {
+		if (print) println("+");
+		return 1;
+	} else 	if (dp <= 10.0) {
+		if (print) println("o");
+		return 0;
+	} else 	if (dp <= 20.0) {
+		if (print) println("-");
+		return -1;
+	}
+	if (print) println("--");
+	return -2;
 }
 
 loc small = |project://smallsql0.21_src|;
@@ -105,9 +176,10 @@ void testDups(str project) {
 	
 	println(projectLoc);
 	println(now());
-	result = getDuplicateLineCount(projectLoc);
+	result = getDuplicationPercentage(projectLoc, false, false);
 	println(now());
 	println(result);
+	getDuplicationRank(result, true);
 }
 
 @doc{
@@ -156,13 +228,19 @@ int DERPgetDuplicateBlocks(list[str] lines, int len) {
 	return block_count;
 }
 
-@doc {
-	.Synopsis
-	Get  the number of duplicated lines using the get duplicate blocks function
-}
-int DERPgetDuplicateLines(loc projectLoc) {
-	list[loc] files = getFiles(projectLoc);
-	tuple[list[str], int] huge = getHugeList(files); //<lines, len> = huge;
-	return (6 * getDuplicateBlocks(huge[0], huge[1]));
-}
+//@doc {
+//	.Synopsis
+//	Get  the number of duplicated lines using the get duplicate blocks function
+//}
+//int DERPgetDuplicateLines(loc projectLoc) {
+//	list[loc] files = getFiles(projectLoc);
+//	tuple[list[str], int] huge = getHugeList(files); //<lines, len> = huge;
+//	return (6 * DERPgetDuplicateBlocks(huge[0], huge[1]));
+//}
+
+//list[str] linurs = ["1",  "2",  "3",  "4",  "5",  "6",  "7",  "1",	 "2",  "3",  "4", "5",	 "6", "0",	"1", "2",  "3",  "4", "5", "6"];
+//
+//void testDup() {
+//	println(createMap(linurs, size(linurs)));
+//}
 
