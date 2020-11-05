@@ -58,9 +58,11 @@ tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
 		// Add a file delimiter to eliminate making codeblocks from seperate files.
 		Snippet delim = <"-0-0-0-", fileLoc>;
 		for (_ <- [0..5]) {
-			codeSnippets += delim;	
+			codeSnippets += delim;
+			len += 1;	
 		}
 	}
+	println(len);
 	return <codeSnippets, len>;
 }
 
@@ -68,15 +70,21 @@ tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
 	.Synopsis
 	Create a map with blocks of 6 lines as keys, with ocurrences as 
 }
-map[list[str], tuple[int, list[loc]]] createMap(list[Snippet] snippets, int len) {
+map[list[str], tuple[int, list[list[loc]]]] createMap(list[Snippet] snippets, int len) {
 	list[str] blockList = [];
-	map[list[str], tuple[int, list[loc]]] blockCounts = ();
+	map[list[str], tuple[int, list[list[loc]]]] blockCounts = ();
 	for (int i <- [0 .. len-5]) {
 		blockList = [snippets[n].block | n <- [i .. (i+6)]];
 		if (blockList in blockCounts) {
-			blockCounts[blockList] = addBlockList(blockCounts[blockList], snippets[i].src);
+			println("\nKNOWNBLOCKADDED");
+			println(blockList);
+			println(blockCounts[blockList]);
+			blockCounts[blockList] = addBlockList(blockCounts[blockList], [snippets[m].src | m <- [i .. (i+6)]]);
+			println(blockCounts[blockList]);
 		} else {
-			blockCounts[blockList] = <1, [snippets[i].src]>;
+			blockCounts[blockList] = <1, [[snippets[m].src | m <- [i .. (i+6)]]]>;
+			println("\nNEWBLOCKFOUND");
+			println(blockList);
 		}
 	}
 	return blockCounts;
@@ -86,8 +94,8 @@ map[list[str], tuple[int, list[loc]]] createMap(list[Snippet] snippets, int len)
 	.Synopsis
 	Add a duplicate block to the dictionary by counting it and adding the location to the list.
 }
-tuple[int, list[loc]] addBlockList(tuple[int, list[loc]] prev, loc new) {
-	return <prev[0]+1, prev[1] + new>;
+tuple[int, list[list[loc]]] addBlockList(tuple[int, list[list[loc]]] prev, list[loc] new) {
+	return <prev[0]+1, insertAt(prev[1], size(prev[1]), new)>;
 } 
 
 @doc {
@@ -99,21 +107,35 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	tuple[list[Snippet], int] huge = getHugeList(files, skip);
 	blockCounts = createMap(huge[0], huge[1]);
 	
-	list[str] lines = [];
+	map[str, int] lineCount = ();
+	println(blockCounts);
+	println();
 	for(bc <- blockCounts) {
 		if (blockCounts[bc][0] >1 &&  "-0-0-0-" notin bc) {
+			println(bc);
 			for(line <- bc) {
-				lines += line;
+				if (line notin lineCount) {
+					lineCount[line] = blockCounts[bc][0];				
+				}
 			}
+		} else {
+			blockCounts = delete(blockCounts, bc);
 		}
 	}
-	
-	unique = toSet(lines);
+	println(lineCount);
+	int unique = 0;
+	for (line <- lineCount) {
+		unique += lineCount[line];
+	}
+	//println(lineCount);
+	//2unique = toSet(lines);
+	//println(unique);
 
 	if (print) {
 		printDuplicateLocs(blockCounts);
 	}
-	return size(unique);
+	return unique;
+	//2return size(unique);
 	//println(size(toSet(lines)));
 	//println(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
 	//return size(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
@@ -123,19 +145,31 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	.Synopsis
 	Print the locations where duplicated codeblocks of 6 or more lines have been found.
 }
-void printDuplicateLocs(map[list[str], tuple[int, list[loc]]] blockCounts) {
-	uniqueBlocks = toSet([ub | ub <- blockCounts]);
-	for (bc <- uniqueBlocks) {
-		if (blockCounts[bc][0] > 1) {
-			if ("-0-0-0-" notin bc) {
-				println("The following locations contain duplicate code: ");
-				for (loci <- blockCounts[bc][1]) {
-					println(loci);
+void printDuplicateLocs(map[list[str], tuple[int, list[list[loc]]]] blockCounts) {
+	list[str] seen = [];
+	for (bc <- blockCounts) {
+		for (i <- [0 .. size(bc)]) {
+			if (bc[i] notin seen) {
+				println("\n`<bc[i]>` occurs <size(blockCounts[bc][1])> times at the following locations:");
+				for (sources <-  blockCounts[bc][1]) {
+					println("\t <sources[i]>");
 				}
-				println();
 			}
 		}
 	}
+	
+	//uniqueBlocks = toSet([ub | ub <- blockCounts]);
+	//for (bc <- uniqueBlocks) {
+	//	if (blockCounts[bc][0] > 1) {
+	//		if ("-0-0-0-" notin bc) {
+	//			println("The following locations contain duplicate code: ");
+	//			for (loci <- blockCounts[bc][1]) {
+	//				println(loci);
+	//			}
+	//			println();
+	//		}
+	//	}
+	//}
 }
 
 // Duplication (D): += 6,   (D/LOC) = duplication%
