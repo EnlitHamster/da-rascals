@@ -76,15 +76,9 @@ map[list[str], tuple[int, list[list[loc]]]] createMap(list[Snippet] snippets, in
 	for (int i <- [0 .. len-5]) {
 		blockList = [snippets[n].block | n <- [i .. (i+6)]];
 		if (blockList in blockCounts) {
-			println("\nKNOWNBLOCKADDED");
-			println(blockList);
-			println(blockCounts[blockList]);
 			blockCounts[blockList] = addBlockList(blockCounts[blockList], [snippets[m].src | m <- [i .. (i+6)]]);
-			println(blockCounts[blockList]);
 		} else {
 			blockCounts[blockList] = <1, [[snippets[m].src | m <- [i .. (i+6)]]]>;
-			println("\nNEWBLOCKFOUND");
-			println(blockList);
 		}
 	}
 	return blockCounts;
@@ -108,37 +102,29 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	blockCounts = createMap(huge[0], huge[1]);
 	
 	map[str, int] lineCount = ();
-	println(blockCounts);
-	println();
 	for(bc <- blockCounts) {
 		if (blockCounts[bc][0] >1 &&  "-0-0-0-" notin bc) {
-			println(bc);
 			for(line <- bc) {
 				if (line notin lineCount) {
 					lineCount[line] = blockCounts[bc][0];				
+				} else {
+					lineCount[line] = max(lineCount[line], blockCounts[bc][0]);
 				}
 			}
 		} else {
 			blockCounts = delete(blockCounts, bc);
 		}
 	}
-	println(lineCount);
+
 	int unique = 0;
 	for (line <- lineCount) {
 		unique += lineCount[line];
 	}
-	//println(lineCount);
-	//2unique = toSet(lines);
-	//println(unique);
-
+	
 	if (print) {
 		printDuplicateLocs(blockCounts);
 	}
 	return unique;
-	//2return size(unique);
-	//println(size(toSet(lines)));
-	//println(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
-	//return size(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
 }
 
 @doc {
@@ -146,30 +132,14 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	Print the locations where duplicated codeblocks of 6 or more lines have been found.
 }
 void printDuplicateLocs(map[list[str], tuple[int, list[list[loc]]]] blockCounts) {
-	list[str] seen = [];
 	for (bc <- blockCounts) {
 		for (i <- [0 .. size(bc)]) {
-			if (bc[i] notin seen) {
-				println("\n`<bc[i]>` occurs <size(blockCounts[bc][1])> times at the following locations:");
-				for (sources <-  blockCounts[bc][1]) {
-					println("\t <sources[i]>");
-				}
+			println("\n``<bc[i]>`` occurs in <size(blockCounts[bc][1])> blocks of 6 or more lines:");
+			for (sources <-  blockCounts[bc][1]) {
+				println("\t <sources[i]>");
 			}
 		}
 	}
-	
-	//uniqueBlocks = toSet([ub | ub <- blockCounts]);
-	//for (bc <- uniqueBlocks) {
-	//	if (blockCounts[bc][0] > 1) {
-	//		if ("-0-0-0-" notin bc) {
-	//			println("The following locations contain duplicate code: ");
-	//			for (loci <- blockCounts[bc][1]) {
-	//				println(loci);
-	//			}
-	//			println();
-	//		}
-	//	}
-	//}
 }
 
 // Duplication (D): += 6,   (D/LOC) = duplication%
