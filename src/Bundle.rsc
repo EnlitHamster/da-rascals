@@ -38,32 +38,40 @@ private alias Bundle = tuple[ int LOC,
 							  int DUP,
 							  int rankDUP ];
 
-private Bundle bundle(loc projectLoc) {
+private Bundle bundle(loc projectLoc, bool print, bool skipBrackets) {
 	// Saving the project files/ASTs as they are used by all metric calculators
 	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectLoc);
 	
 	// VOLUME
-	int LOC = countLinesFiles(projectFiles, false);
-	int rankLOC = getLocRank(LOC, false);
+	if (print) println("=== VOLUME LOGS");
+	
+	int LOC = countLinesFiles(projectFiles, print);
+	int rankLOC = getLocRank(LOC, print);
 	
 	// UNIT COMPLEXITY
+	if (print) println("=== UNIT COMPLEXITY LOGS");
+	
 	list[CC] CCs = calcAllCC(asts);
 	
 	map[str,int] riskCCsNoExp = rankCCsRisk(CCs, false);
 	map[str,int] riskCCsExp = rankCCsRisk(CCs, true);
 	
-	int rankUCNoExp = rankComplexity(riskCCsNoExp, false);
-	int rankUCExp = rankComplexity(riskCCsExp, false);
+	int rankUCNoExp = rankComplexity(riskCCsNoExp, print);
+	int rankUCExp = rankComplexity(riskCCsExp, print);
 	
 	// UNIT SIZE
+	if (print) println("=== UNIT SIZE LOGS");
+	
 	list[int] unitSizes = getUnitsLoc(asts);
 	map[str,int] riskUnitSizes = rankSizeRisk(unitSizes);
-	int rankUS = rankUnitSize(riskUnitSizes, false);
+	int rankUS = rankUnitSize(riskUnitSizes, print);
 	
 	// DUPLICATES
-	int duplicates = getDuplicateLines(projectLoc, false, false);
-	int rankDUP = getDuplicationRank(toReal(duplicates) / toReal(LOC), false);
+	if (print) println("=== DUPLICATES LOGS");
+	
+	int duplicates = getDuplicateLines(projectLoc, skipBrackets, print);
+	int rankDUP = getDuplicationRank(toReal(duplicates) / toReal(LOC), print);
 	
 	// Output
 	return <LOC, rankLOC, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, rankUS, duplicates, rankDUP>;
@@ -77,8 +85,8 @@ str parseScore(int rank) {
 	else return "--";
 }
 
-void printBundle(loc projectLoc) {
-	Bundle bundle = bundle(projectLoc);
+void printBundle(loc projectLoc, bool print, bool skipBrackets) {
+	Bundle bundle = bundle(projectLoc, print, skipBrackets);
 
 	str LOC = parseScore(bundle.rankLOC);
 	str UCE = parseScore(bundle.rankUCE);
@@ -86,14 +94,14 @@ void printBundle(loc projectLoc) {
 	str US = parseScore(bundle.rankUS);
 	str DUP = parseScore(bundle.rankDUP);
 
-	println("+++ Code-level Metrics");
+	println("=== SOURCE-LEVEL METRICS");
 	println("LOC metric: <LOC>");
 	println("\> <bundle.LOC> lines of code");
-	println("UC metric (with|without exception handling): <UCNE> | <UCE>");
-	println("\> <bundle.riskCCsNE[LOW_RISK]> | <bundle.riskCCsE[LOW_RISK]> low risk units");
-	println("\> <bundle.riskCCsNE[MID_RISK]> | <bundle.riskCCsE[MID_RISK]> medium risk units");
-	println("\> <bundle.riskCCsNE[HIGH_RISK]> | <bundle.riskCCsE[HIGH_RISK]> high risk units");
-	println("\> <bundle.riskCCsNE[VERY_HIGH_RISK]> | <bundle.riskCCsE[VERY_HIGH_RISK]> very high risk units");
+	println("UC metric (with|without exception handling): <UCE> | <UCNE>");
+	println("\> <bundle.riskCCsE[LOW_RISK]> | <bundle.riskCCsNE[LOW_RISK]> low risk units");
+	println("\> <bundle.riskCCsE[MID_RISK]> | <bundle.riskCCsNE[MID_RISK]> medium risk units");
+	println("\> <bundle.riskCCsE[HIGH_RISK]> | <bundle.riskCCsNE[HIGH_RISK]> high risk units");
+	println("\> <bundle.riskCCsE[VERY_HIGH_RISK]> | <bundle.riskCCsNE[VERY_HIGH_RISK]> very high risk units");
 	println("US metric: <US>");
 	println("\> <bundle.riskUS[LOW_RISK]> low risk units");
 	println("\> <bundle.riskUS[MID_RISK]> medium risk units");
@@ -108,4 +116,23 @@ void printBundle(loc projectLoc) {
 	real changeabilityE = (toReal(bundle.rankUCE) + toReal(bundle.rankDUP)) / 2.0;
 	real testabilityNE = (toReal(bundle.rankUCNE) + toReal(bundle.rankUS)) / 2.0;
 	real testabilityE = (toReal(bundle.rankUCE) + toReal(bundle.rankUS)) / 2.0;
+	
+	real overallNE = (analysability + changeabilityNE + testabilityNE) / 3.0;
+	real overallE = (analysability + changeabilityE + testabilityE) / 3.0;
+	
+	str AN = parseScore(round(analysability));
+	str CHNE = parseScore(round(changeabilityNE));
+	str CHE = parseScore(round(changeabilityE));
+	str TSNE = parseScore(round(testabilityNE));
+	str TSE = parseScore(round(testabilityE));
+	str OVNE = parseScore(round(overallNE));
+	str OVE = parseScore(round(overallE));
+	
+	println();
+	println("=== SYSTEM-LEVEL METRICS (with|without exception handling)");
+	println("Analysability: <AN> | <AN>");
+	println("Changeability: <CHE> | <CHNE>");
+	println("Testability: <TSE> | <TSNE>");
+	println();
+	println("Overall: <OVE> | <OVNE>");
 }
