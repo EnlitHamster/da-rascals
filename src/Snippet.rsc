@@ -52,11 +52,6 @@ public Snippet mergeSnippets(list[Snippet] snippets) {
 	tuple[int,int] begin = snippets[0].src.begin;
 	tuple[int,int] end = snippets[sz-1].src.end;
 	
-	println(offset);
-	println(len);
-	println(begin);
-	println(end);
-	
 	return <block, snippets[0].src(offset,len,begin,end)>;
 }
 
@@ -68,24 +63,42 @@ public bool softEquals(Snippet s1, Snippet s2) {
 	return s1.block == s2.block;
 }
 
+public list[Snippet] breakLines(Snippet snippet) {
+	return snippetParser(snippet.src, split(eof(), snippet.block), snippet.src.offset, snippet.src.begin);
+}
+
 @doc{
 	.Synopsis
 	Parses a file similarly to <<readFileLines>> but returns a list of Snippets rather than Strings.
 }
 public list[Snippet] readFileSnippets(loc fileLoc) {
+	return snippetParser(fileLoc, readFileLines(fileLoc), 0, <0,0>);
+}
+
+private list[Snippet] snippetParser(loc fileLoc, list[str] content, int offset, tuple[int line,int column] begin) {
 	list[Snippet] snippets = [];
-	list[str] fileContent = readFileLines(fileLoc);
-	int offset = 0; // Char offset from the beginning of the file
-	int ln = 0; // Line counter
 	int eofSize = size(eof()); // System-dependant EOF chars length. To be added to the offset after every line.
-	for (line <- fileContent) {
-		int len = size(line); // Length of the line
+	int line = begin.line;
+	for (ln <- content) {
+		int len = size(ln); // Length of the line
 		// The begin and end tuples are based on the char length and not on the length of
 		// Tabulation Chars (like IDEs) as this is IDE and platform independant. It is the
 		// Char offset from the beginning of the line.
-		snippets += <line, fileLoc(offset, len, <ln, 0>, <ln, len>)>;
+		snippets += <ln, fileLoc(offset, len, <line, 0>, <line, len>)>;
 		offset += len + eofSize;
-		ln += 1;
+		line += 1;
 	}
+	if (begin.column != 0) snippets[0] = offsetColumn(snippet[0], begin.column);
 	return snippets;
+}
+
+private Snippet offsetColumn(Snippet snippet, int column) {
+	loc src = snippet.src;
+	int offset = snippet.src.offset;
+	int length = snippet.src.length;
+	int beginLine = snippet.src.begin.line;
+	int endLine = snippet.src.end.line;
+	int beginColumn = snippet.src.begin.column + column;
+	int endColumn = snippet.src.end.column + column;
+	return <snippet.block, src(offset,length,<beginLine,beginColumn>,<endLine,endColumn>)>;
 }
