@@ -43,7 +43,7 @@ tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
 				}
 				continue;
 			}
-			accend = startsWith(line, "}") &&  skip;
+			accend = skip && line == "}" ;
 			if ((/^\s*$/ := line) || (/^\s*\/\/.*/ := line) || (/\/\*.*?\*\// := line || accend)) {
 				continue;
 			}
@@ -98,10 +98,25 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	list[loc] files = getFiles(projectLoc);
 	tuple[list[Snippet], int] huge = getHugeList(files, skip);
 	blockCounts = createMap(huge[0], huge[1]);
+	
+	list[str] lines = [];
+	for(bc <- blockCounts) {
+		if (blockCounts[bc][0] >1 &&  "-0-0-0-" notin bc) {
+			for(line <- bc) {
+				lines += line;
+			}
+		}
+	}
+	
+	unique = toSet(lines);
+
 	if (print) {
 		printDuplicateLocs(blockCounts);
 	}
-	return size(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
+	return size(unique);
+	//println(size(toSet(lines)));
+	//println(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
+	//return size(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
 }
 
 @doc {
@@ -131,7 +146,7 @@ void printDuplicateLocs(map[list[str], tuple[int, list[loc]]] blockCounts) {
 real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
 	real dups = toReal(getDuplicateLines(projectLoc, skip, print));
 	real lines = toReal(countLinesFiles(getFiles(projectLoc), print));
-	//println("<dups>, <lines>");
+	println("<dups>, <lines>");
 	return  dups / lines; 
 }
 /* duplication(%) :  rank
