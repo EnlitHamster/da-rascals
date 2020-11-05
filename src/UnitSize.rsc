@@ -20,8 +20,8 @@ import lang::java::jdt::m3::AST;
 list[int] getUnitsLoc(list[Declaration] asts) {
 	list[int] uSize = [];
 	visit (asts) {
-		case Declarations decl: \method(_,_,_,_,_): uSize += decl.end.line - decl.begin.line;
-		case Declarations decl: \constructor(_,_,_,_): uSize += decl.end.line - decl.begin.line;
+		case Declaration decl: \method(_,_,_,_,_): uSize += decl.src.end.line - decl.src.begin.line;
+		case Declaration decl: \constructor(_,_,_,_): uSize += decl.src.end.line - decl.src.begin.line;
 	}
 	return uSize;
 }

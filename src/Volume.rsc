@@ -81,8 +81,10 @@ int countLinesFiles(list[loc] fileLocs, bool print) {
 		comment += com;
 		al += a;
 	}
-	println("<ctr>, <empty>, <comment>");
-	println("<ctr + empty + comment> == <al>");
+	if (print) {
+		println("<ctr>, <empty>, <comment>");
+		println("<ctr + empty + comment> == <al>");
+	}
 	return ctr;	
 }
 

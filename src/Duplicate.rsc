@@ -130,7 +130,7 @@ void printDuplicateLocs(map[list[str], tuple[int, list[loc]]] blockCounts) {
 }
 real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
 	real dups = toReal(getDuplicateLines(projectLoc, skip, print));
-	real lines = toReal(LOC(projectLoc));
+	real lines = toReal(countLinesFiles(getFiles(projectLoc), print));
 	//println("<dups>, <lines>");
 	return  dups / lines; 
 }
@@ -142,12 +142,13 @@ real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
 		(20-100):	--  
 					
 */
+
 @doc {
 	.Synopsis
 	Get the rank for the duplication of the project.
 }
 int getDuplicationRank(real dp, bool print) {
-	return scoreRank(dp, 3.0, 5.0, 10.0, 20.0, print);
+	return scoreRank(dp, 0.03, 0.05, 0.1, 0.2, print);
 }
 
 loc small = |project://smallsql0.21_src|;
