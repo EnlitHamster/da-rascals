@@ -2,6 +2,8 @@ module Utility
 
 // Rascal base imports
 import IO;
+import String;
+import List;
 
 import util::Math;
 
@@ -110,4 +112,34 @@ list[Declaration] getASS (loc projectLoc) {
  		asts += createAstFromFile(file,true);
  	}
 	return asts;
+}
+
+tuple[str,bool] removeInlineComments(str code) {
+	// This is to avoid situations like /*/ where this is not a closed comment.
+	str final = replaceAll(code, "/*/", "/*");
+	
+	// Checks whether the lines leaves an open comment
+	bool opensCom = (findLast(final, "/*") > findLast(final, "*/"));
+
+	// Checking for */ (multiline comment closer)
+	if (contains(final, "*/")) {
+		list[str] codes = split("*/", final);
+		// taking only odd indexes as even would be comments
+		final = "";
+		for (i <- [0..size(codes)]) if (i % 2 == 1) final += codes[i];
+	}
+	
+	println(final);
+	
+	// Checking for /* (multiline comment opener)
+	if (contains(final, "/*")) {
+		list[str] codes = split("/*", final);
+		// taking only even indexes as odd would be comments
+		final = "";
+		for (i <- [0..size(codes)]) if (i % 2 == 0) final += codes[i];
+	}
+	
+	println(final);
+	
+	return <split("//", final)[0],opensCom>; // Only the leftmost side can be code;
 }

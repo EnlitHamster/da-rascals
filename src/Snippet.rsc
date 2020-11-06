@@ -102,3 +102,7 @@ private Snippet offsetColumn(Snippet snippet, int column) {
 	int endColumn = snippet.src.end.column + column;
 	return <snippet.block, src(offset,length,<beginLine,beginColumn>,<endLine,endColumn>)>;
 }
+
+public list[Snippet] sortSnippets(list[Snippet] snippets) {
+	return sort(snippets, bool (Snippet s1, Snippet s2) {return s1.src.begin.line < s2.src.begin.line;});
+}
