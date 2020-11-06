@@ -8,6 +8,7 @@ import Volume;
 import Set;
 import List;
 import Map;
+import Exception;
 
 import IO;
 import String;
@@ -62,7 +63,6 @@ tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
 			len += 1;	
 		}
 	}
-	println(len);
 	return <codeSnippets, len>;
 }
 
@@ -132,14 +132,49 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	Print the locations where duplicated codeblocks of 6 or more lines have been found.
 }
 void printDuplicateLocs(map[list[str], tuple[int, list[list[loc]]]] blockCounts) {
+	map[str, list[loc]] fileBlocks = ();
+	//for (bc <- blockCounts) {
+	//	for (blocks <-  blockCounts[bc][1]) {
+	//		p = blocks[0].path;
+	//		t = 0;
+	//		if (p in fileBlocks) {
+	//			//return;
+	//			
+	//			//println(fileBlocks[p]);
+	//			//println(p);
+	//			//println(blocks);
+	//			println();
+	//			println([<"",fileBlocks[p]>] +  [<"", block> | block <- blocks]);
+	//			try {
+	//				fileBlocks[p] = [mergeSnippets([<"",fileBlocks[p]>] +  [<"", block> | block <- blocks])[1]];
+	//			} catch RuntimeException: t = 1;
+	//		} else {
+	//			fileBlocks[p] = [mergeSnippets( [<"", block> | block <- blocks])[1]];
+	//		}
+	//	}
+	//}
+	//println(fileBlocks);
+
 	for (bc <- blockCounts) {
+		println("============================Duplicate Block============================");
 		for (i <- [0 .. size(bc)]) {
-			println("\n``<bc[i]>`` occurs in <size(blockCounts[bc][1])> blocks of 6 or more lines:");
-			for (sources <-  blockCounts[bc][1]) {
-				println("\t <sources[i]>");
-			}
+			println("<bc[i]>");
 		}
+		println("==============================Locations=============================");
+		for (sources <-  blockCounts[bc][1]) {
+				println(sources[0].path);
+				println("\t<mergeSnippets([<"", source> | source <- sources])[1]>");
+		}
+		println();
 	}
+	//for (bc <- blockCounts) {
+	//	for (i <- [0 .. size(bc)]) {
+	//		println("\n``<bc[i]>`` occurs in <size(blockCounts[bc][1])> blocks of 6 or more lines:");
+	//		for (sources <-  blockCounts[bc][1]) {
+	//			println("\t <sources[i]>");
+	//		}
+	//	}
+	//}
 }
 
 // Duplication (D): += 6,   (D/LOC) = duplication%
