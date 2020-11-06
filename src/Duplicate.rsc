@@ -8,6 +8,7 @@ import Volume;
 import Set;
 import List;
 import Map;
+import Exception;
 
 import IO;
 import String;
@@ -58,7 +59,8 @@ tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
 		// Add a file delimiter to eliminate making codeblocks from seperate files.
 		Snippet delim = <"-0-0-0-", fileLoc>;
 		for (_ <- [0..5]) {
-			codeSnippets += delim;	
+			codeSnippets += delim;
+			len += 1;	
 		}
 	}
 	return <codeSnippets, len>;
@@ -68,15 +70,15 @@ tuple[list[Snippet], int] getHugeList(list[loc] fileLocs, bool skip) {
 	.Synopsis
 	Create a map with blocks of 6 lines as keys, with ocurrences as 
 }
-map[list[str], tuple[int, list[loc]]] createMap(list[Snippet] snippets, int len) {
+map[list[str], tuple[int, list[list[loc]]]] createMap(list[Snippet] snippets, int len) {
 	list[str] blockList = [];
-	map[list[str], tuple[int, list[loc]]] blockCounts = ();
+	map[list[str], tuple[int, list[list[loc]]]] blockCounts = ();
 	for (int i <- [0 .. len-5]) {
 		blockList = [snippets[n].block | n <- [i .. (i+6)]];
 		if (blockList in blockCounts) {
-			blockCounts[blockList] = addBlockList(blockCounts[blockList], snippets[i].src);
+			blockCounts[blockList] = addBlockList(blockCounts[blockList], [snippets[m].src | m <- [i .. (i+6)]]);
 		} else {
-			blockCounts[blockList] = <1, [snippets[i].src]>;
+			blockCounts[blockList] = <1, [[snippets[m].src | m <- [i .. (i+6)]]]>;
 		}
 	}
 	return blockCounts;
@@ -86,8 +88,8 @@ map[list[str], tuple[int, list[loc]]] createMap(list[Snippet] snippets, int len)
 	.Synopsis
 	Add a duplicate block to the dictionary by counting it and adding the location to the list.
 }
-tuple[int, list[loc]] addBlockList(tuple[int, list[loc]] prev, loc new) {
-	return <prev[0]+1, prev[1] + new>;
+tuple[int, list[list[loc]]] addBlockList(tuple[int, list[list[loc]]] prev, list[loc] new) {
+	return <prev[0]+1, insertAt(prev[1], size(prev[1]), new)>;
 } 
 
 @doc {
@@ -99,43 +101,80 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	tuple[list[Snippet], int] huge = getHugeList(files, skip);
 	blockCounts = createMap(huge[0], huge[1]);
 	
-	list[str] lines = [];
+	map[str, int] lineCount = ();
 	for(bc <- blockCounts) {
 		if (blockCounts[bc][0] >1 &&  "-0-0-0-" notin bc) {
 			for(line <- bc) {
-				lines += line;
+				if (line notin lineCount) {
+					lineCount[line] = blockCounts[bc][0];				
+				} else {
+					lineCount[line] = max(lineCount[line], blockCounts[bc][0]);
+				}
 			}
+		} else {
+			blockCounts = delete(blockCounts, bc);
 		}
 	}
-	
-	unique = toSet(lines);
 
+	int unique = 0;
+	for (line <- lineCount) {
+		unique += lineCount[line];
+	}
+	
 	if (print) {
 		printDuplicateLocs(blockCounts);
 	}
-	return size(unique);
-	//println(size(toSet(lines)));
-	//println(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
-	//return size(toSet([bc | bc <- blockCounts, blockCounts[bc][0] > 1, "-0-0-0-" notin bc]));
+	return unique;
 }
 
 @doc {
 	.Synopsis
 	Print the locations where duplicated codeblocks of 6 or more lines have been found.
 }
-void printDuplicateLocs(map[list[str], tuple[int, list[loc]]] blockCounts) {
-	uniqueBlocks = toSet([ub | ub <- blockCounts]);
-	for (bc <- uniqueBlocks) {
-		if (blockCounts[bc][0] > 1) {
-			if ("-0-0-0-" notin bc) {
-				println("The following locations contain duplicate code: ");
-				for (loci <- blockCounts[bc][1]) {
-					println(loci);
-				}
-				println();
-			}
+void printDuplicateLocs(map[list[str], tuple[int, list[list[loc]]]] blockCounts) {
+	map[str, list[loc]] fileBlocks = ();
+	//for (bc <- blockCounts) {
+	//	for (blocks <-  blockCounts[bc][1]) {
+	//		p = blocks[0].path;
+	//		t = 0;
+	//		if (p in fileBlocks) {
+	//			//return;
+	//			
+	//			//println(fileBlocks[p]);
+	//			//println(p);
+	//			//println(blocks);
+	//			println();
+	//			println([<"",fileBlocks[p]>] +  [<"", block> | block <- blocks]);
+	//			try {
+	//				fileBlocks[p] = [mergeSnippets([<"",fileBlocks[p]>] +  [<"", block> | block <- blocks])[1]];
+	//			} catch RuntimeException: t = 1;
+	//		} else {
+	//			fileBlocks[p] = [mergeSnippets( [<"", block> | block <- blocks])[1]];
+	//		}
+	//	}
+	//}
+	//println(fileBlocks);
+
+	for (bc <- blockCounts) {
+		println("============================Duplicate Block============================");
+		for (i <- [0 .. size(bc)]) {
+			println("<bc[i]>");
 		}
+		println("==============================Locations=============================");
+		for (sources <-  blockCounts[bc][1]) {
+				println(sources[0].path);
+				println("\t<mergeSnippets([<"", source> | source <- sources])[1]>");
+		}
+		println();
 	}
+	//for (bc <- blockCounts) {
+	//	for (i <- [0 .. size(bc)]) {
+	//		println("\n``<bc[i]>`` occurs in <size(blockCounts[bc][1])> blocks of 6 or more lines:");
+	//		for (sources <-  blockCounts[bc][1]) {
+	//			println("\t <sources[i]>");
+	//		}
+	//	}
+	//}
 }
 
 // Duplication (D): += 6,   (D/LOC) = duplication%
