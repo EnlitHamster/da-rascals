@@ -9,6 +9,7 @@ import Set;
 import List;
 import Map;
 import Exception;
+import Duplicate_new;
 
 import IO;
 import String;
@@ -185,7 +186,7 @@ real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
 	real dups = toReal(getDuplicateLines(projectLoc, skip, print));
 	real lines = toReal(countLinesFiles(getFiles(projectLoc), print));
 	println("<dups>, <lines>");
-	return  dups / lines; 
+	return  (dups / lines) * 100; 
 }
 /* duplication(%) :  rank
 		(0-3)	:	++
@@ -300,4 +301,31 @@ int DERPgetDuplicateBlocks(list[str] lines, int len) {
 //	}
 //	return lineCounts;
 //}
+void compare(loc project, int runs) {
+	println(project);
+	
+	println("clustered");
+	starter = now();
+	println(starter);
+	int result = 0;
+	for (_ <- [1..runs]) {
+		result = getDuplicateLines(project,  false);
+	}
+	end = now();
+	println(end);
+	println(end - starter);
+	println(result);
+	
+	println("not clustered results");
+	starter = now();
+	println(starter);
+	for (_ <- [1..runs]) {
+		result = getDuplicateLines(project, true, false);
+	}
+	end = now();
+	println(end);
+	println(end - starter);
+	println(result);
+	
+}
 
