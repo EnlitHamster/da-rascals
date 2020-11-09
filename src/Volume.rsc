@@ -26,13 +26,13 @@ import lang::java::jdt::m3::AST;
 	.Synopsis
 	The function calculates how many Lines Of Code (LOC) the files are made of. 
 }
-int countLinesFiles(list[loc] fileLocs, bool print) {
+tuple[int,int] countLinesFiles(list[loc] fileLocs, bool print, bool skipBrkts) {
 	int code = 0;
 	int empty = 0;
 	int comment = 0;
 	int total = 0;
 	for (fileLoc <- fileLocs) {
-		<c, e, m, a> = countLines(fileLoc);
+		<c, e, m, a> = countLines(fileLoc, skipBrkts);
 		code += c;
 		empty += e;
 		comment += m;
@@ -40,9 +40,9 @@ int countLinesFiles(list[loc] fileLocs, bool print) {
 	}
 	if (print) {
 		println("<code>, <empty>, <comment>");
-		println("<code + empty + comment> == <totala>");
+		println("<code + empty + comment> == <total>");
 	}
-	return code;	
+	return <code,total>;	
 }
 
 //----------------------

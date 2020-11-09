@@ -44,6 +44,8 @@ bool checkRiskRank(num mid, num high, num vhigh, RiskRank rank) {
 int scoreRank(map[str,num] ranks, RiskRank top, RiskRank midtop, RiskRank mid, RiskRank midbot, bool print) {
 	real total = toReal(ranks[LOW_RISK] + ranks[MID_RISK] + ranks[HIGH_RISK] + ranks[VERY_HIGH_RISK]);
 	
+	if (total == 0) return 2;
+	
 	real lowRisk 	= ranks[LOW_RISK] / total;
 	real midRisk 	= ranks[MID_RISK] / total;
 	real highRisk 	= ranks[HIGH_RISK] / total;
@@ -73,19 +75,19 @@ int scoreRank(map[str,num] ranks, RiskRank top, RiskRank midtop, RiskRank mid, R
 }
 int scoreRank(num metric, num top, num midtop, num mid, num midbot, bool print) {
 	if (metric <= top) {
-		if (print) println("Man Month Ranking: ++");
+		if (print) println("Ranking: ++");
 		return 2;
 	} else if (metric <= midtop) {
-		if (print) println("Man Month Ranking: +");
+		if (print) println("Ranking: +");
 		return 1;
 	} else if (metric <= mid) {
-		if (print) println("Man Month Ranking: o");
+		if (print) println("Ranking: o");
 		return 0;
 	} else if (metric <= midbot) {
-		if (print) println("Man Month Ranking: -");
+		if (print) println("Ranking: -");
 		return -1;
 	} else {
-		if (print) println("Man Month Ranking: --");
+		if (print) println("Ranking: --");
 		return -2;
 	}
 }

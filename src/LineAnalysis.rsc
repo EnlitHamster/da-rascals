@@ -14,7 +14,11 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 tuple[str, bool] removeInlineComments(str code, bool inCom) {
-	str final = replaceAll(split("//", code)[0], "/*/", "/*");
+	println(code);
+	list[str] codeComm = split("//", code);
+	if (size(codeComm) <= 0) return <"", false>; // The line is an entire single line comment
+	
+	str final = replaceAll(codeComm[0], "/*/", "/*");
 	int iOpen = inCom ? 0 : findFirst(final, "/*");
 	int iClse = findFirst(final, "*/");
 	
@@ -40,7 +44,7 @@ public alias LineCount = tuple[int code, int empty, int comment, int total];
 	.Synopsis
 	Lines with both code and comments are counted as code lines
 }
-LineCount countLines(loc fileLoc) {
+LineCount countLines(loc fileLoc, bool skipBrkts) {
 	int code = 0;
 	int empty = 0;
 	int comment = 0;
@@ -56,7 +60,7 @@ LineCount countLines(loc fileLoc) {
 			if (!inCom) empty += 1;
 			else comment += 1;
 		} else {
-			if (/^\s*}\s*$/ := filteredLine.code) empty += 1;
+			if (skipBrkts && /^\s*}\s*$/ := filteredLine.code) empty += 1;
 			else if (/^\s*$/ := filteredLine.code) comment += 1;
 			else code += 1;
 		}

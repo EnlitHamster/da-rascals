@@ -22,8 +22,8 @@ list[int] getUnitsLoc(list[Declaration] asts) {
 	list[int] uSize = [];
 	visit (asts) {
 		// The -1 is due to the fact that the prototype is included as well. This is to ignore it.
-		case Declaration decl: \method(_,_,_,_,_): uSize += countLines(decl.src)[0] - 1;
-		case Declaration decl: \constructor(_,_,_,_): uSize += countLines(decl.src)[0] - 1;
+		case Declaration decl: \method(_,_,_,_,_): uSize += countLines(decl.src, false)[0] - 1;
+		case Declaration decl: \constructor(_,_,_,_): uSize += countLines(decl.src, false)[0] - 1;
 	}
 	return uSize;
 }

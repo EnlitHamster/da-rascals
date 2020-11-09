@@ -25,10 +25,10 @@ import lang::java::jdt::m3::AST;
 public alias Block = list[Snippet];
 private map[str, str] whiteSpaces = (" ":"", "\t":"");
 
-map[str, list[Block]] mapBlocks(list[loc] fileLocs) {
+map[str, list[Block]] mapBlocks(list[loc] fileLocs, bool skipBrkts) {
 	map[str, list[Block]] blocks = ();
 	for (fLoc <- toSet(fileLocs)) {
-		list[tuple[str, Snippet]] snps = filterSnippets(readFileSnippets(fLoc));
+		list[tuple[str, Snippet]] snps = filterSnippets(readFileSnippets(fLoc), skipBrkts);
 		int len = size(snps);
 		if (len > 5) { // If the file size is less than 5, it is obvious there cannot be any duplicate code.
 			for (i <- [0..len-5]) {
@@ -49,7 +49,7 @@ map[str, list[Block]] mapBlocks(list[loc] fileLocs) {
 	return blocks;
 }
 
-list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps) {
+list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps, bool skipBrkts) {
 	list[tuple[str, Snippet]] filtered = [];
 	bool inCom = false;
 	for (snp <- snps) {
@@ -57,7 +57,7 @@ list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps) {
 			tuple[str code, bool inCom] filteredLine = removeInlineComments(snp.block, inCom);
 			line = escape(filteredLine.code, whiteSpaces);
 		
-			if (line != "}" && line != "") filtered += <line, snp>; 
+			if ((!skipBrkts || line != "}") && line != "") filtered += <line, snp>; 
 			
 			inCom = filteredLine.inCom;
 		}		
@@ -69,10 +69,10 @@ list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps) {
 	.Synopsis
 	Get the number of duplicated lines in a project.
 }
-int getDuplicateLines(loc projectLoc, bool print) {
+int getDuplicateLines(loc projectLoc, bool print, bool skipBrkts) {
 	if (print) println(now());
 	list[loc] files = getFiles(projectLoc);
-	map[str, list[Block]] blocks = mapBlocks(files);
+	map[str, list[Block]] blocks = mapBlocks(files, skipBrkts);
 	map[str, list[Block]] dupBlocks = ();
 	
 	set[Snippet] dupSnps = {};

@@ -25,7 +25,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 // Used to pass data from bundling to output
-private alias Bundle = tuple[ int LOC,
+private alias Bundle = tuple[ tuple[int,int] LOC,
 							  int rankLOC,
 							  list[CC] CCs,
 							  map[str,int] riskCCsNE,
@@ -36,9 +36,16 @@ private alias Bundle = tuple[ int LOC,
 							  map[str,int] riskUS,
 							  int rankUS,
 							  int DUP,
-							  int rankDUP ];
+							  int rankDUP,
+							  real AN,
+							  real CHNE,
+							  real CHE,
+							  real TSNE,
+							  real TSE,
+							  real OVNE,
+							  real OVE ];
 
-private Bundle bundle(loc projectLoc, bool print) {
+private Bundle bundle(loc projectLoc, bool print, bool skipBrkts) {
 	// Saving the project files/ASTs as they are used by all metric calculators
 	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectLoc);
@@ -46,8 +53,8 @@ private Bundle bundle(loc projectLoc, bool print) {
 	// VOLUME
 	if (print) println("=== VOLUME LOGS");
 	
-	int LOC = countLinesFiles(projectFiles, print);
-	int rankLOC = getLocRank(LOC, print);
+	tuple[int,int] LOC = countLinesFiles(projectFiles, print, skipBrkts);
+	int rankLOC = getLocRank(LOC[0], print);
 	
 	// UNIT COMPLEXITY
 	if (print) println("=== UNIT COMPLEXITY LOGS");
@@ -70,11 +77,22 @@ private Bundle bundle(loc projectLoc, bool print) {
 	// DUPLICATES
 	if (print) println("=== DUPLICATES LOGS");
 	
-	int duplicates = getDuplicateLines(projectLoc, print);
-	int rankDUP = getDuplicationRank(toReal(duplicates) / toReal(LOC), print);
+	int duplicates = getDuplicateLines(projectLoc, print, skipBrkts);
+	int rankDUP = getDuplicationRank(toReal(duplicates) / toReal(LOC[0]), print);
+	
+	// SYSTEM-LEVEL
+	
+	real AN = (toReal(rankLOC) + toReal(rankDUP) + toReal(rankUS)) / 3.0;
+	real CHNE = (toReal(rankUCNoExp) + toReal(rankDUP)) / 2.0;
+	real CHE = (toReal(rankUCExp) + toReal(rankDUP)) / 2.0;
+	real TSNE = (toReal(rankUCNoExp) + toReal(rankUS)) / 2.0;
+	real TSE = (toReal(rankUCExp) + toReal(rankUS)) / 2.0;
+	
+	real OVNE = (AN + CHNE + TSNE) / 3.0;
+	real OVE = (AN + CHE + TSE) / 3.0;
 	
 	// Output
-	return <LOC, rankLOC, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, rankUS, duplicates, rankDUP>;
+	return <LOC, rankLOC, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, rankUS, duplicates, rankDUP, AN, CHNE, CHE, TSNE, TSE, OVNE, OVE>;
 }
 
 str parseScore(int rank) {
@@ -85,8 +103,8 @@ str parseScore(int rank) {
 	else return "--";
 }
 
-void printBundle(loc projectLoc, bool print) {
-	Bundle bundle = bundle(projectLoc, print);
+void printBundle(loc projectLoc, bool print, bool skipBrkts) {
+	Bundle bundle = bundle(projectLoc, print, skipBrkts);
 
 	str LOC = parseScore(bundle.rankLOC);
 	str UCE = parseScore(bundle.rankUCE);
@@ -94,43 +112,34 @@ void printBundle(loc projectLoc, bool print) {
 	str US = parseScore(bundle.rankUS);
 	str DUP = parseScore(bundle.rankDUP);
 	
-	int totalCCsE = bundle.riskCCsE[LOW_RISK] + bundle.riskCCsE[MID_RISK] + bundle.riskCCsE[HIGH_RISK] + bundle.riskCCsE[VERY_HIGH_RISK];
-	int totalCCsNE = bundle.riskCCsNE[LOW_RISK] + bundle.riskCCsNE[MID_RISK] + bundle.riskCCsNE[HIGH_RISK] + bundle.riskCCsNE[VERY_HIGH_RISK];
-	int totalUS = bundle.riskUS[LOW_RISK] + bundle.riskUS[MID_RISK] + bundle.riskUS[HIGH_RISK] + bundle.riskUS[VERY_HIGH_RISK];
+	int totalCCsE = max(1, bundle.riskCCsE[LOW_RISK] + bundle.riskCCsE[MID_RISK] + bundle.riskCCsE[HIGH_RISK] + bundle.riskCCsE[VERY_HIGH_RISK]);
+	int totalCCsNE = max(1, bundle.riskCCsNE[LOW_RISK] + bundle.riskCCsNE[MID_RISK] + bundle.riskCCsNE[HIGH_RISK] + bundle.riskCCsNE[VERY_HIGH_RISK]);
+	int totalUS = max(1, bundle.riskUS[LOW_RISK] + bundle.riskUS[MID_RISK] + bundle.riskUS[HIGH_RISK] + bundle.riskUS[VERY_HIGH_RISK]);
 
 	println("=== SOURCE-LEVEL METRICS");
 	println("LOC metric: <LOC>");
-	println("\> <bundle.LOC> lines of code");
+	println("\> <bundle.LOC[0]> lines of code\t(<toReal(bundle.LOC[0]) * 100 / toReal(bundle.LOC[1])>%)");
 	println("UC metric (with|without exception handling): <UCE> | <UCNE>");
-	println("\> <bundle.riskCCsE[LOW_RISK]> | <bundle.riskCCsNE[LOW_RISK]> low risk units (<toReal(bundle.riskCCsE[LOW_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[LOW_RISK]) * 100 / toReal(totalCCsNE)>%)");
-	println("\> <bundle.riskCCsE[MID_RISK]> | <bundle.riskCCsNE[MID_RISK]> medium risk units (<toReal(bundle.riskCCsE[MID_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[MID_RISK]) * 100 / toReal(totalCCsNE)>%)");
-	println("\> <bundle.riskCCsE[HIGH_RISK]> | <bundle.riskCCsNE[HIGH_RISK]> high risk units (<toReal(bundle.riskCCsE[HIGH_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[HIGH_RISK]) * 100 / toReal(totalCCsNE)>%)");
-	println("\> <bundle.riskCCsE[VERY_HIGH_RISK]> | <bundle.riskCCsNE[VERY_HIGH_RISK]> very high risk units (<toReal(bundle.riskCCsE[VERY_HIGH_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[VERY_HIGH_RISK]) * 100 / toReal(totalCCsNE)>%)");
+	println("\> <bundle.riskCCsE[LOW_RISK]> | <bundle.riskCCsNE[LOW_RISK]> low risk units\t(<toReal(bundle.riskCCsE[LOW_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[LOW_RISK]) * 100 / toReal(totalCCsNE)>%)");
+	println("\> <bundle.riskCCsE[MID_RISK]> | <bundle.riskCCsNE[MID_RISK]> medium risk units\t(<toReal(bundle.riskCCsE[MID_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[MID_RISK]) * 100 / toReal(totalCCsNE)>%)");
+	println("\> <bundle.riskCCsE[HIGH_RISK]> | <bundle.riskCCsNE[HIGH_RISK]> high risk units\t(<toReal(bundle.riskCCsE[HIGH_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[HIGH_RISK]) * 100 / toReal(totalCCsNE)>%)");
+	println("\> <bundle.riskCCsE[VERY_HIGH_RISK]> | <bundle.riskCCsNE[VERY_HIGH_RISK]> very high risk units\t(<toReal(bundle.riskCCsE[VERY_HIGH_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[VERY_HIGH_RISK]) * 100 / toReal(totalCCsNE)>%)");
 	println("US metric: <US>");
-	println("\> <bundle.riskUS[LOW_RISK]> low risk units (<toReal(bundle.riskUS[LOW_RISK]) * 100 / toReal(totalUS)>%)");
-	println("\> <bundle.riskUS[MID_RISK]> medium risk units (<toReal(bundle.riskUS[MID_RISK]) * 100 / toReal(totalUS)>%)");
-	println("\> <bundle.riskUS[HIGH_RISK]> high risk units (<toReal(bundle.riskUS[HIGH_RISK]) * 100 / toReal(totalUS)>%)");
-	println("\> <bundle.riskUS[VERY_HIGH_RISK]> very high risk units (<toReal(bundle.riskUS[VERY_HIGH_RISK]) * 100 / toReal(totalUS)>%)");
+	println("\> <bundle.riskUS[LOW_RISK]> low risk units\t\t(<toReal(bundle.riskUS[LOW_RISK]) * 100 / toReal(totalUS)>%)");
+	println("\> <bundle.riskUS[MID_RISK]> medium risk units\t\t(<toReal(bundle.riskUS[MID_RISK]) * 100 / toReal(totalUS)>%)");
+	println("\> <bundle.riskUS[HIGH_RISK]> high risk units\t\t(<toReal(bundle.riskUS[HIGH_RISK]) * 100 / toReal(totalUS)>%)");
+	println("\> <bundle.riskUS[VERY_HIGH_RISK]> very high risk units\t(<toReal(bundle.riskUS[VERY_HIGH_RISK]) * 100 / toReal(totalUS)>%)");
 	println("DUP metric: <DUP>");
 	println("\> <bundle.DUP> duplicate lines");
-	println("\> <toReal(bundle.DUP) * 100 / toReal(bundle.LOC)>% ratio of duplicates");
+	println("\> <toReal(bundle.DUP) * 100 / toReal(bundle.LOC[0])>% ratio of duplicates");
 	
-	real analysability = (toReal(bundle.rankLOC) + toReal(bundle.rankDUP) + toReal(bundle.rankUS)) / 3.0;
-	real changeabilityNE = (toReal(bundle.rankUCNE) + toReal(bundle.rankDUP)) / 2.0;
-	real changeabilityE = (toReal(bundle.rankUCE) + toReal(bundle.rankDUP)) / 2.0;
-	real testabilityNE = (toReal(bundle.rankUCNE) + toReal(bundle.rankUS)) / 2.0;
-	real testabilityE = (toReal(bundle.rankUCE) + toReal(bundle.rankUS)) / 2.0;
-	
-	real overallNE = (analysability + changeabilityNE + testabilityNE) / 3.0;
-	real overallE = (analysability + changeabilityE + testabilityE) / 3.0;
-	
-	str AN = parseScore(round(analysability));
-	str CHNE = parseScore(round(changeabilityNE));
-	str CHE = parseScore(round(changeabilityE));
-	str TSNE = parseScore(round(testabilityNE));
-	str TSE = parseScore(round(testabilityE));
-	str OVNE = parseScore(round(overallNE));
-	str OVE = parseScore(round(overallE));
+	str AN = parseScore(round(bundle.AN));
+	str CHNE = parseScore(round(bundle.CHNE));
+	str CHE = parseScore(round(bundle.CHE));
+	str TSNE = parseScore(round(bundle.TSNE));
+	str TSE = parseScore(round(bundle.TSE));
+	str OVNE = parseScore(round(bundle.OVNE));
+	str OVE = parseScore(round(bundle.OVE));
 	
 	println();
 	println("=== SYSTEM-LEVEL METRICS (with|without exception handling)");
