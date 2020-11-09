@@ -134,9 +134,9 @@ void printBundle(loc projectLoc, bool print) {
 	
 	println();
 	println("=== SYSTEM-LEVEL METRICS (with|without exception handling)");
-	println("Analysability:\t<AN> | <AN>");
-	println("Changeability:\t<CHE> | <CHNE>");
-	println("Testability:\t<TSE> | <TSNE>");
+	println("Analysability:\t<AN>\t|\t<AN>");
+	println("Changeability:\t<CHE>\t|\t<CHNE>");
+	println("Testability:\t<TSE>\t|\t<TSNE>");
 	println();
-	println("Overall:\t\t<OVE> | <OVNE>");
+	println("Overall:\t<OVE>\t|\t<OVNE>");
 }

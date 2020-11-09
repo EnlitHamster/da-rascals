@@ -2,6 +2,7 @@ module Volume
 
 // Project imports
 import Utility;
+import LineAnalysis;
 
 // Rascal base imports
 import Set;
@@ -23,69 +24,25 @@ import lang::java::jdt::m3::AST;
 
 @doc {
 	.Synopsis
-	The function calculates distinctly the LOC metric, the number of empty lines, the number of comment lines
-	and the total lines of the file.
-}
-tuple[int, int, int, int] countLines(loc fileLoc, bool print) {
-	int ctr = 0;
-	int empty = 0;
-	int comment = 0;
-	int al = 0;
-	bool inCom = false;
-	
-	for (line <- (readFileLines(fileLoc))) {
-		al += 1;
-		if (!inCom) {
-			if ((/^\s*$/ := line)) {
-				empty += 1;
-				if (print) println("EMPTY :: <line>");
-			} else if ((/^\s*\/\/.*/ := line) || (/\/\*.*?\*\// := line)) {
-				comment += 1;
-				if (print) println("COMMENT :: <line>");
-			} else {
-				// handle multiline
-				if (/^\s*\/\*.*/ := line) {
-					inCom = true;
-					comment += 1;
-					if (print) println("COMMENT :: <line>");
-					continue;
-				}
-				ctr += 1;
-				if (print) println("CODE :: <line>");
-			}
-		} else {
-			comment += 1;
-			if (print) println("COMMENT :: <line>");
-			end = contains(line, "*/");
-			if (end) {
-				inCom = false;
-			}
-		}		
-	}
-	return <ctr, empty, comment, al>;
-}
-
-@doc {
-	.Synopsis
 	The function calculates how many Lines Of Code (LOC) the files are made of. 
 }
 int countLinesFiles(list[loc] fileLocs, bool print) {
-	int ctr = 0;
+	int code = 0;
 	int empty = 0;
 	int comment = 0;
-	int al = 0;
+	int total = 0;
 	for (fileLoc <- fileLocs) {
-		<c, e, com, a> = countLines(fileLoc, print);
-		ctr += c;
+		<c, e, m, a> = countLines(fileLoc);
+		code += c;
 		empty += e;
-		comment += com;
-		al += a;
+		comment += m;
+		total += a;
 	}
 	if (print) {
-		println("<ctr>, <empty>, <comment>");
-		println("<ctr + empty + comment> == <al>");
+		println("<code>, <empty>, <comment>");
+		println("<code + empty + comment> == <totala>");
 	}
-	return ctr;	
+	return code;	
 }
 
 //----------------------
