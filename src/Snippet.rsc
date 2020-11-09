@@ -19,7 +19,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 @javaClass{internal.Snippet}
-private java str eof();
+public java str eof();
 
 @doc{
 	.Synopsis
@@ -72,7 +72,8 @@ public list[Snippet] breakLines(Snippet snippet) {
 	Parses a file similarly to <<readFileLines>> but returns a list of Snippets rather than Strings.
 }
 public list[Snippet] readFileSnippets(loc fileLoc) {
-	return snippetParser(fileLoc, readFileLines(fileLoc), 0, <0,0>);
+	if (fileLoc.offset ? && fileLoc.begin ?) return snippetParser(fileLoc, readFileLines(fileLoc), fileLoc.offset, fileLoc.begin);
+	else return snippetParser(fileLoc, readFileLines(fileLoc), 0, <0,0>);
 }
 
 private list[Snippet] snippetParser(loc fileLoc, list[str] content, int offset, tuple[int line,int column] begin) {
@@ -88,7 +89,7 @@ private list[Snippet] snippetParser(loc fileLoc, list[str] content, int offset, 
 		offset += len + eofSize;
 		line += 1;
 	}
-	if (begin.column != 0) snippets[0] = offsetColumn(snippet[0], begin.column);
+	if (begin.column != 0) snippets[0] = offsetColumn(snippets[0], begin.column);
 	return snippets;
 }
 
