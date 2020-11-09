@@ -44,6 +44,8 @@ bool checkRiskRank(num mid, num high, num vhigh, RiskRank rank) {
 int scoreRank(map[str,num] ranks, RiskRank top, RiskRank midtop, RiskRank mid, RiskRank midbot, bool print) {
 	real total = toReal(ranks[LOW_RISK] + ranks[MID_RISK] + ranks[HIGH_RISK] + ranks[VERY_HIGH_RISK]);
 	
+	if (total == 0) return 2;
+	
 	real lowRisk 	= ranks[LOW_RISK] / total;
 	real midRisk 	= ranks[MID_RISK] / total;
 	real highRisk 	= ranks[HIGH_RISK] / total;
