@@ -101,30 +101,29 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	tuple[list[Snippet], int] huge = getHugeList(files, skip);
 	blockCounts = createMap(huge[0], huge[1]);
 	
-	map[str, int] lineCount = ();
+	int uniqueCount = 0;
+	map[str, set[loc]] lineCounts= ();
+		
 	for(bc <- blockCounts) {
 		if (blockCounts[bc][0] >1 &&  "-0-0-0-" notin bc) {
-			for(line <- bc) {
-				if (line notin lineCount) {
-					lineCount[line] = blockCounts[bc][0];				
-				} else {
-					lineCount[line] = max(lineCount[line], blockCounts[bc][0]);
-				}
+			for(int i <- [0 .. 6]) {
+				line = bc[i];
+				sources = {blockSource[i] | blockSource <- blockCounts[bc][1]};
+				if (line in lineCounts) {lineCounts[line] += sources;} 
+				else {lineCounts[line] = sources;}
 			}
 		} else {
 			blockCounts = delete(blockCounts, bc);
 		}
 	}
-
-	int unique = 0;
-	for (line <- lineCount) {
-		unique += lineCount[line];
-	}
 	
-	if (print) {
-		printDuplicateLocs(blockCounts);
+	for (uniqueLine <- lineCounts) {
+		uniqueCount += size(lineCounts[uniqueLine]);
 	}
-	return unique;
+	//printMap(lineCounts);
+
+	if (print) 	printDuplicateLocs(blockCounts);
+	return uniqueCount;
 }
 
 @doc {
@@ -132,7 +131,7 @@ int getDuplicateLines(loc projectLoc, bool skip, bool print) {
 	Print the locations where duplicated codeblocks of 6 or more lines have been found.
 }
 void printDuplicateLocs(map[list[str], tuple[int, list[list[loc]]]] blockCounts) {
-	map[str, list[loc]] fileBlocks = ();
+	//map[str, list[loc]] fileBlocks = ();
 	//for (bc <- blockCounts) {
 	//	for (blocks <-  blockCounts[bc][1]) {
 	//		p = blocks[0].path;
@@ -196,7 +195,6 @@ real getDuplicationPercentage(loc projectLoc, bool skip, bool print) {
 		(20-100):	--  
 					
 */
-
 @doc {
 	.Synopsis
 	Get the rank for the duplication of the project.
@@ -216,9 +214,12 @@ void testDups(str project) {
 	}
 	
 	println(projectLoc);
-	println(now());
+	starter = now();
+	println(starter);
 	result = getDuplicationPercentage(projectLoc, false, false);
-	println(now());
+	end = now();
+	println(end);
+	println(end - starter);
 	println(result);
 	getDuplicationRank(result, true);
 }
@@ -283,5 +284,20 @@ int DERPgetDuplicateBlocks(list[str] lines, int len) {
 //
 //void testDup() {
 //	println(createMap(linurs, size(linurs)));
+//}
+
+//map[str, tuple[int,list[loc]]] updateLineCounts(map[str, tuple[int,list[loc]]] lineCounts, list[str]blockList, int i, list[Snippet] snippets) {
+//	for(int j <- [0 .. 6]) {
+//		if (blockList[j] in lineCounts) {
+//			if (snippets[i+j].src notin lineCounts[blockList[j]][1]) {
+//				if (blockList[j] == "privatebooleancaseSensitive;") println("<blockList[j]> new location found < [snippets[i+j].src]>");
+//				lineCounts[blockList[j]] = <lineCounts[blockList[j]][0] + 1, lineCounts[blockList[j]][1] + [snippets[i+j].src]>;				
+//			} 
+//		} else {
+//			if (blockList[j] == "privatebooleancaseSensitive;") println("<blockList[j]> added");
+//			lineCounts[blockList[j]] = <2, [snippets[i+j].src]>;
+//		}
+//	}
+//	return lineCounts;
 //}
 

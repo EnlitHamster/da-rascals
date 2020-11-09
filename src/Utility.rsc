@@ -143,3 +143,11 @@ tuple[str,bool] removeInlineComments(str code) {
 	
 	return <split("//", final)[0],opensCom>; // Only the leftmost side can be code;
 }
+
+void printMap(map[&a, &b] mappy) {
+	println("==================================MAP==================================");
+	for(key <- mappy) {
+		println("<key> : <mappy[key]>\n");
+	}
+	println("=======================================================================");
+}
