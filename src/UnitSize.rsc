@@ -2,6 +2,7 @@ module UnitSize
 
 // Project imports
 import Utility;
+import LineAnalysis;
 
 // Rascal base imports
 import Set;
@@ -20,8 +21,9 @@ import lang::java::jdt::m3::AST;
 list[int] getUnitsLoc(list[Declaration] asts) {
 	list[int] uSize = [];
 	visit (asts) {
-		case Declaration decl: \method(_,_,_,_,_): uSize += decl.src.end.line - decl.src.begin.line;
-		case Declaration decl: \constructor(_,_,_,_): uSize += decl.src.end.line - decl.src.begin.line;
+		// The -1 is due to the fact that the prototype is included as well. This is to ignore it.
+		case Declaration decl: \method(_,_,_,_,_): uSize += countLines(decl.src)[0] - 1;
+		case Declaration decl: \constructor(_,_,_,_): uSize += countLines(decl.src)[0] - 1;
 	}
 	return uSize;
 }
