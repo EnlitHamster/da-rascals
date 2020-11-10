@@ -55,29 +55,46 @@ class ScoresTab extends Tab {
     textAlign(LEFT);
     
     text("Lines of Code", 20, 60);
-    text("Unit Complexity", 20, 80);
-    text("Unit Size", 20, 100);
-    text("Duplicated code", 20, 120);
+    text("Duplicated code", 20, 100);
+    text("Unit Complexity", 20, 180);
+    text("Unit Size", 20, 240);
     
     textAlign(CENTER);
     
     text(toScore(rankLOC), width/2, 60);
-    text(toScore(exceptions.isChecked() ? ranksUC[1] : ranksUC[0]), width/2, 80);
-    text(toScore(rankUS), width/2, 100);
-    text(toScore(rankDUP), width/2, 120);
+    text(toScore(rankDUP), width/2, 100);
+    text(toScore(exceptions.isChecked() ? ranksUC[1] : ranksUC[0]), width/2, 180);
+    text(toScore(rankUS), width/2, 240);
     
-    textAlign(RIGHT);
     textFont(font, 12);
+    textAlign(RIGHT);
     
-    text(linesOfCode[0], width - 20, 60);
-    text(printPercs(exceptions.isChecked() ? percRiskUCE : percRiskUCNE), width - 20, 80);
-    text(printPercs(percRiskUS), width - 20, 100);
-    text(duplicateLines, width - 20, 120);
+    text(linesOfCode[0] + String.format(" (%4.2f%c)", (float) linesOfCode[0] / (float) linesOfCode[3], '%'), width - 20, 60);
+    text(duplicateLines + String.format(" (%4.2f%c)", (float) duplicateLines / (float) linesOfCode[3], '%'), width - 20, 100);
+    
+    printPercs(exceptions.isChecked() ? riskUCE : riskUCNE, exceptions.isChecked() ? percRiskUCE : percRiskUCNE, 180);
+    printPercs(riskUS, percRiskUS, 240);
+    
+    printHeader(140);
   }
   
-  private String printPercs(float[] percs) {
-    String sPercs = String.format("%4.2f%c", percs[0], '%');
-    for (int i = 1; i < percs.length; i++) sPercs += String.format(" / %4.2f%c", percs[i], '%');
-    return sPercs;
+  private void printPercs(int[] stats, float[] percs, int height) {
+    int start = width/2 + 20;
+    int area = width - 20 - start;
+    int step = area/4;
+    
+    for (int i = 0; i < 4; i++) {
+      text(stats[i], start + step*(i+1), height);
+      text(String.format("%4.2f%c", percs[i]*100, '%'), start + step*(i+1), height + 20); 
+    }
+  }
+  
+  private void printHeader(int height) {
+    int start = width/2 + 20;
+    int area = width - 20 - start;
+    int step = area/4;
+    String[] texts = {"LOW", "MID", "HIGH", "VERY\nHIGH"};
+    
+    for (int i = 0; i < 4; i++) text(texts[i], start + step*(i+1), height);
   }
 }

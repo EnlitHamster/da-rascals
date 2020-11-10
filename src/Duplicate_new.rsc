@@ -27,9 +27,10 @@ private map[str, str] whiteSpaces = (" ":"", "\t":"");
 
 map[str, list[Block]] mapBlocks(list[loc] fileLocs, bool skipBrkts) {
 	map[str, list[Block]] blocks = ();
-	for (fLoc <- toSet(fileLocs)) {
+	for (fLoc <- toSet(fileLocs)) { // -- O(#files) = O(n)
 		list[tuple[str, Snippet]] snps = filterSnippets(readFileSnippets(fLoc), skipBrkts);
 		int len = size(snps);
+		// -- O(#lines in nth file) = O(m)
 		if (len > 5) { // If the file size is less than 5, it is obvious there cannot be any duplicate code.
 			for (i <- [0..len-5]) {
 				// 6-line block of code
@@ -37,7 +38,7 @@ map[str, list[Block]] mapBlocks(list[loc] fileLocs, bool skipBrkts) {
 				// mapping on escaped block
 				str key = roughBlk[0].key;
 				Block block = [roughBlk[0].code];
-				for (j <- [1..6]) {
+				for (j <- [1..6]) { // -- O(6)
 					key += eof() + roughBlk[j].key;
 					block += roughBlk[j].code;
 				}
@@ -45,7 +46,8 @@ map[str, list[Block]] mapBlocks(list[loc] fileLocs, bool skipBrkts) {
 				else blocks[key] = [block];
 			}
 		}
-	}
+	} // O(n * 5/3 * m(n) * 6) = O(k * 10) approx O(k) linear 
+	  // n * m(n) = k, where k is the number of lines in the project
 	return blocks;
 }
 
