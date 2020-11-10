@@ -14,7 +14,6 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 tuple[str, bool] removeInlineComments(str code, bool inCom) {
-	println(code);
 	list[str] codeComm = split("//", code);
 	if (size(codeComm) <= 0) return <"", false>; // The line is an entire single line comment
 	
