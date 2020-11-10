@@ -323,4 +323,31 @@ int DERPgetDuplicateBlocks(list[str] lines, int len) {
 //void testDup() {
 //	println(createMap(linurs, size(linurs)));
 //}
+void compare(loc project, int runs) {
+	println(project);
+	
+	println("clustered");
+	starter = now();
+	println(starter);
+	int result = 0;
+	for (_ <- [1..runs]) {
+		result = getDuplicateLines(project,  false);
+	}
+	end = now();
+	println(end);
+	println(end - starter);
+	println(result);
+	
+	println("not clustered results");
+	starter = now();
+	println(starter);
+	for (_ <- [1..runs]) {
+		result = getDuplicateLines(project, true, false);
+	}
+	end = now();
+	println(end);
+	println(end - starter);
+	println(result);
+	
+}
 
