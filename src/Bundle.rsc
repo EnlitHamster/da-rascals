@@ -7,6 +7,7 @@ import UnitComplexity;
 import UnitSize;
 import Duplicate_new;
 import Snippet;
+import LineAnalysis;
 
 // Rascal base imports
 import Set;
@@ -25,7 +26,7 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 // Used to pass data from bundling to output
-private alias Bundle = tuple[ tuple[int,int] LOC,
+private alias Bundle = tuple[ LineCount LOC,
 							  int rankLOC,
 							  list[CC] CCs,
 							  map[str,int] riskCCsNE,
@@ -53,8 +54,8 @@ private Bundle bundle(loc projectLoc, bool print, bool skipBrkts) {
 	// VOLUME
 	if (print) println("=== VOLUME LOGS");
 	
-	tuple[int,int] LOC = countLinesFiles(projectFiles, print, skipBrkts);
-	int rankLOC = getLocRank(LOC[0], print);
+	LineCount LOC = countLinesFiles(projectFiles, print, skipBrkts);
+	int rankLOC = getLocRank(LOC.code, print);
 	
 	// UNIT COMPLEXITY
 	if (print) println("=== UNIT COMPLEXITY LOGS");
@@ -78,7 +79,7 @@ private Bundle bundle(loc projectLoc, bool print, bool skipBrkts) {
 	if (print) println("=== DUPLICATES LOGS");
 	
 	int duplicates = getDuplicateLines(projectLoc, print, skipBrkts);
-	int rankDUP = getDuplicationRank(toReal(duplicates) / toReal(LOC[0]), print);
+	int rankDUP = getDuplicationRank(toReal(duplicates) / toReal(LOC.code), print);
 	
 	// SYSTEM-LEVEL
 	
@@ -93,6 +94,43 @@ private Bundle bundle(loc projectLoc, bool print, bool skipBrkts) {
 	
 	// Output
 	return <LOC, rankLOC, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, rankUS, duplicates, rankDUP, AN, CHNE, CHE, TSNE, TSE, OVNE, OVE>;
+}
+
+// private alias Bundle = tuple[ LineCount LOC,
+//							  int rankLOC,
+//							  list[CC] CCs,
+//							  map[str,int] riskCCsNE,
+//							  map[str,int] riskCCsE,
+//							  int rankUCNE,
+//							  int rankUCE,
+//							  list[int] US,
+//							  map[str,int] riskUS,
+//							  int rankUS,
+//							  int DUP,
+//							  int rankDUP,
+//							  real AN,
+//							  real CHNE,
+//							  real CHE,
+//							  real TSNE,
+//							  real TSE,
+//							  real OVNE,
+//							  real OVE ];
+
+void printBundle(loc projectLoc, loc outputFolder, str fileName, bool print, bool skipBrkts) {
+	Bundle bundle = bundle(projectLoc, print, skipBrkts);
+	loc outputFile = outputFolder + "<fileName>.metrics";
+	writeFile( outputFile, 
+			   "<bundle.LOC.code>,<bundle.LOC.empty>,<bundle.LOC.comment>,<bundle.LOC.total>" + eof(),
+		       "<bundle.rankLOC>" + eof(),
+			   "<bundle.riskCCsNE[LOW_RISK]>,<bundle.riskCCsNE[MID_RISK]>,<bundle.riskCCsNE[HIGH_RISK]>,<bundle.riskCCsNE[VERY_HIGH_RISK]>" + eof(),
+			   "<bundle.riskCCsE[LOW_RISK]>,<bundle.riskCCsE[MID_RISK]>,<bundle.riskCCsE[HIGH_RISK]>,<bundle.riskCCsE[VERY_HIGH_RISK]>" + eof(),
+			   "<bundle.rankUCNE>,<bundle.rankUCE>" + eof(),
+			   "<bundle.riskUS[LOW_RISK]>,<bundle.riskUS[MID_RISK]>,<bundle.riskUS[HIGH_RISK]>,<bundle.riskUS[VERY_HIGH_RISK]>" + eof(),
+			   "<bundle.rankUS>" + eof(),
+			   "<bundle.DUP>" + eof(),
+			   "<bundle.rankDUP>" + eof(),
+			   "<round(bundle.AN)>,<round(bundle.CHNE)>,<round(bundle.CHE)>,<round(bundle.TSNE)>,<round(bundle.TSE)>,<round(bundle.OVNE)>,<round(bundle.OVE)>" );
+	println(outputFile);
 }
 
 str parseScore(int rank) {
@@ -118,7 +156,7 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 
 	println("=== SOURCE-LEVEL METRICS");
 	println("LOC metric: <LOC>");
-	println("\> <bundle.LOC[0]> lines of code\t(<toReal(bundle.LOC[0]) * 100 / toReal(bundle.LOC[1])>%)");
+	println("\> <bundle.LOC.code> lines of code\t(<toReal(bundle.LOC.code) * 100 / toReal(bundle.LOC.total)>%)");
 	println("UC metric (with|without exception handling): <UCE> | <UCNE>");
 	println("\> <bundle.riskCCsE[LOW_RISK]> | <bundle.riskCCsNE[LOW_RISK]> low risk units\t(<toReal(bundle.riskCCsE[LOW_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[LOW_RISK]) * 100 / toReal(totalCCsNE)>%)");
 	println("\> <bundle.riskCCsE[MID_RISK]> | <bundle.riskCCsNE[MID_RISK]> medium risk units\t(<toReal(bundle.riskCCsE[MID_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[MID_RISK]) * 100 / toReal(totalCCsNE)>%)");
@@ -131,7 +169,7 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 	println("\> <bundle.riskUS[VERY_HIGH_RISK]> very high risk units\t(<toReal(bundle.riskUS[VERY_HIGH_RISK]) * 100 / toReal(totalUS)>%)");
 	println("DUP metric: <DUP>");
 	println("\> <bundle.DUP> duplicate lines");
-	println("\> <toReal(bundle.DUP) * 100 / toReal(bundle.LOC[0])>% ratio of duplicates");
+	println("\> <toReal(bundle.DUP) * 100 / toReal(bundle.LOC.code)>% ratio of duplicates");
 	
 	str AN = parseScore(round(bundle.AN));
 	str CHNE = parseScore(round(bundle.CHNE));
