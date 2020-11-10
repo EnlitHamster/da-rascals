@@ -77,8 +77,7 @@ class ScoresTab extends Tab {
     printPercs(riskUS, percRiskUS, 240);
     
     printHeader(140);
-   String [][] mapping = createMapping();
-    
+    String [][] mapping = createMapping();
     printMap(mapping, 80, 340);
   }
   
@@ -146,10 +145,15 @@ class ScoresTab extends Tab {
             textAlign(CENTER);
             text(mapping[i][j], x + j*xoff, y+ i*yoff);
           }
-          
         }
       }
     }
+    printLines(x, y, xoff, yoff);
+  }
+  
+  void printLines(int x, int y, int xoff, int yoff) {
+    line(x+60, y+1*yoff+5, x+4.3*xoff, y+1*yoff+5); 
+    line(x+4.2*xoff, y+1*yoff+5, x+4.2*xoff, y+1*yoff+5); 
   }
   
   private void printPercs(int[] stats, float[] percs, int height) {
