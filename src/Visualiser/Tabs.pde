@@ -47,6 +47,7 @@ class PiesTab extends Tab {
 
 class ScoresTab extends Tab {
   public void setup() {
+    surface.setSize(520, 600); 
   } 
   
   public void draw() {
@@ -76,6 +77,79 @@ class ScoresTab extends Tab {
     printPercs(riskUS, percRiskUS, 240);
     
     printHeader(140);
+   String [][] mapping = createMapping();
+    
+    printMap(mapping, 80, 340);
+  }
+  
+  String[][] createMapping() {
+    String[][] mapping = new String[6][6];
+    mapping = addX(mapping);
+    mapping = addLabels(mapping);
+    mapping = addRankings(mapping);
+    return mapping;
+  }
+  
+  String[][] addLabels(String[][] mapping) {
+    mapping[2][0] = "analysabilty";
+    mapping[3][0] = "changeabilty";
+    mapping[4][0] = "stabilty";
+    mapping[5][0] = "testability";
+    
+    mapping[0][1] = "Volume";
+    mapping[0][2] = "Complexity";
+    mapping[0][3] = "Duplication";
+    mapping[0][4] = "Unit Size";
+    return mapping;
+  }
+  
+  String[][] addRankings(String[][] mapping) {
+    int offset = 0;
+    if (exceptions.isChecked()) {
+      offset = 1;
+    }
+    mapping[2][5] = toScore(scores[0]);
+    mapping[3][5] = toScore(scores[1+offset]);
+    mapping[4][5] = toScore(scores[3+offset]);
+    mapping[5][5] = toScore(scores[5+offset]);
+    
+    mapping[1][1] = toScore(rankLOC);
+    mapping[1][2] = toScore(exceptions.isChecked() ? ranksUC[1] : ranksUC[0]);
+    mapping[1][3] = toScore(rankDUP);
+    mapping[1][4] = toScore(rankUS);
+    return mapping;
+  }
+  
+  String[][] addX(String[][] mapping) {
+    int xs[][] = {{2,1}, {2,3}, {2,4}, {3,2}, {3,3}, {5,2}, {5,4}};
+    for(int []xy : xs) {
+      mapping[xy[0]][xy[1]] = "x";
+    }
+    return mapping;
+  }
+  
+  void printMap(String[][] mapping, int x, int y) {
+    int xoff = 80;
+    int yoff = 20;
+    
+    for (int i = 0; i < mapping.length; i++) {
+      for (int j = 0; j < mapping[0].length; j++) {
+        if (mapping[i][j] != null) {
+          if (j == 0) {
+            textAlign(RIGHT);
+            text(mapping[i][j], x + 40, y+ i*yoff);
+          } else if (j == (mapping[0].length)-1) {
+             textAlign(LEFT);
+            text(mapping[i][j], x + j*xoff - 40, y+ i*yoff);
+          }
+          else {
+            textAlign(CENTER);
+            text(mapping[i][j], x + j*xoff, y+ i*yoff);
+          }
+          
+        }
+      }
+    }
   }
   
   private void printPercs(int[] stats, float[] percs, int height) {
