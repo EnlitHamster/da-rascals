@@ -68,3 +68,7 @@ LineCount countLines(loc fileLoc, bool skipBrkts) {
 	}
 	return <code, empty, comment, total>;
 }
+
+LineCount NLC() {
+	return <-1, -1, -1, -1>;
+}
