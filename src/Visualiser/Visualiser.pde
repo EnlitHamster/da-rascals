@@ -15,7 +15,7 @@ Bundle brkts, noBrkts, activeBundle;
 Map<Button, Tab> tabs;
 Button activeButton;
 
-Button piesButton, scoresButton, distribsButton, changeDB;
+Button piesButton, scoresButton, distribsButton, graphButton, changeDB;
 RadioButton exceptions, brackets;
 
 boolean run;
@@ -31,6 +31,7 @@ void draw() {
     piesButton.draw();
     scoresButton.draw();
     distribsButton.draw();
+    graphButton.draw();
     exceptions.draw();
     brackets.draw();
     changeDB.draw();
@@ -58,12 +59,25 @@ void mousePressed() {
   if (piesButton.hover() && activeButton != piesButton) activate(piesButton);
   if (scoresButton.hover() && activeButton != scoresButton) activate(scoresButton);
   if (distribsButton.hover() && activeButton != distribsButton) activate(distribsButton);
+  if (graphButton.hover() && activeButton != graphButton) activate(graphButton);
   if (exceptions.hover()) exceptions.check();
   if (brackets.hover()) {
     brackets.check();
     if (brackets.isChecked()) activeBundle = brkts; else activeBundle = noBrkts;
   }
   if (changeDB.hover()) selectDB();
+}
+
+void mouseMoved() {
+  tabs.get(activeButton).mouseMoved();
+}
+
+void mouseDragged() {
+  tabs.get(activeButton).mouseDragged();
+}
+
+void mouseReleased() {
+  tabs.get(activeButton).mouseReleased();
 }
 
 void selectDB() {
@@ -99,16 +113,18 @@ void processInput(String dbFile) {
   piesButton = new Button(0, 0, 80, 20, "Pie charts");
   scoresButton = new Button(80, 0, 80, 20, "Scores");
   distribsButton = new Button(160, 0, 80, 20, "Distributions");
+  graphButton = new Button(240, 0, 80, 20, "Coupling graph");
   
   tabs = new HashMap<Button, Tab>();
   tabs.put(piesButton, new PiesTab());
   tabs.put(scoresButton, new ScoresTab());
   tabs.put(distribsButton, new DistribsTab());
+  tabs.put(graphButton, new GraphTab());
   activeButton = piesButton;
   
   piesButton.setActive();
   
-  tabs.get(activeButton ).setup();
+  tabs.get(activeButton).setup();
   center();
   
   changeDB = new Button(width - 120, 0, 120, 20, "Change metrics");

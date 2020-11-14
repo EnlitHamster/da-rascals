@@ -32,3 +32,5 @@ hs_err_pid*
 build.properties
 
 META-INF/
+
+*.txt
