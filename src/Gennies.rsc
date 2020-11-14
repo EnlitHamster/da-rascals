@@ -9,28 +9,29 @@ import Duplicate_new;
 import Snippet;
 import LineAnalysis;
 
-// Rascal base imports
 import Set;
-import List;
-import Map;
-
 import IO;
-import String;
-import Exception;
-
 import util::Math;
  
 // M3 imports
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import lang::java::jdt::m3::Core;
-import lang::java::jdt::m3::AST;
+
 
 loc MOCK = |project://mock/|;
 loc SRC = MOCK + "src";
 int CODELINECOUNTER = 0;
 int UNITCOUNTER = 0;
 int FILECOUNT = 0;
+bool SETUP = false;
+
+bool getSetup() {
+	return SETUP;
+}
+
+loc getMock() {
+	return MOCK;
+}
 
 list[str] possibleComments = ["\t// such comment", "\t/* very multiline comment */"];
 // ..................................................................MOCK PROJECT FUNCTIONS.................................................................. //
@@ -45,6 +46,7 @@ void setup() {
 	SRC = MOCK + "src";
 	mkDirectory(SRC);
 	setupProjectSettings(MOCK);
+	SETUP = true;
 }
 
 @docs {
@@ -85,6 +87,7 @@ void clearSrc() {
 	genCodeFiles(0, 0, FILECOUNT);
 	FILECOUNT = 0;
 	genDuplicationFile(-1);
+	genComplexFile(0);
 }
 
 // ..................................................................GENERATE COMMENT FILE .................................................................. //
@@ -92,18 +95,18 @@ void clearSrc() {
 	.Synopsis
 	Generate a file with n comments in the mock project containing all kinds of comments.
 }
-void genCommentFile(int n) {
-	commentsLoc = SRC + "comments.java";
-	println(commentsLoc);
+loc genCommentFile(int n) {
+	commentFile = SRC + "comments.java";
+	//println(commentFile);
 	if (n == 0) {
-		writeFile(commentsLoc, "");	
+		writeFile(commentFile, "");	
 	} else {
-		writeFile(commentsLoc, 
+		writeFile(commentFile, 
 				"class comments {"+eof(),
 				"<genComments(n)>",
 				"}");
-		println(commentsLoc);
 	}
+	return commentFile;
 }
 
 @doc {
@@ -150,7 +153,7 @@ tuple[str, int] selectComment(int cur, int n) {
 }
 str makeMulti(int len) {
 	if (len == 0) return "";
-	println("length of multi: <len>");
+	//println("length of multi: <len>");
 	multi = "\t/*";
 	for (_ <- [0..len-1]) {
 		multi += eof() + "\t *";
@@ -164,7 +167,7 @@ str makeMulti(int len) {
 }
 str makeDoc(int len) {
 	if (len == 0) return "";
-	println("length of JavaDoc: <len>");
+	//println("length of JavaDoc: <len>");
 	doc = "\t/**";
 	for (_ <- [0..len-1]) {
 		doc += eof() + "\t *";
@@ -178,6 +181,12 @@ str makeDoc(int len) {
 	Generate "fileCount" files dividing "lineCount" lines of code across all files, with units conform "unitSize".
 }
 void genCodeFiles(int lineCount, int unitSize, int fileCount) {
+	if (lineCount == 0) {
+		for (fileCounter <- [0 .. fileCount]) {
+			genCodeFile(0, unitSize, fileCounter);
+		}
+		return;
+	}
 	int linesPerFile = lineCount / fileCount;
 	int leftover = lineCount - linesPerFile * fileCount;
 	FILECOUNT = max(fileCount, FILECOUNT);
@@ -186,13 +195,14 @@ void genCodeFiles(int lineCount, int unitSize, int fileCount) {
 		genCodeFile(linesPerFile, unitSize, fileCounter);
 	}
 }
+
 @doc {
 	.Synopsis
 	Generate a codefile with lineCount
 }
-void genCodeFile(int lineCount, int unitSize, int fileCounter) {
+loc genCodeFile(int lineCount, int unitSize, int fileCounter) {
 	loc codeFile = SRC + "code<fileCounter>.java";
-	println(codeFile);
+	//println(codeFile);
 	if (lineCount == 0) {
 		writeFile(codeFile, "");
 	} else {
@@ -205,6 +215,7 @@ void genCodeFile(int lineCount, int unitSize, int fileCounter) {
 			"<genUnits(totalUnitCount, unitSize)>" +eof(),
 			"} ");
 	}
+	return codeFile;
 }
 
 @doc {
@@ -249,9 +260,9 @@ str genCodeLines(int n) {
 	.Synopsis
 	Generate a duplication file that complies with the percentage given.
 }
-void genDuplicationFile(int percentage){
+loc genDuplicationFile(int percentage){
 	loc dupFile = SRC + "duplication.java";
-	println(dupFile);
+	//println(dupFile);
 	if (percentage == -1) {
 		writeFile(dupFile, "");
 	} else {
@@ -262,6 +273,7 @@ void genDuplicationFile(int percentage){
 			"<genCodeLines(100 - percentage)>" +eof(),
 			"} ");
 	}
+	return dupFile;
 }
 
 @doc {
@@ -275,5 +287,48 @@ str genDuplicateLines(int dupCount) {
 		duplicateLines += code;
 	}
 	return duplicateLines;
+}
+
+// ..................................................................GENERATE CYCLOMATIC COMPLEXITY FILE .................................................................. //
+loc genComplexFile(int cc) {
+	loc cycloFile = SRC + "complex.java";
+	if (cc == 0) {
+		writeFile(cycloFile, "");
+	} else {
+		writeFile(cycloFile,
+			"class cyclomaticComplexity {" +eof(),
+			"\tvoid cyclo () {" + eof(),
+			"<genComplexLines(cc)>",
+			"\t} " +eof(),
+			"} ");
+	}
+	return cycloFile;
+}
+
+
+
+list[str] ones = ["for(;;) {}", "int[] vars;" +eof()+"\tfor(int var:vars) {}", "if(true) {}", "throw new RemoteException();"]; 
+list[str] twos = ["do{} while(true);", "try{} catch (IOException e) {}"];
+list[str] trees = ["if(true || false) {}", "if(true && false) {}", "switch(1) {case 1: break; case 2:  break; default: int x = 0;}"];
+
+str genComplexLines(int cc) {
+	complex = "";
+	int choice = 0;
+	while (cc > 0) {
+		choice = min(cc, (arbInt(3)+1));
+		complex += choose(choice);
+		cc -= choice;
+	}
+	return complex;
+}
+
+str choose(int choice) {
+	if (choice == 1) {
+		return "\t" + ones[arbInt(4)] + eof();
+	} else if (choice == 2) {
+		return "\t" +twos[arbInt(2)] + eof();
+	} else {
+		return "\t" + trees[arbInt(3)] +eof();
+	}
 }
 
