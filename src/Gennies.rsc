@@ -10,6 +10,7 @@ import Snippet;
 import LineAnalysis;
 
 import Set;
+import List;
 import IO;
 import util::Math;
  
@@ -298,18 +299,16 @@ loc genComplexFile(int cc) {
 		writeFile(cycloFile,
 			"class cyclomaticComplexity {" +eof(),
 			"\tvoid cyclo () {" + eof(),
-			"<genComplexLines(cc)>",
+			"<genComplexLines(cc-1)>",
 			"\t} " +eof(),
 			"} ");
 	}
 	return cycloFile;
 }
 
-
-
-list[str] ones = ["for(;;) {}", "int[] vars;" +eof()+"\tfor(int var:vars) {}", "if(true) {}", "throw new RemoteException();"]; 
-list[str] twos = ["do{} while(true);", "try{} catch (IOException e) {}"];
-list[str] trees = ["if(true || false) {}", "if(true && false) {}", "switch(1) {case 1: break; case 2:  break; default: int x = 0;}"];
+list[str] ones = ["for(;;) {}", "int[] vars;" +eof()+"\tfor(int var:vars) {}", "if(true) {}", "throw new RemoteException();", "do{} while(true);", "while(true) {}"]; 
+list[str] twos = ["try{} catch (IOException e) {} finally {}", "if(true || false) {}", "if(true && false) {}"];
+list[str] trees = ["switch(1) {case 1: break; case 2:  break; default: int x = 0;}", "if(true && false || true) {}"];
 
 str genComplexLines(int cc) {
 	complex = "";
@@ -324,11 +323,11 @@ str genComplexLines(int cc) {
 
 str choose(int choice) {
 	if (choice == 1) {
-		return "\t" + ones[arbInt(4)] + eof();
+		return "\t" + ones[arbInt(size(ones))] + eof();
 	} else if (choice == 2) {
-		return "\t" +twos[arbInt(2)] + eof();
+		return "\t" +twos[arbInt(size(twos))] + eof();
 	} else {
-		return "\t" + trees[arbInt(3)] +eof();
+		return "\t" + trees[arbInt(size(trees))] +eof();
 	}
 }
 
