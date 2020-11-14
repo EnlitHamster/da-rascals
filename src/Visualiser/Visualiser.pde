@@ -1,121 +1,120 @@
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Optional;
 
-color[] colors4 = {
-  color(127,255,0),
-  color(255,255,0),
-  color(255,127,0),
-  color(255,0,0)
-};
+import java.io.File;
 
-color[] colorsLOC = {
-  color(127,127,255),
-  color(127,127,127),
-  color(127,255,127)
-};
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 
 PFont font;
 
-int[] linesOfCode;
-int rankLOC;
-int[] riskUCNE;
-int[] riskUCE;
-int[] ranksUC;
-int[] riskUS;
-int rankUS;
-int duplicateLines;
-int rankDUP;
-// 0 -> ANALISABILITY
-// 1 -> CHANGEABILITY WITHOUT EXCEPTION HANDLING
-// 2 -> CHANGEABILITY WITH EXCEPTION HANDLING
-// 3 -> TESTABILITY WITHOUT EXCPETION HANDLING
-// 4 -> TESTABILITY WITH EXCEPTION HANDLING
-// 5 -> OVERALL WITHOUT EXCEPTION HANDLING
-// 6 -> OVERALL WITH EXCEPTION HANDLING
-int[] scores;
-
-float[] percLOC;
-float[] percRiskUCNE;
-float[] percRiskUCE;
-float[] percRiskUS;
-float percDuplicateLines;
+// NOT CONSIDERING BRACKETS
+Bundle brkts, noBrkts, activeBundle;
 
 Map<Button, Tab> tabs;
 Button activeButton;
 
-Button piesButton, scoresButton;
-RadioButton exceptions;
+Button piesButton, scoresButton, distribsButton, changeDB;
+RadioButton exceptions, brackets;
+
+boolean run;
 
 void setup() {
-  size(460, 600); 
+  selectDB();
+}
+
+void draw() {    
+  if (run) {
+    background(255);
+    tabs.get(activeButton).draw();
+    piesButton.draw();
+    scoresButton.draw();
+    distribsButton.draw();
+    exceptions.draw();
+    brackets.draw();
+    changeDB.draw();
+  }
+}
+
+void activate(Button btn) {
+  run = false;
+  noLoop();
+  activeButton.setInactive();
+  activeButton = btn;
+  activeButton.setActive();
+  tabs.get(activeButton).setup();
+  center();
   
-  String[] database = loadStrings("db.metrics");
+  changeDB.update(width - 120, 0);
+  exceptions.update(20, height - 70);
+  brackets.update(20, height - 40);
+  loop();
+  run = true;
+}
+
+void mousePressed() {
+  tabs.get(activeButton).mousePressed();
+  if (piesButton.hover() && activeButton != piesButton) activate(piesButton);
+  if (scoresButton.hover() && activeButton != scoresButton) activate(scoresButton);
+  if (distribsButton.hover() && activeButton != distribsButton) activate(distribsButton);
+  if (exceptions.hover()) exceptions.check();
+  if (brackets.hover()) {
+    brackets.check();
+    if (brackets.isChecked()) activeBundle = brkts; else activeBundle = noBrkts;
+  }
+  if (changeDB.hover()) selectDB();
+}
+
+void selectDB() {
+  run = false;
+  noLoop();
+  selectInput("Select a metrics file", "fileSelected");
+}
+
+void fileSelected(File selection) {
+  if (selection == null) {
+    println("Window was closed or the user hit cancel.");
+    System.exit(-1);
+  } else {
+    Optional<String> extension = getFileExtension(selection.getName());
+    if (extension.isPresent() && extension.get().equalsIgnoreCase("metrics")) processInput(selection.getAbsolutePath());
+    else { 
+      println("File must be a .metrics file"); 
+      System.exit(-1);
+    }
+  }
+}
+
+void processInput(String dbFile) {
+  String[] database = loadStrings(dbFile);
   
-  linesOfCode = int(split(database[0], ','));
-  rankLOC = int(database[1]);
-  riskUCNE = int(split(database[2], ','));
-  riskUCE = int(split(database[3], ','));
-  ranksUC = int(split(database[4], ','));
-  riskUS = int(split(database[5], ','));
-  rankUS = int(database[6]);
-  duplicateLines = int(database[7]);
-  rankDUP = int(database[8]);
-  scores = int(split(database[9], ','));
-  
-  int totalUCNE = sum(riskUCNE);
-  int totalUCE = sum(riskUCE);
-  int totalUS = sum(riskUS);
-  
-  percLOC = new float[linesOfCode.length - 1];
-  percRiskUCNE = new float[riskUCNE.length];
-  percRiskUCE = new float[riskUCE.length];
-  percRiskUS = new float[riskUS.length];
-  
-  for (int i = 0; i < linesOfCode.length - 1; i++) percLOC[i] = (float) linesOfCode[i] / (float) linesOfCode[3];
-  for (int i = 0; i < riskUCNE.length; i++) percRiskUCNE[i] = (float) riskUCNE[i] / (float) totalUCNE;
-  for (int i = 0; i < riskUCE.length; i++) percRiskUCE[i] = (float) riskUCE[i] / (float) totalUCE;
-  for (int i = 0; i < riskUS.length; i++) percRiskUS[i] = (float) riskUS[i] / (float) totalUS;
+  brkts = new Bundle(database, false);
+  noBrkts = new Bundle(database, true);
+  activeBundle = noBrkts;
   
   font = createFont("Arial", 16, true);
   noStroke();
   
   piesButton = new Button(0, 0, 80, 20, "Pie charts");
   scoresButton = new Button(80, 0, 80, 20, "Scores");
-  
-  piesButton.setActive();
+  distribsButton = new Button(160, 0, 80, 20, "Distributions");
   
   tabs = new HashMap<Button, Tab>();
   tabs.put(piesButton, new PiesTab());
   tabs.put(scoresButton, new ScoresTab());
+  tabs.put(distribsButton, new DistribsTab());
   activeButton = piesButton;
   
-  tabs.get(activeButton).setup();
+  piesButton.setActive();
   
-  exceptions = new RadioButton(20, height - 40, 20);
-}
-
-void draw() {    
-  background(255);
-  tabs.get(activeButton).draw();
-  piesButton.draw();
-  scoresButton.draw();
-  exceptions.draw();
+  tabs.get(activeButton ).setup();
+  center();
   
-  textFont(font, 16);
-  fill(0);
-  textAlign(LEFT);
-  text("Consider Exceptions", 60, height - 22);
-}
-
-void activate(Button btn) {
-  activeButton.setInactive();
-  activeButton = btn;
-  activeButton.setActive();
-  tabs.get(activeButton).setup();
-}
-
-void mousePressed() {
-  if (piesButton.hover() && activeButton != piesButton) activate(piesButton);
-  else if (scoresButton.hover() && activeButton != scoresButton) activate(scoresButton);
-  else if (exceptions.hover()) exceptions.check();
+  changeDB = new Button(width - 120, 0, 120, 20, "Change metrics");
+  exceptions = new RadioButton(20, height - 70, 20, "Consider Exception Handling");
+  brackets = new RadioButton(20, height - 40, 20, "Consider lines with closing brackets");
+  
+  loop();
+  run = true;
 }
