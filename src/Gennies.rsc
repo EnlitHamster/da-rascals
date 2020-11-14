@@ -26,23 +26,31 @@ import lang::java::m3::AST;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-loc mock = |project://mock/|;
-loc src = mock + "src";
-int codelineCounter = 0;
-int unitCounter = 0;
-int fileCounter = 0;
+loc MOCK = |project://mock/|;
+loc SRC = MOCK + "src";
+int CODELINECOUNTER = 0;
+int UNITCOUNTER = 0;
+int FILECOUNT = 0;
 
 list[str] possibleComments = ["\t// such comment", "\t/* very multiline comment */"];
 // ..................................................................MOCK PROJECT FUNCTIONS.................................................................. //
+@doc {
+	.Synopsis
+	Create a mock project, set the settings for it to be a proper java project and set the global locations.
+}
 void setup() {
 	loc mockProject =  |project://mock|;
 	mkDirectory(mockProject);
-	mkDirectory(src);
-	setupProjectSettings(mock);
-	mock = mockProject;
-	src = mock + "src";
+	MOCK = mockProject;
+	SRC = MOCK + "src";
+	mkDirectory(SRC);
+	setupProjectSettings(MOCK);
 }
 
+@docs {
+	.Synopsis
+	Set the .project settings of the mock project for it to be recognised as a java project.
+}
 void setupProjectSettings(loc projectLoc) {
 	loc settings = projectLoc + ".project";
 	try {
@@ -68,15 +76,24 @@ void setupProjectSettings(loc projectLoc) {
 				"\</projectDescription\>"+eof());
 }
 
+@doc {
+	.Synopsis
+	Clear all the .java files in the mock project.
+}
 void clearSrc() {
 	genCommentFile(0);
-	genCodeFile(0, 0, 0);
+	genCodeFiles(0, 0, FILECOUNT);
 	genDuplicationFile(-1);
 }
 
 // ..................................................................GENERATE COMMENT FILE .................................................................. //
+@doc {
+	.Synopsis
+	Generate a file with n comments in the mock project containing all kinds of comments.
+}
 void genCommentFile(int n) {
-	commentsLoc = src + "comments.java";
+	commentsLoc = SRC + "comments.java";
+	println(commentsLoc);
 	if (n == 0) {
 		writeFile(commentsLoc, "");	
 	} else {
@@ -88,9 +105,12 @@ void genCommentFile(int n) {
 	}
 }
 
+@doc {
+	.Synopsis
+	Generate a string of n lines of comments, containing all kinds of comments, randomly picked.
+}
 str genComments(int n) {
 	str comments = "";
-	int r = 0;
 	if (n == 1) return possibleComments[arbInt(2)] + eof();
 	int cur = 0;
 	while (cur < n) {
@@ -101,10 +121,14 @@ str genComments(int n) {
 	return comments;
 }
 
+@doc {
+	.Synopsis
+	Randomly select a type of comment to be returned and added to the file.
+}
 tuple[str, int] selectComment(int cur, int n) {
-	comment = "";
+	str comment = "";
 	int inc = 1;
-	r = arbInt(4);
+	int r = arbInt(4);
 	if (r > 1) {
 		len = arbInt(n-cur) + 1;
 		inc = len;
@@ -119,6 +143,10 @@ tuple[str, int] selectComment(int cur, int n) {
 	return <comment, inc>;
 }
 
+@doc {
+	.Synopsis
+	Generate a multiline comment of length n.
+}
 str makeMulti(int len) {
 	if (len == 0) return "";
 	println("length of multi: <len>");
@@ -129,6 +157,10 @@ str makeMulti(int len) {
 	return multi + eof() + "\t */" +eof();
 }
 
+@doc {
+	.Synopsis
+	Generate a JavaDoc comment of length n.
+}
 str makeDoc(int len) {
 	if (len == 0) return "";
 	println("length of JavaDoc: <len>");
@@ -140,8 +172,25 @@ str makeDoc(int len) {
 }
 
 // ..................................................................GENERATE CODE FILE .................................................................. //
-void genCodeFile(int lineCount, int unitSize, int fileCount) {
-	loc codeFile = src + "code<fileCount>.java";
+@doc {
+	.Synopsis
+	Generate "fileCount" files dividing "lineCount" lines of code across all files, with units conform "unitSize".
+}
+void genCodeFiles(int lineCount, int unitSize, int fileCount) {
+	int linesPerFile = lineCount / fileCount;
+	int leftover = lineCount - linesPerFile * fileCount;
+	FILECOUNT = fileCount;
+	genCodeFile(linesPerFile + leftover, unitSize, 0);
+	for (fileCounter <- [1 .. fileCount]) {
+		genCodeFile(linesPerFile, unitSize, fileCounter);
+	}
+}
+@doc {
+	.Synopsis
+	Generate a codefile with lineCount
+}
+void genCodeFile(int lineCount, int unitSize, int fileCounter) {
+	loc codeFile = SRC + "code<fileCounter>.java";
 	println(codeFile);
 	if (lineCount == 0) {
 		writeFile(codeFile, "");
@@ -157,6 +206,10 @@ void genCodeFile(int lineCount, int unitSize, int fileCount) {
 	}
 }
 
+@doc {
+	.Synopsis
+	Generate "totalUnitCount" unique functions of length "unitSize".
+}
 str genUnits(int totalUnitCount, int unitSize) {
 	units = "";
 	for (_ <- [0 .. totalUnitCount]) {
@@ -165,26 +218,38 @@ str genUnits(int totalUnitCount, int unitSize) {
 	return units;
 }
 
+@doc {
+	.Synopsis
+	Generate a unit of length "unitSize".
+}
 str genUnit(int unitSize) {
-	unit = "\tvoid unit<unitCounter>() {" + eof();;
-	unitCounter += 1;
+	unit = "\tvoid unit<UNITCOUNTER>() {" + eof();;
+	UNITCOUNTER += 1;
 	unit += genCodeLines(unitSize-1);
 	unit += "\t}" +eof();
 	return unit;
 }
 
+@doc {
+	.Synopsis
+	Generate n unique codelines.
+}
 str genCodeLines(int n) {
 	code = "";
 	for (_ <- [0 .. n]) {
-		code += "\tint i_<codelineCounter> = 0;" +eof();
-		codelineCounter += 1;
+		code += "\tint i_<CODELINECOUNTER> = 0;" +eof();
+		CODELINECOUNTER += 1;
 	}
 	return code;
 }
 
 // ..................................................................GENERATE DUPLICATION FILE .................................................................. //
+@doc {
+	.Synopsis
+	Generate a duplication file that complies with the percentage given.
+}
 void genDuplicationFile(int percentage){
-	loc dupFile = src + "duplication.java";
+	loc dupFile = SRC + "duplication.java";
 	println(dupFile);
 	if (percentage == -1) {
 		writeFile(dupFile, "");
@@ -198,6 +263,10 @@ void genDuplicationFile(int percentage){
 	}
 }
 
+@doc {
+	.Synopsis
+	Generate "dupCount" duplicate lines of code.
+}
 str genDuplicateLines(int dupCount) {
 	duplicateLines = "";
 	code = genCodeLines(1);

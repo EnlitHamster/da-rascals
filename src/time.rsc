@@ -9,6 +9,10 @@ import Utility;
 import Volume;
 import Duplicate_new;
 
+@doc {
+	.Synopsis
+	Measure the time it takes to calculate the duplicated lines in project, n times, also print average.
+}
 void timeNruns(loc project, int runs) {
 	println(project);
 	bool print = false;
@@ -34,7 +38,10 @@ void timeNruns(loc project, int runs) {
 	println(result);	
 }
 
-
+@doc {
+	.Synopsis
+	Convert the duration d to the equavalent amount in seconds.
+}
 real toSec(Duration d) {
 	return (d.years*31557600) + (d.months*2629746) + (d.days*86400) +(d.hours* 3600) + (d.minutes * 60) + d.seconds + (toReal(d.milliseconds) / 1000);
 }
