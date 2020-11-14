@@ -94,7 +94,7 @@ test bool checkUnitSize() {
 test bool checkComplexity() {
 	if (!getSetup()) setup();
 	allConform = true;
-	println("testing <NUMTESTS> random combinations of generated files with complexity structures whether cyclomatic complexity evaluation holds:");
+	println("testing <NUMTESTS> random combinations of generated files with complexity structures to see whether cyclomatic complexity evaluation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
 		clearSrc();
 		int cc = arbInt(200) + 100;	
@@ -102,6 +102,29 @@ test bool checkComplexity() {
 		list[CC] found = calcAllCC(getASS(getMock()));
 		println("<cc>, <found>");
 		allConform = allConform && (found[0][0] + found[0][1]) == cc;
+	}
+	clearSrc();
+	return allConform;
+}
+
+@doc {
+	.Synopsis
+	Check whether the duplication metric is calculated correctly, by randomly generating files with random but known amount of duplication.
+}
+test bool checkDuplication() {
+	if (!getSetup()) setup();
+	allConform = true;
+	println("testing <NUMTESTS> random combinations of generated files with a set percentage of duplication to see whether the duplication calculation holds:");
+	for (_ <- [0 .. NUMTESTS]) {
+		clearSrc();
+		int dupPercent = arbInt(93) + 7;	
+		genDuplicationFile(dupPercent);
+		int dupLoc = getDuplicateLines(getMock(), false, true);
+		println("<dupPercent>, <dupLoc>");
+		if (dupLoc != dupPercent) {
+			return false;
+		}
+		allConform = allConform && (dupPercent == dupLoc);
 	}
 	clearSrc();
 	return allConform;
