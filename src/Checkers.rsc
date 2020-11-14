@@ -26,6 +26,12 @@ import lang::java::jdt::m3::AST;
 
 int NUMTESTS = 100;
 
+int setNumTests(int new) {
+	if (new < 1) throw 
+	NUMTESTS = new;
+	return NUMTESTS;
+}
+
 @doc {
 	.Synopsis
 	Check whether the LOC metric is correct, by randomly generating sets of files with an amount of lines across the set.
@@ -117,14 +123,15 @@ test bool checkDuplication() {
 	println("testing <NUMTESTS> random combinations of generated files with a set percentage of duplication to see whether the duplication calculation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
 		clearSrc();
-		int dupPercent = arbInt(93) + 7;	
+		int dupPercent = arbInt(100) + 1;	
 		genDuplicationFile(dupPercent);
 		int dupLoc = getDuplicateLines(getMock(), false, true);
-		println("<dupPercent>, <dupLoc>");
-		if (dupLoc != dupPercent) {
-			return false;
+		if (dupPercent <= 6) {
+			allConform = allConform && (dupLoc == 0);
+		} else {
+			if (dupPercent != dupLoc) return false;
+			allConform = allConform && (dupPercent == dupLoc);
 		}
-		allConform = allConform && (dupPercent == dupLoc);
 	}
 	clearSrc();
 	return allConform;
