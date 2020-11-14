@@ -83,6 +83,7 @@ void setupProjectSettings(loc projectLoc) {
 void clearSrc() {
 	genCommentFile(0);
 	genCodeFiles(0, 0, FILECOUNT);
+	FILECOUNT = 0;
 	genDuplicationFile(-1);
 }
 
@@ -179,7 +180,7 @@ str makeDoc(int len) {
 void genCodeFiles(int lineCount, int unitSize, int fileCount) {
 	int linesPerFile = lineCount / fileCount;
 	int leftover = lineCount - linesPerFile * fileCount;
-	FILECOUNT = fileCount;
+	FILECOUNT = max(fileCount, FILECOUNT);
 	genCodeFile(linesPerFile + leftover, unitSize, 0);
 	for (fileCounter <- [1 .. fileCount]) {
 		genCodeFile(linesPerFile, unitSize, fileCounter);
