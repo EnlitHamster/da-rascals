@@ -1,7 +1,13 @@
+import java.util.Set;
+import java.util.HashSet;
+
 abstract class Tab {
   abstract public void setup();
   abstract public void draw();
   public void mousePressed() {}
+  public void mouseMoved() {}
+  public void mouseDragged() {}
+  public void mouseReleased() {}
 }
 
 //-------------------
@@ -235,6 +241,79 @@ class DistribsTab extends Tab {
   
   int distributionMagnitude(int[] data) {
     return (int) (Math.log10(data.length) + 1);
+  }
+  
+}
+
+//-------------------
+//              GRAPH
+//-------------------
+
+class GraphTab extends Tab {
+  
+  ForceDirectedGraph graph;
+  
+  private int sWidth = 600, sHeight = 710;
+  
+  public void setup() {
+    surface.setSize(sWidth, sHeight);
+    generateGraph();
+    //graph.dumpInformation();
+  }
+  
+  public void draw() {
+    background(255);
+    graph.draw();
+  }
+  
+  public void mouseMoved() {
+    if (graph.isIntersectingWith(mouseX, mouseY)) graph.onMouseMovedAt(mouseX, mouseY);
+  }
+  
+  public void mousePressed() {
+    if (graph.isIntersectingWith(mouseX, mouseY)) graph.onMousePressedAt(mouseX, mouseY);
+  }
+  
+  public void mouseDragged() {
+    if (graph.isIntersectingWith(mouseX, mouseY)) graph.onMouseDraggedTo(mouseX, mouseY);
+  }
+  
+  public void mouseReleased() {
+    if (graph.isIntersectingWith(mouseX, mouseY)) graph.onMouseReleased();
+  }
+  
+  private void generateGraph() {
+    graph = new ForceDirectedGraph();
+    String[] lines = loadStrings("example.graph");
+    
+    Map<String, String[]> couplings = new HashMap<String, String[]>();
+    for(String line : lines) {
+      String[] data = line.split(":");
+      couplings.put(data[0], data[1].split(","));
+    }
+    
+    Set<String> nodes = new HashSet(couplings.keySet());
+    for (String[] cpls : couplings.values())
+      for (String cpl : cpls) nodes.add(cpl);
+      
+    for (String node : nodes) {
+      int size = couplings.containsKey(node) ? couplings.get(node).length : 0;
+      graph.add(new Node(node, size+1));
+    }
+    
+    graph.set(0.0f, 0.0f, (float) sWidth, (float) (sHeight - 110));
+    graph.initializeNodeLocations();
+    
+    for (String node : couplings.keySet()) println(node);
+    
+    for (String id1 : couplings.keySet())
+      for (String id2 : couplings.get(id1)) {
+        if (couplings.containsKey(id1) && couplings.containsKey(id2)) {
+          println(id1 + " " + id2);
+          graph.addEdge(id1, id2, graph.getNodeWith(id1).getDiameter() + graph.getNodeWith(id2).getDiameter() + 30);
+        } else
+          graph.addEdge(id1, id2, graph.getNodeWith(id1).getDiameter() + graph.getNodeWith(id2).getDiameter());
+      }
   }
   
 }
