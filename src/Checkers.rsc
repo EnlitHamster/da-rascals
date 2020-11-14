@@ -17,6 +17,7 @@ import Map;
 import IO;
 import String;
 import util::Math;
+import Exception;
 
 // M3 imports
 import lang::java::m3::Core;
@@ -27,7 +28,7 @@ import lang::java::jdt::m3::AST;
 int NUMTESTS = 100;
 
 int setNumTests(int new) {
-	if (new < 1) throw 
+	if (new < 1) throw IllegalArgument();
 	NUMTESTS = new;
 	return NUMTESTS;
 }
@@ -42,7 +43,7 @@ test bool checkLOC() {
 	println("testing <NUMTESTS> random combinations of generated codefiles to see whether LOC calculation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
 		clearSrc();
-		int lines = arbInt(1000) + 100;	
+		int lines = arbInt(4000) + 200;	
 		int unitSize = arbInt(91) +10;
 		int fileCount = arbInt(10) + 1;
 		genCodeFiles(lines, unitSize, fileCount);
