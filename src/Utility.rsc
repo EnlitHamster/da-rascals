@@ -153,3 +153,10 @@ void printMap(map[&a, &b] mappy) {
 	}
 	println("=======================================================================");
 }
+
+
+str listToStr(list[int] lst) {
+	str s = toString(lst[0]);
+	for (i <- [1..size(lst)]) s += "," + toString(lst[i]);
+	return s;
+}

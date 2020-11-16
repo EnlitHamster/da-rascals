@@ -1,0 +1,1369 @@
+// online environment: https://dreampuf.github.io/GraphvizOnline
+// we highly recomend for readability reasons you use the "Circo" engine
+
+digraph G {
+
+// --- Inner Class: smallsql.database.ExpressionFunctionACos ---
+
+smallsqldatabaseExpressionFunctionACos [label="smallsql.database.ExpressionFunctionACos\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandDrop ---
+
+smallsqldatabaseCommandDrop [label="smallsql.database.CommandDrop\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestOperatoren.TestValue ---
+
+smallsqljunitTestOperatorenTestValue [label="smallsql.junit.TestOperatoren.TestValue\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionValue ---
+
+smallsqldatabaseExpressionValue [label="smallsql.database.ExpressionValue\ncouplings: 9",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestDataTypes ---
+
+smallsqljunitTestDataTypes [label="smallsql.junit.TestDataTypes\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSSavepoint ---
+
+smallsqldatabaseSSSavepoint [label="smallsql.database.SSSavepoint\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLocate ---
+
+smallsqldatabaseExpressionFunctionLocate [label="smallsql.database.ExpressionFunctionLocate\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionInSelect ---
+
+smallsqldatabaseExpressionInSelect [label="smallsql.database.ExpressionInSelect\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.LongTreeListEnum ---
+
+smallsqldatabaseLongTreeListEnum [label="smallsql.database.LongTreeListEnum\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandDelete ---
+
+smallsqldatabaseCommandDelete [label="smallsql.database.CommandDelete\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Command ---
+
+smallsqldatabaseCommand [label="smallsql.database.Command\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandInsert ---
+
+smallsqldatabaseCommandInsert [label="smallsql.database.CommandInsert\ncouplings: 13",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Strings ---
+
+smallsqldatabaseStrings [label="smallsql.database.Strings\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionRound ---
+
+smallsqldatabaseExpressionFunctionRound [label="smallsql.database.ExpressionFunctionRound\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.IndexScrollStatus ---
+
+smallsqldatabaseIndexScrollStatus [label="smallsql.database.IndexScrollStatus\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionSin ---
+
+smallsqldatabaseExpressionFunctionSin [label="smallsql.database.ExpressionFunctionSin\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionRadians ---
+
+smallsqldatabaseExpressionFunctionRadians [label="smallsql.database.ExpressionFunctionRadians\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Index ---
+
+smallsqldatabaseIndex [label="smallsql.database.Index\ncouplings: 6",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MutableFloat ---
+
+smallsqldatabaseMutableFloat [label="smallsql.database.MutableFloat\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.FileIndexNode ---
+
+smallsqldatabaseFileIndexNode [label="smallsql.database.FileIndexNode\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionATan ---
+
+smallsqldatabaseExpressionFunctionATan [label="smallsql.database.ExpressionFunctionATan\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionTan ---
+
+smallsqldatabaseExpressionFunctionTan [label="smallsql.database.ExpressionFunctionTan\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestOperatoren ---
+
+smallsqljunitTestOperatoren [label="smallsql.junit.TestOperatoren\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionDayOfYear ---
+
+smallsqldatabaseExpressionFunctionDayOfYear [label="smallsql.database.ExpressionFunctionDayOfYear\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.AllTests ---
+
+smallsqljunitAllTests [label="smallsql.junit.AllTests\ncouplings: 17",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestDeleteUpdate ---
+
+smallsqljunitTestDeleteUpdate [label="smallsql.junit.TestDeleteUpdate\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SQLParser ---
+
+smallsqldatabaseSQLParser [label="smallsql.database.SQLParser\ncouplings: 87",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MemoryStream ---
+
+smallsqldatabaseMemoryStream [label="smallsql.database.MemoryStream\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TableStorePageInsert ---
+
+smallsqldatabaseTableStorePageInsert [label="smallsql.database.TableStorePageInsert\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestAlterTable2 ---
+
+smallsqljunitTestAlterTable2 [label="smallsql.junit.TestAlterTable2\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Logger ---
+
+smallsqldatabaseLogger [label="smallsql.database.Logger\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSResultSet ---
+
+smallsqldatabaseSSResultSet [label="smallsql.database.SSResultSet\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestExceptions ---
+
+smallsqljunitTestExceptions [label="smallsql.junit.TestExceptions\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestFunctions ---
+
+smallsqljunitTestFunctions [label="smallsql.junit.TestFunctions\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestGroupBy ---
+
+smallsqljunitTestGroupBy [label="smallsql.junit.TestGroupBy\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MemoryResult ---
+
+smallsqldatabaseMemoryResult [label="smallsql.database.MemoryResult\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.language.Language_en ---
+
+smallsqldatabaselanguageLanguage_en [label="smallsql.database.language.Language_en\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.IndexDescription ---
+
+smallsqldatabaseIndexDescription [label="smallsql.database.IndexDescription\ncouplings: 9",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.tools.CommandLine ---
+
+smallsqltoolsCommandLine [label="smallsql.tools.CommandLine\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReturnString ---
+
+smallsqldatabaseExpressionFunctionReturnString [label="smallsql.database.ExpressionFunctionReturnString\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.IndexDescriptions ---
+
+smallsqldatabaseIndexDescriptions [label="smallsql.database.IndexDescriptions\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.IndexNodeScrollStatus ---
+
+smallsqldatabaseIndexNodeScrollStatus [label="smallsql.database.IndexNodeScrollStatus\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TableView ---
+
+smallsqldatabaseTableView [label="smallsql.database.TableView\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandSelect ---
+
+smallsqldatabaseCommandSelect [label="smallsql.database.CommandSelect\ncouplings: 22",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionMod ---
+
+smallsqldatabaseExpressionFunctionMod [label="smallsql.database.ExpressionFunctionMod\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionPI ---
+
+smallsqldatabaseExpressionFunctionPI [label="smallsql.database.ExpressionFunctionPI\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionAscii ---
+
+smallsqldatabaseExpressionFunctionAscii [label="smallsql.database.ExpressionFunctionAscii\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Where ---
+
+smallsqldatabaseWhere [label="smallsql.database.Where\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReturnFloat ---
+
+smallsqldatabaseExpressionFunctionReturnFloat [label="smallsql.database.ExpressionFunctionReturnFloat\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CreateFile ---
+
+smallsqldatabaseCreateFile [label="smallsql.database.CreateFile\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReturnInt ---
+
+smallsqldatabaseExpressionFunctionReturnInt [label="smallsql.database.ExpressionFunctionReturnInt\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StoreImpl ---
+
+smallsqldatabaseStoreImpl [label="smallsql.database.StoreImpl\ncouplings: 12",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLog10 ---
+
+smallsqldatabaseExpressionFunctionLog10 [label="smallsql.database.ExpressionFunctionLog10\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReturnP1 ---
+
+smallsqldatabaseExpressionFunctionReturnP1 [label="smallsql.database.ExpressionFunctionReturnP1\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionFloor ---
+
+smallsqldatabaseExpressionFunctionFloor [label="smallsql.database.ExpressionFunctionFloor\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ForeignKeys ---
+
+smallsqldatabaseForeignKeys [label="smallsql.database.ForeignKeys\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionCeiling ---
+
+smallsqldatabaseExpressionFunctionCeiling [label="smallsql.database.ExpressionFunctionCeiling\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestJoins ---
+
+smallsqljunitTestJoins [label="smallsql.junit.TestJoins\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReturnP1StringAndBinary ---
+
+smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [label="smallsql.database.ExpressionFunctionReturnP1StringAndBinary\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionASin ---
+
+smallsqldatabaseExpressionFunctionASin [label="smallsql.database.ExpressionFunctionASin\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionSign ---
+
+smallsqldatabaseExpressionFunctionSign [label="smallsql.database.ExpressionFunctionSign\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReplace ---
+
+smallsqldatabaseExpressionFunctionReplace [label="smallsql.database.ExpressionFunctionReplace\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionUCase ---
+
+smallsqldatabaseExpressionFunctionUCase [label="smallsql.database.ExpressionFunctionUCase\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestLanguage ---
+
+smallsqljunitTestLanguage [label="smallsql.junit.TestLanguage\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.GroupResult ---
+
+smallsqldatabaseGroupResult [label="smallsql.database.GroupResult\ncouplings: 10",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.JoinScroll ---
+
+smallsqldatabaseJoinScroll [label="smallsql.database.JoinScroll\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestIdentifer ---
+
+smallsqljunitTestIdentifer [label="smallsql.junit.TestIdentifer\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.DataSource ---
+
+smallsqldatabaseDataSource [label="smallsql.database.DataSource\ncouplings: 6",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StorePageLink ---
+
+smallsqldatabaseStorePageLink [label="smallsql.database.StorePageLink\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestAlterTable ---
+
+smallsqljunitTestAlterTable [label="smallsql.junit.TestAlterTable\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionCharLen ---
+
+smallsqldatabaseExpressionFunctionCharLen [label="smallsql.database.ExpressionFunctionCharLen\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MutableDouble ---
+
+smallsqldatabaseMutableDouble [label="smallsql.database.MutableDouble\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLCase ---
+
+smallsqldatabaseExpressionFunctionLCase [label="smallsql.database.ExpressionFunctionLCase\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionRight ---
+
+smallsqldatabaseExpressionFunctionRight [label="smallsql.database.ExpressionFunctionRight\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SearchNode ---
+
+smallsqldatabaseSearchNode [label="smallsql.database.SearchNode\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSCallableStatement ---
+
+smallsqldatabaseSSCallableStatement [label="smallsql.database.SSCallableStatement\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSConnection ---
+
+smallsqldatabaseSSConnection [label="smallsql.database.SSConnection\ncouplings: 8",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestExceptionMethods ---
+
+smallsqljunitTestExceptionMethods [label="smallsql.junit.TestExceptionMethods\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Utils ---
+
+smallsqldatabaseUtils [label="smallsql.database.Utils\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MutableNumeric ---
+
+smallsqldatabaseMutableNumeric [label="smallsql.database.MutableNumeric\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Expressions ---
+
+smallsqldatabaseExpressions [label="smallsql.database.Expressions\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Join ---
+
+smallsqldatabaseJoin [label="smallsql.database.Join\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StoreNoCurrentRow ---
+
+smallsqldatabaseStoreNoCurrentRow [label="smallsql.database.StoreNoCurrentRow\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Table ---
+
+smallsqldatabaseTable [label="smallsql.database.Table\ncouplings: 12",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SQLTokenizer ---
+
+smallsqldatabaseSQLTokenizer [label="smallsql.database.SQLTokenizer\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestResultSet ---
+
+smallsqljunitTestResultSet [label="smallsql.junit.TestResultSet\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestOther ---
+
+smallsqljunitTestOther [label="smallsql.junit.TestOther\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandUpdate ---
+
+smallsqldatabaseCommandUpdate [label="smallsql.database.CommandUpdate\ncouplings: 9",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestTokenizer ---
+
+smallsqljunitTestTokenizer [label="smallsql.junit.TestTokenizer\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Store ---
+
+smallsqldatabaseStore [label="smallsql.database.Store\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionMonth ---
+
+smallsqldatabaseExpressionFunctionMonth [label="smallsql.database.ExpressionFunctionMonth\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Lobs ---
+
+smallsqldatabaseLobs [label="smallsql.database.Lobs\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SQLToken ---
+
+smallsqldatabaseSQLToken [label="smallsql.database.SQLToken\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionTimestampAdd ---
+
+smallsqldatabaseExpressionFunctionTimestampAdd [label="smallsql.database.ExpressionFunctionTimestampAdd\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionDayOfWeek ---
+
+smallsqldatabaseExpressionFunctionDayOfWeek [label="smallsql.database.ExpressionFunctionDayOfWeek\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TableViewResult ---
+
+smallsqldatabaseTableViewResult [label="smallsql.database.TableViewResult\ncouplings: 10",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Identity ---
+
+smallsqldatabaseIdentity [label="smallsql.database.Identity\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionHour ---
+
+smallsqldatabaseExpressionFunctionHour [label="smallsql.database.ExpressionFunctionHour\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TransactionStep ---
+
+smallsqldatabaseTransactionStep [label="smallsql.database.TransactionStep\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLog ---
+
+smallsqldatabaseExpressionFunctionLog [label="smallsql.database.ExpressionFunctionLog\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.LongTreeList ---
+
+smallsqldatabaseLongTreeList [label="smallsql.database.LongTreeList\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionIIF ---
+
+smallsqldatabaseExpressionFunctionIIF [label="smallsql.database.ExpressionFunctionIIF\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandCreateView ---
+
+smallsqldatabaseCommandCreateView [label="smallsql.database.CommandCreateView\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLTrim ---
+
+smallsqldatabaseExpressionFunctionLTrim [label="smallsql.database.ExpressionFunctionLTrim\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionName ---
+
+smallsqldatabaseExpressionName [label="smallsql.database.ExpressionName\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Distinct ---
+
+smallsqldatabaseDistinct [label="smallsql.database.Distinct\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ForeignKey ---
+
+smallsqldatabaseForeignKey [label="smallsql.database.ForeignKey\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ColumnExpression ---
+
+smallsqldatabaseColumnExpression [label="smallsql.database.ColumnExpression\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandTable ---
+
+smallsqldatabaseCommandTable [label="smallsql.database.CommandTable\ncouplings: 13",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Database ---
+
+smallsqldatabaseDatabase [label="smallsql.database.Database\ncouplings: 12",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionSpace ---
+
+smallsqldatabaseExpressionFunctionSpace [label="smallsql.database.ExpressionFunctionSpace\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestOrderBy ---
+
+smallsqljunitTestOrderBy [label="smallsql.junit.TestOrderBy\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSStatement ---
+
+smallsqldatabaseSSStatement [label="smallsql.database.SSStatement\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.RowSource ---
+
+smallsqldatabaseRowSource [label="smallsql.database.RowSource\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestStatement ---
+
+smallsqljunitTestStatement [label="smallsql.junit.TestStatement\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionTruncate ---
+
+smallsqldatabaseExpressionFunctionTruncate [label="smallsql.database.ExpressionFunctionTruncate\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionPower ---
+
+smallsqldatabaseExpressionFunctionPower [label="smallsql.database.ExpressionFunctionPower\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionExp ---
+
+smallsqldatabaseExpressionFunctionExp [label="smallsql.database.ExpressionFunctionExp\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.UnionAll ---
+
+smallsqldatabaseUnionAll [label="smallsql.database.UnionAll\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.DateTime ---
+
+smallsqldatabaseDateTime [label="smallsql.database.DateTime\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestFunctions.TestValue ---
+
+smallsqljunitTestFunctionsTestValue [label="smallsql.junit.TestFunctions.TestValue\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ViewResult ---
+
+smallsqldatabaseViewResult [label="smallsql.database.ViewResult\ncouplings: 8",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MutableLong ---
+
+smallsqldatabaseMutableLong [label="smallsql.database.MutableLong\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TableResult ---
+
+smallsqldatabaseTableResult [label="smallsql.database.TableResult\ncouplings: 12",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionSubstring ---
+
+smallsqldatabaseExpressionFunctionSubstring [label="smallsql.database.ExpressionFunctionSubstring\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLeft ---
+
+smallsqldatabaseExpressionFunctionLeft [label="smallsql.database.ExpressionFunctionLeft\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.MutableInteger ---
+
+smallsqldatabaseMutableInteger [label="smallsql.database.MutableInteger\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionRepeat ---
+
+smallsqldatabaseExpressionFunctionRepeat [label="smallsql.database.ExpressionFunctionRepeat\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandCreateDatabase ---
+
+smallsqldatabaseCommandCreateDatabase [label="smallsql.database.CommandCreateDatabase\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunction ---
+
+smallsqldatabaseExpressionFunction [label="smallsql.database.ExpressionFunction\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SmallSQLException ---
+
+smallsqldatabaseSmallSQLException [label="smallsql.database.SmallSQLException\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Expression ---
+
+smallsqldatabaseExpression [label="smallsql.database.Expression\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TableViewMap ---
+
+smallsqldatabaseTableViewMap [label="smallsql.database.TableViewMap\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Scrollable ---
+
+smallsqldatabaseScrollable [label="smallsql.database.Scrollable\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StorePageMap ---
+
+smallsqldatabaseStorePageMap [label="smallsql.database.StorePageMap\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.language.Language_it ---
+
+smallsqldatabaselanguageLanguage_it [label="smallsql.database.language.Language_it\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Columns ---
+
+smallsqldatabaseColumns [label="smallsql.database.Columns\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestDBMetaData ---
+
+smallsqljunitTestDBMetaData [label="smallsql.junit.TestDBMetaData\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionSqrt ---
+
+smallsqldatabaseExpressionFunctionSqrt [label="smallsql.database.ExpressionFunctionSqrt\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.LongList ---
+
+smallsqldatabaseLongList [label="smallsql.database.LongList\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.FileIndex ---
+
+smallsqldatabaseFileIndex [label="smallsql.database.FileIndex\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Column ---
+
+smallsqldatabaseColumn [label="smallsql.database.Column\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestScrollable ---
+
+smallsqljunitTestScrollable [label="smallsql.junit.TestScrollable\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionDegrees ---
+
+smallsqldatabaseExpressionFunctionDegrees [label="smallsql.database.ExpressionFunctionDegrees\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.BenchTest ---
+
+smallsqljunitBenchTest [label="smallsql.junit.BenchTest\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionRTrim ---
+
+smallsqldatabaseExpressionFunctionRTrim [label="smallsql.database.ExpressionFunctionRTrim\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestTransactions ---
+
+smallsqljunitTestTransactions [label="smallsql.junit.TestTransactions\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionCase ---
+
+smallsqldatabaseExpressionFunctionCase [label="smallsql.database.ExpressionFunctionCase\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSDatabaseMetaData ---
+
+smallsqldatabaseSSDatabaseMetaData [label="smallsql.database.SSDatabaseMetaData\ncouplings: 9",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionCot ---
+
+smallsqldatabaseExpressionFunctionCot [label="smallsql.database.ExpressionFunctionCot\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionRand ---
+
+smallsqldatabaseExpressionFunctionRand [label="smallsql.database.ExpressionFunctionRand\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionDifference ---
+
+smallsqldatabaseExpressionFunctionDifference [label="smallsql.database.ExpressionFunctionDifference\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestJoins.TestValue ---
+
+smallsqljunitTestJoinsTestValue [label="smallsql.junit.TestJoins.TestValue\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionCos ---
+
+smallsqldatabaseExpressionFunctionCos [label="smallsql.database.ExpressionFunctionCos\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SortedResult ---
+
+smallsqldatabaseSortedResult [label="smallsql.database.SortedResult\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StorePage ---
+
+smallsqldatabaseStorePage [label="smallsql.database.StorePage\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionConvert ---
+
+smallsqldatabaseExpressionFunctionConvert [label="smallsql.database.ExpressionFunctionConvert\ncouplings: 5",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionArithmetic ---
+
+smallsqldatabaseExpressionArithmetic [label="smallsql.database.ExpressionArithmetic\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionYear ---
+
+smallsqldatabaseExpressionFunctionYear [label="smallsql.database.ExpressionFunctionYear\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.DateTime.Details ---
+
+smallsqldatabaseDateTimeDetails [label="smallsql.database.DateTime.Details\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestExceptions.TestValue ---
+
+smallsqljunitTestExceptionsTestValue [label="smallsql.junit.TestExceptions.TestValue\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.NoFromResult ---
+
+smallsqldatabaseNoFromResult [label="smallsql.database.NoFromResult\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestMoneyRounding ---
+
+smallsqljunitTestMoneyRounding [label="smallsql.junit.TestMoneyRounding\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.language.Language ---
+
+smallsqldatabaselanguageLanguage [label="smallsql.database.language.Language\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionLength ---
+
+smallsqldatabaseExpressionFunctionLength [label="smallsql.database.ExpressionFunctionLength\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.BasicTestCase ---
+
+smallsqljunitBasicTestCase [label="smallsql.junit.BasicTestCase\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.language.Language_de ---
+
+smallsqldatabaselanguageLanguage_de [label="smallsql.database.language.Language_de\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSDriver ---
+
+smallsqldatabaseSSDriver [label="smallsql.database.SSDriver\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionReturnP1Number ---
+
+smallsqldatabaseExpressionFunctionReturnP1Number [label="smallsql.database.ExpressionFunctionReturnP1Number\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.Money ---
+
+smallsqldatabaseMoney [label="smallsql.database.Money\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionBitLen ---
+
+smallsqldatabaseExpressionFunctionBitLen [label="smallsql.database.ExpressionFunctionBitLen\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSPreparedStatement ---
+
+smallsqldatabaseSSPreparedStatement [label="smallsql.database.SSPreparedStatement\ncouplings: 7",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.LongLongList ---
+
+smallsqldatabaseLongLongList [label="smallsql.database.LongLongList\ncouplings: 0",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.CommandSet ---
+
+smallsqldatabaseCommandSet [label="smallsql.database.CommandSet\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StoreNull ---
+
+smallsqldatabaseStoreNull [label="smallsql.database.StoreNull\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionInsert ---
+
+smallsqldatabaseExpressionFunctionInsert [label="smallsql.database.ExpressionFunctionInsert\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.View ---
+
+smallsqldatabaseView [label="smallsql.database.View\ncouplings: 13",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionTimestampDiff ---
+
+smallsqldatabaseExpressionFunctionTimestampDiff [label="smallsql.database.ExpressionFunctionTimestampDiff\ncouplings: 4",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.StorePageMap.Entry ---
+
+smallsqldatabaseStorePageMapEntry [label="smallsql.database.StorePageMap.Entry\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionSoundex ---
+
+smallsqldatabaseExpressionFunctionSoundex [label="smallsql.database.ExpressionFunctionSoundex\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionDayOfMonth ---
+
+smallsqldatabaseExpressionFunctionDayOfMonth [label="smallsql.database.ExpressionFunctionDayOfMonth\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.IndexNode ---
+
+smallsqldatabaseIndexNode [label="smallsql.database.IndexNode\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionAbs ---
+
+smallsqldatabaseExpressionFunctionAbs [label="smallsql.database.ExpressionFunctionAbs\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.TableStorePage ---
+
+smallsqldatabaseTableStorePage [label="smallsql.database.TableStorePage\ncouplings: 3",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionOctetLen ---
+
+smallsqldatabaseExpressionFunctionOctetLen [label="smallsql.database.ExpressionFunctionOctetLen\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionChar ---
+
+smallsqldatabaseExpressionFunctionChar [label="smallsql.database.ExpressionFunctionChar\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.SSResultSetMetaData ---
+
+smallsqldatabaseSSResultSetMetaData [label="smallsql.database.SSResultSetMetaData\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionMinute ---
+
+smallsqldatabaseExpressionFunctionMinute [label="smallsql.database.ExpressionFunctionMinute\ncouplings: 2",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.junit.TestThreads ---
+
+smallsqljunitTestThreads [label="smallsql.junit.TestThreads\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.JoinScrollIndex ---
+
+smallsqldatabaseJoinScrollIndex [label="smallsql.database.JoinScrollIndex\ncouplings: 6",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.ExpressionFunctionATan2 ---
+
+smallsqldatabaseExpressionFunctionATan2 [label="smallsql.database.ExpressionFunctionATan2\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Inner Class: smallsql.database.DataSources ---
+
+smallsqldatabaseDataSources [label="smallsql.database.DataSources\ncouplings: 1",fillcolor=white,color=blue]
+
+// --- Edges ---
+
+smallsqldatabaseExpressionFunctionACos -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseCommandDrop -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandDrop -> smallsqldatabaseSSConnectionsmallsqldatabaseLoggersmallsqldatabaseCommand_smallsqldatabaseCommandDrop [fillcolor=black]
+smallsqldatabaseExpressionValue -> smallsqldatabaseMutableFloat [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseIdentity [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseMutableDouble [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseMoney [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseMutableLong [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionValue -> smallsqldatabaseMutableInteger [fillcolor=blue]
+smallsqljunitTestDataTypes -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionLocate -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionInSelect -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionInSelect -> smallsqldatabaseIndex [fillcolor=blue]
+smallsqldatabaseExpressionInSelect -> smallsqldatabaseSSConnectionsmallsqldatabaseExpressionArithmeticsmallsqldatabaseExpressionssmallsqldatabaseCommandSelect_smallsqldatabaseExpressionInSelect [fillcolor=black]
+smallsqldatabaseCommandDelete -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandDelete -> smallsqldatabaseTableViewResult [fillcolor=blue]
+smallsqldatabaseCommandDelete -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandDelete -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseCommandDelete -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseSSResultSet [fillcolor=blue]
+smallsqldatabaseCommand -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseStrings [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseSSResultSet [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseIndexDescriptions [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseCommand [fillcolor=blue]
+smallsqldatabaseCommandInsert -> smallsqldatabaseColumnsmallsqldatabaseTable_smallsqldatabaseCommandInsert [fillcolor=black]
+smallsqldatabaseExpressionFunctionRound -> smallsqldatabaseExpressionFunctionReturnP1Number [fillcolor=blue]
+smallsqldatabaseIndexScrollStatus -> smallsqldatabaseLongTreeList [fillcolor=blue]
+smallsqldatabaseIndexScrollStatus -> smallsqldatabaseLongTreeListEnum [fillcolor=blue]
+smallsqldatabaseIndexScrollStatus -> smallsqldatabaseIndexNodeScrollStatus [fillcolor=blue]
+smallsqldatabaseIndexScrollStatus -> smallsqldatabaseIndexNode [fillcolor=blue]
+smallsqldatabaseIndexScrollStatus -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionSin -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionRadians -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseIndex -> smallsqldatabaseIndexScrollStatus [fillcolor=blue]
+smallsqldatabaseIndex -> smallsqldatabaseIndexNode [fillcolor=blue]
+smallsqldatabaseIndex -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseIndex -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseIndex -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseIndex -> smallsqldatabaseLongTreeList [fillcolor=blue]
+smallsqldatabaseFileIndexNode -> smallsqldatabaseStorePage [fillcolor=blue]
+smallsqldatabaseFileIndexNode -> smallsqldatabaseIndexNode [fillcolor=blue]
+smallsqldatabaseFileIndexNode -> smallsqldatabaseMemoryStream [fillcolor=blue]
+smallsqldatabaseFileIndexNode -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseExpressionFunctionATan -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTan -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqljunitTestOperatoren -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqljunitTestOperatoren -> smallsqljunitTestOperatorenTestValue [fillcolor=blue]
+smallsqldatabaseExpressionFunctionDayOfYear -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionDayOfYear -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestScrollable [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestDBMetaData [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestDeleteUpdate [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestTransactions [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestThreads [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestStatement [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestOther [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestMoneyRounding [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestExceptionMethods [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestGroupBy [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestTokenizer [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestAlterTable2 [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestIdentifer [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestResultSet [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestOrderBy [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestAlterTable [fillcolor=blue]
+smallsqljunitAllTests -> smallsqljunitTestLanguage [fillcolor=blue]
+smallsqljunitTestDeleteUpdate -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionASin [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseUnionAll [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionHour [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandCreateView [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLCase [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionRight [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionExp [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionCeiling [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionRand [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseDataSources [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionTruncate [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionOctetLen [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLength [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionACos [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLeft [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandSet [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionCharLen [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionBitLen [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseTableViewResult [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionMonth [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionTan [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionInSelect [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionMod [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionSoundex [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLog10 [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionTimestampAdd [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLog [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandUpdate [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionDayOfMonth [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionPower [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionUCase [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionIIF [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionSpace [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandDelete [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionDayOfWeek [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionDegrees [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionCos [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionCase [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionCot [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseViewResult [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandDrop [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLocate [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionArithmetic [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandTable [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionMinute [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionFloor [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionLTrim [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionChar [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionRound [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionDayOfYear [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseMoney [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionAscii [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionSubstring [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionInsert [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionPI [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseIndexDescription [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseStrings [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandCreateDatabase [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionATan2 [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseJoin [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionAbs [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionRadians [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionRepeat [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseSQLToken [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionConvert [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseForeignKey [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommandInsert [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionRTrim [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionReplace [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionSign [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionYear [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionDifference [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionATan [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionSin [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionSqrt [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseCommand [fillcolor=blue]
+smallsqldatabaseSQLParser -> smallsqldatabaseExpressionFunctionTimestampDiff [fillcolor=blue]
+smallsqldatabaseTableStorePageInsert -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseTableStorePageInsert -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseTableStorePageInsert -> smallsqldatabaseTableStorePage [fillcolor=blue]
+smallsqldatabaseTableStorePageInsert -> smallsqldatabaseStorePageLink [fillcolor=blue]
+smallsqljunitTestAlterTable2 -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseSSResultSet -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseSSResultSet -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseSSResultSet -> smallsqldatabaseSSResultSetMetaData [fillcolor=blue]
+smallsqldatabaseSSResultSet -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseSSResultSet -> smallsqldatabaseMutableNumericsmallsqldatabaseCommandSelect_smallsqldatabaseSSResultSet [fillcolor=black]
+smallsqljunitTestExceptions -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqljunitTestExceptions -> smallsqljunitTestExceptionsTestValue [fillcolor=blue]
+smallsqljunitTestFunctions -> smallsqljunitBasicTestCasesmallsqljunitTestFunctionsTestValue_smallsqljunitTestFunctions [fillcolor=black]
+smallsqljunitTestGroupBy -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseDataSource [fillcolor=blue]
+smallsqldatabaseMemoryResult -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseSQLParser [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseIndex [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseStrings [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseCreateFile [fillcolor=blue]
+smallsqldatabaseIndexDescription -> smallsqldatabaseTableViewsmallsqldatabaseDatabase_smallsqldatabaseIndexDescription [fillcolor=black]
+smallsqltoolsCommandLine -> smallsqldatabaseSSDriver [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnString -> smallsqldatabaseMutableNumericsmallsqldatabaseExpressionFunction_smallsqldatabaseExpressionFunctionReturnString [fillcolor=black]
+smallsqldatabaseIndexDescriptions -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseIndexDescriptions -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseIndexDescriptions -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseIndexDescriptions -> smallsqldatabaseIndexDescription [fillcolor=blue]
+smallsqldatabaseIndexDescriptions -> smallsqldatabaseStrings [fillcolor=blue]
+smallsqldatabaseIndexNodeScrollStatus -> smallsqldatabaseIndexNode [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseCreateFile [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseView [fillcolor=blue]
+smallsqldatabaseTableView -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseDataSources [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseSortedResult [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseDistinct [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseGroupResult [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseScrollable [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseNoFromResult [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseJoin [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseSSResultSet [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseWhere [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseCommand [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseTableViewResult [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseDataSource [fillcolor=blue]
+smallsqldatabaseCommandSelect -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseExpressionFunctionMod -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionPI -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionAscii -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseWhere -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseWhere -> smallsqldatabaseRowSourcesmallsqldatabaseExpressions_smallsqldatabaseWhere [fillcolor=black]
+smallsqldatabaseExpressionFunctionReturnFloat -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnFloat -> smallsqldatabaseExpressionFunction [fillcolor=blue]
+smallsqldatabaseCreateFile -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseCreateFile -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCreateFile -> smallsqldatabaseTransactionStep [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnInt -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnInt -> smallsqldatabaseExpressionFunction [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseSQLParser [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseTableStorePage [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseStore [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseStorePageLink [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseStorePage [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseStoreImpl -> smallsqldatabaseTableStorePageInsert [fillcolor=blue]
+smallsqldatabaseExpressionFunctionLog10 -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnP1 -> smallsqldatabaseDateTimesmallsqldatabaseExpressionFunction_smallsqldatabaseExpressionFunctionReturnP1 [fillcolor=black]
+smallsqldatabaseExpressionFunctionFloor -> smallsqldatabaseExpressionFunctionReturnP1Number [fillcolor=blue]
+smallsqldatabaseForeignKeys -> smallsqldatabaseForeignKey [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCeiling -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqljunitTestJoins -> smallsqljunitTestJoinsTestValue [fillcolor=blue]
+smallsqljunitTestJoins -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnP1StringAndBinary -> smallsqldatabaseExpressionFunctionReturnP1 [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnP1StringAndBinary -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionASin -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionSign -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReplace -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseExpressionFunctionUCase -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqljunitTestLanguage -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseMemoryResult [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseExpressionArithmetic [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseColumnExpression [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseGroupResult -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseJoinScroll -> smallsqldatabaseExpressionsmallsqldatabaseRowSource_smallsqldatabaseJoinScroll [fillcolor=black]
+smallsqljunitTestIdentifer -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseDataSource -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseDataSource -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseDataSource -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseDataSource -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseDataSource -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseDataSource -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseStorePageLink -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseStorePageLink -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseStorePageLink -> smallsqldatabaseTableStorePage [fillcolor=blue]
+smallsqldatabaseStorePageLink -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqljunitTestAlterTable -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCharLen -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionLCase -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseExpressionFunctionRight -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseSSCallableStatement -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseSSCallableStatement -> smallsqldatabaseSSPreparedStatement [fillcolor=blue]
+smallsqldatabaseSSCallableStatement -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseSSCallableStatement -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseSSPreparedStatement [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseSSCallableStatement [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseSSDatabaseMetaData [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseTransactionStep [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseSSConnection -> smallsqldatabaseSSSavepoint [fillcolor=blue]
+smallsqljunitTestExceptionMethods -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseMemoryResult [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseUtils -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressions -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseLongLongList [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseJoinScroll [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseExpressionArithmetic [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseJoinScrollIndex [fillcolor=blue]
+smallsqldatabaseJoin -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseStoreNoCurrentRow -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseStoreNoCurrentRow -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseStoreNoCurrentRow -> smallsqldatabaseStore [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseLobs [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseTableStorePage [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseIndexDescription [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseForeignKey [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseForeignKeys [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseIndexDescriptions [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseTable -> smallsqldatabaseTableStorePageInsert [fillcolor=blue]
+smallsqldatabaseSQLTokenizer -> smallsqldatabaseSearchNode [fillcolor=blue]
+smallsqldatabaseSQLTokenizer -> smallsqldatabaseSQLToken [fillcolor=blue]
+smallsqljunitTestResultSet -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqljunitTestOther -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseDataSource [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseTableResult [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseCommandUpdate -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqljunitTestTokenizer -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseStore -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseStore -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseStore -> smallsqldatabaseStoreNoCurrentRowsmallsqldatabaseStoreNull_smallsqldatabaseStore [fillcolor=black]
+smallsqldatabaseExpressionFunctionMonth -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionMonth -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseLobs -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseLobs -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampAdd -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampAdd -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampAdd -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampAdd -> smallsqldatabaseExpressionFunction [fillcolor=blue]
+smallsqldatabaseExpressionFunctionDayOfWeek -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseViewResult [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseWhere [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseTableResult [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseView [fillcolor=blue]
+smallsqldatabaseTableViewResult -> smallsqldatabaseDataSource [fillcolor=blue]
+smallsqldatabaseIdentity -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseIdentity -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseIdentity -> smallsqldatabaseStorePage [fillcolor=blue]
+smallsqldatabaseExpressionFunctionHour -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionHour -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseExpressionFunctionLog -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseLongTreeList -> smallsqldatabaseLongTreeListEnum [fillcolor=blue]
+smallsqldatabaseLongTreeList -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseExpressionFunctionIIF -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionIIF -> smallsqldatabaseExpressionFunction [fillcolor=blue]
+smallsqldatabaseCommandCreateView -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseCommandCreateView -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandCreateView -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandCreateView -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseCommandCreateView -> smallsqldatabaseLoggersmallsqldatabaseCommand_smallsqldatabaseCommandCreateView [fillcolor=black]
+smallsqldatabaseExpressionFunctionLTrim -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseExpressionName -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseExpressionName -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionName -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseExpressionName -> smallsqldatabaseDataSource [fillcolor=blue]
+smallsqldatabaseExpressionName -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseDistinct -> smallsqldatabaseIndex [fillcolor=blue]
+smallsqldatabaseDistinct -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseDistinct -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseForeignKey -> smallsqldatabaseIndexDescription [fillcolor=blue]
+smallsqldatabaseColumnExpression -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseColumnExpression -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseTableStorePage [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseIndexDescription [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseForeignKey [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseIndexDescriptions [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseCommand [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseForeignKeys [fillcolor=blue]
+smallsqldatabaseCommandTable -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseTableViewMap [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseForeignKey [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseForeignKeys [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseIndexDescriptions [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseView [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseIndexDescription [fillcolor=blue]
+smallsqldatabaseDatabase -> smallsqldatabaseStringssmallsqldatabaseCommandCreateDatabase_smallsqldatabaseDatabase [fillcolor=black]
+smallsqldatabaseExpressionFunctionSpace -> smallsqldatabaseExpressionFunctionReturnString [fillcolor=blue]
+smallsqljunitTestOrderBy -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseSSStatement -> smallsqldatabaseSQLParser [fillcolor=blue]
+smallsqldatabaseSSStatement -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseSSStatement -> smallsqldatabaseCommand [fillcolor=blue]
+smallsqldatabaseRowSource -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqljunitTestStatement -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTruncate -> smallsqldatabaseExpressionFunctionReturnP1Number [fillcolor=blue]
+smallsqldatabaseExpressionFunctionPower -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionExp -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseUnionAll -> smallsqldatabaseDataSources [fillcolor=blue]
+smallsqldatabaseUnionAll -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseUnionAll -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseUnionAll -> smallsqldatabaseDataSourcesmallsqldatabaseMutableNumeric_smallsqldatabaseUnionAll [fillcolor=black]
+smallsqldatabaseDateTime -> smallsqldatabaseDateTimeDetails [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseView [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseViewResult -> smallsqldatabaseTableViewResult [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseStoreNull [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseStorePageLink [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseTableViewResult [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseTableResult -> smallsqldatabaseStore [fillcolor=blue]
+smallsqldatabaseExpressionFunctionSubstring -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseExpressionFunctionLeft -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseExpressionFunctionRepeat -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseCommandCreateDatabase -> smallsqldatabaseSSStatementsmallsqldatabaseSSConnectionsmallsqldatabaseLoggersmallsqldatabaseCommand_smallsqldatabaseCommandCreateDatabase [fillcolor=black]
+smallsqldatabaseExpressionFunction -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpression -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseExpression -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseTableViewMap -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseScrollable -> smallsqldatabaseLongList [fillcolor=blue]
+smallsqldatabaseScrollable -> smallsqldatabaseRowSourcesmallsqldatabaseExpressions_smallsqldatabaseScrollable [fillcolor=black]
+smallsqldatabaseStorePageMap -> smallsqldatabaseTableStorePagesmallsqldatabaseStorePageMapEntry_smallsqldatabaseStorePageMap [fillcolor=black]
+smallsqldatabaseColumns -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqljunitTestDBMetaData -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionSqrt -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseFileIndex -> smallsqldatabaseIndexScrollStatus [fillcolor=blue]
+smallsqldatabaseFileIndex -> smallsqldatabaseIndex [fillcolor=blue]
+smallsqldatabaseFileIndex -> smallsqldatabaseFileIndexNodesmallsqldatabaseExpressions_smallsqldatabaseFileIndex [fillcolor=black]
+smallsqldatabaseColumn -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseColumn -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseColumn -> smallsqldatabaseIdentity [fillcolor=blue]
+smallsqldatabaseColumn -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqljunitTestScrollable -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionDegrees -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionRTrim -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqljunitTestTransactions -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCase -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCase -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCase -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseView [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseStrings [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseSSResultSet [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseSSDatabaseMetaData -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCot -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionRand -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseExpressionFunctionDifference -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionCos -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseSortedResult -> smallsqldatabaseIndexScrollStatus [fillcolor=blue]
+smallsqldatabaseSortedResult -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseSortedResult -> smallsqldatabaseExpressionssmallsqldatabaseLongListsmallsqldatabaseIndex_smallsqldatabaseSortedResult [fillcolor=black]
+smallsqldatabaseStorePage -> smallsqldatabaseTransactionStep [fillcolor=blue]
+smallsqldatabaseExpressionFunctionConvert -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseExpressionFunctionConvert -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionFunctionConvert -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseExpressionFunctionConvert -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionConvert -> smallsqldatabaseExpressionFunction [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseExpressionFunctionConvert [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseExpressionFunctionRTrim [fillcolor=blue]
+smallsqldatabaseExpressionArithmetic -> smallsqldatabaseColumnExpression [fillcolor=blue]
+smallsqldatabaseExpressionFunctionYear -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionYear -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseDateTimeDetails -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseNoFromResult -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseNoFromResult -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionLength -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseSSDriver -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseExpressionFunctionReturnP1Number -> smallsqldatabaseExpressionFunctionReturnP1smallsqldatabaseMutableNumeric_smallsqldatabaseExpressionFunctionReturnP1Number [fillcolor=black]
+smallsqldatabaseExpressionFunctionBitLen -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseSQLParser [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseSSResultSetMetaData [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseExpressionValue [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseSSPreparedStatement -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseCommandSet -> smallsqldatabaseSSStatement [fillcolor=blue]
+smallsqldatabaseCommandSet -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseCommandSet -> smallsqldatabaseLogger [fillcolor=blue]
+smallsqldatabaseCommandSet -> smallsqldatabaseCommand [fillcolor=blue]
+smallsqldatabaseStoreNull -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseStoreNull -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseStoreNull -> smallsqldatabaseStore [fillcolor=blue]
+smallsqldatabaseExpressionFunctionInsert -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseSQLParser [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseColumn [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseColumns [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseColumnExpression [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseCommandSelect [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseStorePage [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseTableView [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseDatabase [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseExpressionName [fillcolor=blue]
+smallsqldatabaseView -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampDiff -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampDiff -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampDiff -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionTimestampDiff -> smallsqldatabaseExpressionFunction [fillcolor=blue]
+smallsqldatabaseStorePageMapEntry -> smallsqldatabaseTableStorePage [fillcolor=blue]
+smallsqldatabaseExpressionFunctionSoundex -> smallsqldatabaseExpressionFunctionReturnP1StringAndBinary [fillcolor=blue]
+smallsqldatabaseExpressionFunctionDayOfMonth -> smallsqldatabaseExpressionFunctionReturnIntsmallsqldatabaseDateTime_smallsqldatabaseExpressionFunctionDayOfMonth [fillcolor=black]
+smallsqldatabaseIndexNode -> smallsqldatabaseLongTreeList [fillcolor=blue]
+smallsqldatabaseIndexNode -> smallsqldatabaseStoreImpl [fillcolor=blue]
+smallsqldatabaseExpressionFunctionAbs -> smallsqldatabaseExpressionFunctionReturnP1 [fillcolor=blue]
+smallsqldatabaseExpressionFunctionAbs -> smallsqldatabaseMutableNumeric [fillcolor=blue]
+smallsqldatabaseExpressionFunctionAbs -> smallsqldatabaseMoney [fillcolor=blue]
+smallsqldatabaseTableStorePage -> smallsqldatabaseTable [fillcolor=blue]
+smallsqldatabaseTableStorePage -> smallsqldatabaseStorePage [fillcolor=blue]
+smallsqldatabaseTableStorePage -> smallsqldatabaseSSConnection [fillcolor=blue]
+smallsqldatabaseExpressionFunctionOctetLen -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionChar -> smallsqldatabaseExpressionFunctionReturnString [fillcolor=blue]
+smallsqldatabaseSSResultSetMetaData -> smallsqldatabaseExpression [fillcolor=blue]
+smallsqldatabaseSSResultSetMetaData -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionMinute -> smallsqldatabaseExpressionFunctionReturnInt [fillcolor=blue]
+smallsqldatabaseExpressionFunctionMinute -> smallsqldatabaseDateTime [fillcolor=blue]
+smallsqljunitTestThreads -> smallsqljunitBasicTestCase [fillcolor=blue]
+smallsqldatabaseJoinScrollIndex -> smallsqldatabaseJoinScroll [fillcolor=blue]
+smallsqldatabaseJoinScrollIndex -> smallsqldatabaseLongTreeList [fillcolor=blue]
+smallsqldatabaseJoinScrollIndex -> smallsqldatabaseLongTreeListEnum [fillcolor=blue]
+smallsqldatabaseJoinScrollIndex -> smallsqldatabaseIndex [fillcolor=blue]
+smallsqldatabaseJoinScrollIndex -> smallsqldatabaseRowSource [fillcolor=blue]
+smallsqldatabaseJoinScrollIndex -> smallsqldatabaseExpressions [fillcolor=blue]
+smallsqldatabaseExpressionFunctionATan2 -> smallsqldatabaseExpressionFunctionReturnFloat [fillcolor=blue]
+smallsqldatabaseDataSources -> smallsqldatabaseDataSource [fillcolor=blue]
+
+}

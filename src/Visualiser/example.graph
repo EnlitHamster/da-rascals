@@ -1,4 +1,0 @@
-test.Test:java.lang.String,java.lang.Integer,test.Test1,test.Test2
-test.Test1:java.util.List,java.util.ArrayList,java.lang.String,test.Test2
-test.Test2:test.impl.TestImpl,java.lang.Integer
-test.impl.TestImpl:java.lang.Integer

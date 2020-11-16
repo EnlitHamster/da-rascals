@@ -8,6 +8,7 @@ import UnitSize;
 import Duplicate_new;
 import Snippet;
 import LineAnalysis;
+import Coupling;
 
 // Rascal base imports
 import Set;
@@ -196,6 +197,8 @@ void printBundle(loc projectLoc, loc outputFolder, str fileName) {
 			   "<round(bundle.ANB)>,<round(bundle.CHNEB)>,<round(bundle.CHEB)>,<round(bundle.TSNE)>,<round(bundle.TSE)>,<round(bundle.OVNEB)>,<round(bundle.OVEB)>" );
 	print("File generated: ");
 	println(outputFile);
+	
+	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
 }
 
 str parseScore(int rank) {
@@ -238,6 +241,8 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 	println("DUP metric: <DUP>");
 	println("\> <bDUP> duplicate lines");
 	println("\> <toReal(bDUP) * 100 / toReal(bLOC.code)>% ratio of duplicates");
+	println("COUPLING metrics");
+	//printCouplingGraphs(getASS(projectLoc));
 	
 	str AN = parseScore(round(skipBrkts ? bundle.ANNB : bundle.ANB));
 	str CHNE = parseScore(round(skipBrkts ? bundle.CHNENB : bundle.CHNEB));
@@ -256,8 +261,40 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 	println("Overall:\t<OVE>\t|\t<OVNE>");
 }
 
-str listToStr(list[int] lst) {
-	str s = toString(lst[0]);
-	for (i <- [1..size(lst)]) s += "," + toString(lst[i]);
-	return s;
+void printCouplingGraphs(list[Declaration] asts) {
+	CouplingGraphs graphs = genCouplingGraphs(asts);
+	
+}
+
+void printCouplingGraphs(list[Declaration] asts, loc outputFile) {
+	println("Generating coupling graph...");
+	CouplingGraphs graphs = genCouplingGraphs(asts);
+	println("Writing inter-coupling base graph...");
+	printCouplingGraph(graphs.inter, toLocation(outputFile.uri + "_inter_base.graph"));
+	println("Writing intra-coupling base graph...");
+	printCouplingGraph(graphs.intra, toLocation(outputFile.uri + "_intra_base.graph"));
+	println("Writing inter-coupling visited graph...");
+	printCouplingGraph(graphs.interVisited, toLocation(outputFile.uri + "_inter_visited.graph"));
+	println("Writing intra-coupling visited graph...");
+	printCouplingGraph(graphs.intraVisited, toLocation(outputFile.uri + "_intra_visited.graph"));
+}
+
+private void printCouplingGraph(CouplingGraph cg, loc outputFile) {
+	str lines = "";
+	
+	println("Processing graph...");
+	for (loc clss <- cg) {
+		lines += declToClass(clss) + ":";
+		Couplings cpls = cg[clss];
+		if (size(cpls) > 0) {
+			for (cpl <- cpls) lines += cpl + ",";
+		}
+		lines = replaceLast(lines, ",", "") + eof();
+	}
+	println("Dumping data...");
+	if (lines != "") lines = replaceLast(lines, eof(), "");
+	writeFile(outputFile, lines);
+	
+	print("File generated: ");
+	println(outputFile);
 }

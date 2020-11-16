@@ -1,6 +1,8 @@
 import java.util.Set;
 import java.util.HashSet;
 
+import java.io.File;
+
 abstract class Tab {
   abstract public void setup();
   abstract public void draw();
@@ -249,21 +251,176 @@ class DistribsTab extends Tab {
 //              GRAPH
 //-------------------
 
+// 3rd experiment
 class GraphTab extends Tab {
   
-  ForceDirectedGraph graph;
+  private int sWidth = 500, sHeight = 260;
   
-  private int sWidth = 600, sHeight = 710;
+  private Button generate, generateAll;
+  private RadioButton inner, visited;
+  
+  private String baseFile;
+  
+  GraphTab(String bf) {baseFile = bf;}
+  
+  void setup() {
+    surface.setSize(sWidth, sHeight);
+    inner = new RadioButton(20, 40, 20, "Consider only intra-coupling");
+    visited = new RadioButton(20, 70, 20, "Depth visit of the graph");
+    generate = new Button(20, 110, 80, 20, "Generate");
+    generateAll = new Button(120, 110, 80, 20, "Generate All");
+  }
+  
+  void draw() {
+    inner.draw();
+    visited.draw();
+    generate.draw();
+    generateAll.draw();
+    
+    textFont(font, 10);
+    textAlign(LEFT,TOP);
+    fill(0);
+    text("All generated graphs are saved as .dot files in the folder /Visualizer/Output/ of this application", 20, 150);
+  }
+  
+  void mousePressed() {
+    if (inner.hover()) inner.check();
+    if (visited.hover()) visited.check();
+    if (generate.hover()) generateGraph(inner.isChecked(), visited.isChecked());
+    if (generateAll.hover()) {
+      generateGraph(true, true);
+      generateGraph(true, false);
+      generateGraph(false, true);
+      generateGraph(false, false);
+    }
+  }
+  
+  private void generateGraph(boolean inr, boolean vst) {
+    File f = new File(baseFile);
+    String fileName = f.getName()
+                      + (inr ? "_intra" : "_inter")
+                      + (vst ? "_visited" : "_base");
+    
+    String file = f.getParent() + "\\" + fileName + ".graph";
+    String outputFile = "Output\\" + fileName + ".dot";
+    
+    String[] lines = loadStrings(file);
+    
+    Map<String, String[]> couplings = new HashMap<String, String[]>();
+    for(String line : lines) {
+      String[] data = line.split(":");
+      if (data.length == 2) couplings.put(data[0], data[1].split(","));
+      else couplings.put(data[0], new String[] {});
+    }
+    
+    PrintWriter output = createWriter(outputFile);
+    output.println("// online environment: https://dreampuf.github.io/GraphvizOnline");
+    output.println("// we highly recomend for readability reasons you use the \"Circo\" engine\n");
+    output.println("digraph G {\n");
+    
+    for (String node : couplings.keySet()) {
+      String[] cpls = couplings.get(node);
+      String name = nodeName(node);
+      output.println("// --- Inner Class: " + node + " ---\n");
+      output.println(name + " [label=\"" + node + "\\ncouplings: " + cpls.length + "\",fillcolor=white,color=blue]\n");
+      if (!inr) {
+        output.println("// --- Phantom couplings of: " + node + " ---\n");
+        for (String phtm : cpls)
+          if (!couplings.containsKey(phtm)) output.println(nodeName(phtm) + "_" + name + "[label=\"" + phtm + "\",fillcolor=white,color=black]");
+        output.println();
+      }
+    }
+      
+    output.println("// --- Edges ---\n");
+    
+    for (String node1 : couplings.keySet()) {
+      for (String node2 : couplings.get(node1)) {
+        String name1 = nodeName(node1);
+        if (couplings.containsKey(node2))
+          output.println(name1 + " -> " + nodeName(node2) + " [fillcolor=blue]");
+        else 
+          output.println(name1 + " -> " + nodeName(node2) + "_" + name1 + " [fillcolor=black]");
+      }
+    }
+    
+    output.println("\n}");
+    output.flush();
+    output.close();
+  }
+    
+  private String nodeName(String node) {
+    return node.replace(".", "").replace("(", "").replace(")", "").replace("$", "");
+  }
+  
+}
+
+// 2nd experiment
+/*
+class GraphTab extends Tab {
+ 
+  DirectedGraph graph;
+  
+  private int sWidth = 680, sHeight = 740;
+  private boolean stable = false;
+  
+  void setup() {
+    surface.setSize(sWidth, sHeight); 
+  }
+  
+  void draw() {
+    if (!stable) stable = graph.reflow();
+    graph.draw();
+  }
+  
+  public void generateGraph(String file) {
+    graph = new DirectedGraph();
+    String[] lines = loadStrings(file);
+    
+    Map<String, String[]> couplings = new HashMap<String, String[]>();
+    for(String line : lines) {
+      println(line);
+      String[] data = line.split(":");
+      if (data.length == 2) couplings.put(data[0], data[1].split(","));
+      else couplings.put(data[0], new String[] {});
+    }
+    
+    // Node generation
+    Map<String, Node> nodeMap = new HashMap<String, Node>();
+    for (String cls : couplings.keySet()) {
+      Node node = new Node( cls + ": " + couplings.get(cls).length, 
+                            (int) random(60, sWidth - 60), 
+                            (int) random(60, sHeight - 130)
+                          );
+      nodeMap.put(cls, node);
+      graph.addNode(node);
+    }
+    
+    for (String node1 : couplings.keySet())
+      for (String node2 : couplings.get(node1))
+        graph.linkNodes(nodeMap.get(node1), nodeMap.get(node2));
+        
+    graph.setFlowAlgorithm(new ForceDirectedFlowAlgorithm());
+  }
+  
+}*/
+
+// Old Graph Tab
+/*
+class GraphTab extends Tab {
+  
+  private int sWidth = 620, sHeight = 720;
+  
+  private boolean draw = true;
+  
+  Button switchButton;
   
   public void setup() {
     surface.setSize(sWidth, sHeight);
-    generateGraph();
-    //graph.dumpInformation();
+    switchButton = new Button(20, sHeight - 100, 80, 20, "Stop");
   }
   
   public void draw() {
     background(255);
-    graph.draw();
   }
   
   public void mouseMoved() {
@@ -272,6 +429,11 @@ class GraphTab extends Tab {
   
   public void mousePressed() {
     if (graph.isIntersectingWith(mouseX, mouseY)) graph.onMousePressedAt(mouseX, mouseY);
+    if (switchButton.hover()) {
+      draw = !draw;
+      if (draw) switchButton.setText("Stop");
+      else switchButton.setText("Start");
+    }
   }
   
   public void mouseDragged() {
@@ -282,38 +444,37 @@ class GraphTab extends Tab {
     if (graph.isIntersectingWith(mouseX, mouseY)) graph.onMouseReleased();
   }
   
-  private void generateGraph() {
+  public void generateGraph(String file) {
     graph = new ForceDirectedGraph();
-    String[] lines = loadStrings("example.graph");
+    String[] lines = loadStrings(file);
     
     Map<String, String[]> couplings = new HashMap<String, String[]>();
     for(String line : lines) {
+      println(line);
       String[] data = line.split(":");
-      couplings.put(data[0], data[1].split(","));
+      if (data.length == 2) couplings.put(data[0], data[1].split(","));
+      else couplings.put(data[0], new String[] {});
     }
-    
-    Set<String> nodes = new HashSet(couplings.keySet());
-    for (String[] cpls : couplings.values())
-      for (String cpl : cpls) nodes.add(cpl);
       
-    for (String node : nodes) {
-      int size = couplings.containsKey(node) ? couplings.get(node).length : 0;
-      graph.add(new Node(node, size+1));
+    for (String node : couplings.keySet()) {
+      graph.add(new Node(node, 1));
+      for (String cpl : couplings.get(node))
+        if (!couplings.containsKey(cpl)) 
+          graph.add(phantomNode(cpl, node));
     }
     
-    graph.set(0.0f, 0.0f, (float) sWidth, (float) (sHeight - 110));
+    graph.set(60.0f, 60.0f, (float) sWidth - 120, (float) (sHeight - 190));
     graph.initializeNodeLocations();
     
-    for (String node : couplings.keySet()) println(node);
-    
     for (String id1 : couplings.keySet())
-      for (String id2 : couplings.get(id1)) {
-        if (couplings.containsKey(id1) && couplings.containsKey(id2)) {
-          println(id1 + " " + id2);
-          graph.addEdge(id1, id2, graph.getNodeWith(id1).getDiameter() + graph.getNodeWith(id2).getDiameter() + 30);
-        } else
-          graph.addEdge(id1, id2, graph.getNodeWith(id1).getDiameter() + graph.getNodeWith(id2).getDiameter());
-      }
+      for (String id2 : couplings.get(id1))
+        if (couplings.containsKey(id2))
+          graph.addEdge(id1, id2, graph.getNodeWith(id1).getDiameter() + graph.getNodeWith(id2).getDiameter() + 5);
+        else {
+          String phantomId2 = getPhantomId(id2, id1);
+          println(phantomId2);
+          graph.addEdge(id1, phantomId2, graph.getNodeWith(id1).getDiameter() + graph.getNodeWith(phantomId2).getDiameter() + 2);
+        }
   }
   
-}
+}*/

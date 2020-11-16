@@ -16,6 +16,7 @@ public class Button implements AbstractButton {
     this.border = color(0,0,0);
   }
   
+  public void setText(String text) {this.text = text;}
   public void setActive() {bg = color(230,230,230);}
   public void setInactive() {bg = color(255,255,255);}
   public boolean hover() {return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;}

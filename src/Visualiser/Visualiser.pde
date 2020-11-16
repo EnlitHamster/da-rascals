@@ -113,13 +113,13 @@ void processInput(String dbFile) {
   piesButton = new Button(0, 0, 80, 20, "Pie charts");
   scoresButton = new Button(80, 0, 80, 20, "Scores");
   distribsButton = new Button(160, 0, 80, 20, "Distributions");
-  graphButton = new Button(240, 0, 80, 20, "Coupling graph");
+  graphButton = new Button(240, 0, 80, 20, "Graphs");
   
   tabs = new HashMap<Button, Tab>();
   tabs.put(piesButton, new PiesTab());
   tabs.put(scoresButton, new ScoresTab());
   tabs.put(distribsButton, new DistribsTab());
-  tabs.put(graphButton, new GraphTab());
+  tabs.put(graphButton, new GraphTab(dbFile.substring(0, dbFile.lastIndexOf('.'))));
   activeButton = piesButton;
   
   piesButton.setActive();
