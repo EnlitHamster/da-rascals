@@ -27,7 +27,7 @@ private map[str, str] whiteSpaces = (" ":"", "\t":"");
 
 map[str, list[Block]] mapBlocks(list[loc] fileLocs, bool skipBrkts) {
 	map[str, list[Block]] blocks = ();
-	for (fLoc <- toSet(fileLocs)) { // -- O(#files) = O(n)
+	for (fLoc <- fileLocs) { // -- O(#files) = O(n)
 		list[tuple[str, Snippet]] snps = filterSnippets(readFileSnippets(fLoc), skipBrkts);
 		int len = size(snps);
 		// -- O(#lines in nth file) = O(m)
@@ -71,9 +71,7 @@ list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps, bool skipBrkts) {
 	.Synopsis
 	Get the number of duplicated lines in a project.
 }
-int getDuplicateLines(loc projectLoc, bool print, bool skipBrkts) {
-	if (print) println(now());
-	list[loc] files = getFiles(projectLoc);
+int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
 	map[str, list[Block]] blocks = mapBlocks(files, skipBrkts);
 	map[str, list[Block]] dupBlocks = ();
 	
@@ -94,7 +92,6 @@ int getDuplicateLines(loc projectLoc, bool print, bool skipBrkts) {
 		}
 	}
 	
-	if (print) println(now());
 	return size(dupSnps);
 }
 

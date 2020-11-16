@@ -50,15 +50,12 @@ CC getCyclomaticComplexity(Statement stmt) {
 		case \while(_,_): pi += 1;
 		// Each case of the switch is +1
 		case \case(_): pi += 1;
-		case \defaultCase(): pi += 1;
 		// Each logical clause yields +1
 		case \infix(_,"||",_): pi += 1;
 		case \infix(_,"&&",_): pi += 1;
 		case \conditional(_,_,_): pi += 1;
 		// Each exception handling stmt yields +1
-		case \throw(_): piExp += 1;
 		case \catch(_,_): piExp += 1;
-		case \try(_,_,_): piExp += 1;
 	}
 	
 	return <pi, piExp>;

@@ -108,12 +108,16 @@ list[loc] getFiles (loc projectLoc) {
 @doc {
 	Get the AST from all the files in the project.
 }
-list[Declaration] getASS (loc projectLoc) {
+list[Declaration] getASS (list[loc] files) {
  	list[Declaration] asts = [];
- 	for (file <- getFiles(projectLoc)) {
+ 	for (file <- files) {
  		asts += createAstFromFile(file,true);
  	}
 	return asts;
+}
+
+list[Declaration] getASS(loc projectLoc) {
+	return getASS(getFiles(projectLoc));
 }
 
 tuple[str,bool] removeInlineComments(str code) {

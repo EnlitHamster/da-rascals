@@ -58,8 +58,8 @@ private alias Bundle = tuple[ LineCount LOCNB,
 
 private Bundle bundle(loc projectLoc, bool print, int skipBrkts) {
 	// Saving the project files/ASTs as they are used by all metric calculators
-	list[loc] projectFiles = getFiles(projectLoc);
-	list[Declaration] asts = getASS(projectLoc);
+	list[loc] projectFiles = toList(toSet(getFiles(projectLoc)));
+	list[Declaration] asts = getASS(projectFiles);
 	
 	// VOLUME
 	if (print) println("=== VOLUME LOGS");
@@ -106,12 +106,12 @@ private Bundle bundle(loc projectLoc, bool print, int skipBrkts) {
 	int rankDUPB = -1;
 	
 	if (skipBrkts % 2 == 0) {
-		duplicatesNB = getDuplicateLines(projectLoc, print, true);
+		duplicatesNB = getDuplicateLines(projectFiles, print, true);
 		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), print);
 	}
 	
 	if (skipBrkts > 0) {
-		duplicatesB = getDuplicateLines(projectLoc, print, false);
+		duplicatesB = getDuplicateLines(projectFiles, print, false);
 		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), print);
 	}
 	
@@ -263,11 +263,11 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 
 void printCouplingGraphs(list[Declaration] asts) {
 	CouplingGraphs graphs = genCouplingGraphs(asts);
-	
+	//TODO: Print rankings
 }
 
 void printCouplingGraphs(list[Declaration] asts, loc outputFile) {
-	println("Generating coupling graph...");
+	println("Generating coupling graphs...");
 	CouplingGraphs graphs = genCouplingGraphs(asts);
 	println("Writing inter-coupling base graph...");
 	printCouplingGraph(graphs.inter, toLocation(outputFile.uri + "_inter_base.graph"));
