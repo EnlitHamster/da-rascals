@@ -18,7 +18,9 @@ import lang::java::m3::AST;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-// TODO: Compute risk rankings and scores
+map[str,int] rankFanInRisk(list[int] cpls) {
+	return rankRisk(cpls, 10, 22, 56);
+}
 
 public alias Imports = map[loc,set[str]];
 public alias Classes = map[str,loc];
@@ -26,29 +28,21 @@ public alias Couplings = set[str];
 public alias CouplingGraph = map[loc,Couplings];
 public alias CouplingGraphs = tuple[CouplingGraph inter, CouplingGraph intra, CouplingGraph interVisited, CouplingGraph intraVisited];
 
-private str UNKNOWN = "Unknown";
-
-public str declToClass(loc decl) {
-	str scheme = decl.scheme;	
-	switch (scheme) {
-		case "java+enum": return pathToClass(decl.path);
-		case "java+enumConstant": {
-			list[str] paths = split("/", decl.path[1..]);
-			return intercalate(".", paths[0..size(paths)-2]);
-		}
-		case "java+class": return pathToClass(decl.path);
-		case "java+interface": return pathToClass(decl.path);
-		case "java+field": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
-		case "java+method": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
-		case "java+constructor": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
-		default: return UNKNOWN;
+public CouplingGraph fanInGraph(list[Declaration] asts) {
+	set[Declaration] classes;
+	Imports imports;
+	<classes, imports> = getClasses(asts);
+	Classes clsMap = genClasses(classes);
+	CouplingGraph cg = genCouplingGraph(asts, classes, imports, clsMap, true);
+	
+	CouplingGraph fanInGraph = ();
+	for (loc cls <- cg) {
+		fanInGraph[cls] = {};
+		str sCls = declToClass(cls);
+		for (loc cls1 <- cg)
+			if (sCls in cg[cls1]) fanInGraph[cls] += declToClass(cls1);
 	}
-}
-
-private str pathToClass(str path) {
-	str clss = path;
-	if (clss[0] == "/") clss = clss[1..];
-	return replaceAll(clss, "/", ".");
+	return fanInGraph;
 }
 
 private CouplingGraph cleanCouplingGraph(CouplingGraph cg, Classes clsMap) {

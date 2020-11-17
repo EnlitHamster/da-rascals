@@ -164,3 +164,28 @@ str listToStr(list[int] lst) {
 	for (i <- [1..size(lst)]) s += "," + toString(lst[i]);
 	return s;
 }
+
+public str UNKNOWN = "Unknown";
+
+public str declToClass(loc decl) {
+	str scheme = decl.scheme;	
+	switch (scheme) {
+		case "java+enum": return pathToClass(decl.path);
+		case "java+enumConstant": {
+			list[str] paths = split("/", decl.path[1..]);
+			return intercalate(".", paths[0..size(paths)-2]);
+		}
+		case "java+class": return pathToClass(decl.path);
+		case "java+interface": return pathToClass(decl.path);
+		case "java+field": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
+		case "java+method": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
+		case "java+constructor": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
+		default: return UNKNOWN;
+	}
+}
+
+public str pathToClass(str path) {
+	str clss = path;
+	if (clss[0] == "/") clss = clss[1..];
+	return replaceAll(clss, "/", ".");
+}
