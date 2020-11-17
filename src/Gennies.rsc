@@ -33,7 +33,6 @@ loc getMock() {
 	return MOCK;
 }
 
-list[str] possibleComments = ["\t// such comment", "\t/* very multiline comment */"];
 // ..................................................................MOCK PROJECT FUNCTIONS.................................................................. //
 @doc {
 	.Synopsis
@@ -109,6 +108,8 @@ loc genCommentFile(int n) {
 	}
 	return commentFile;
 }
+
+list[str] possibleComments = ["\t// such comment", "\t/* very multiline comment */"];
 
 @doc {
 	.Synopsis
