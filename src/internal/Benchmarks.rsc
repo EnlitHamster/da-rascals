@@ -20,12 +20,12 @@ import lang::java::jdt::m3::AST;
 
 void benchmarkCoupling(loc dumpFolder) {
 	list[loc] projects = [
-		|project://androidannotations-develop|,
-		|project://antlr4-master|,
-		|project://arthas-master|,
-		|project://cas-master|,
-		|project://CNTK-master|,
-		|project://dagli-master|,
+		//|project://androidannotations-develop|,
+		//|project://tool|, //ANTLR4
+		//|project://core|, //ARTHAS
+		//|project://cas-master|,
+		//|project://CNTK-master|,
+		//|project://dagli-master|,
 		|project://dropwizard-master|,
 		|project://elasticsearch-analysis-ik-master|,
 		|project://elasticsearch-master|,
@@ -88,7 +88,7 @@ void benchmarkCoupling(loc dumpFolder) {
 		ranks = rankFanInRisk(fanIns);
 		rankings += ranks;
 		print("Done.\nDumping on file... ");
-		writeFile(dumpFolder + proj.path + "dump.txt", ranks);
+		writeFile(dumpFolder + "<proj.uri[findLast(proj.uri, "/")..]>.txt", ranks);
    	}
    	
    	list[int] low = [];

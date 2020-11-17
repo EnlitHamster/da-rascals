@@ -22,11 +22,24 @@ map[str,int] rankFanInRisk(list[int] cpls) {
 	return rankRisk(cpls, 10, 22, 56);
 }
 
+// The values are a best-guess based upon https://www.softwareimprovementgroup.com/wp-content/uploads/2019/11/20190919-SIG-TUViT-Evaluation-Criteria-Trusted-Product-Maintainability-Guidance-for-producers.pdf
+// Due to the fact that we were not able to benchmark as defined in internal::Benchmarks.
+
+// *** THIS IS ONLY A PROOF OF CONCEPT ***
+int rankFanIn(map[str,int] risks, bool print) {
+	return scoreRank( risks,
+					  <0.157, 0.089, 0.036>,
+					  <0.302, 0.194, 0.107>,
+					  <0.426, 0.293, 0.190>,
+					  <0.574, 0.445, 0.251>,
+					  print );
+}
+
 public alias Imports = map[loc,set[str]];
 public alias Classes = map[str,loc];
 public alias Couplings = set[str];
 public alias CouplingGraph = map[loc,Couplings];
-public alias CouplingGraphs = tuple[CouplingGraph inter, CouplingGraph intra, CouplingGraph interVisited, CouplingGraph intraVisited];
+public alias CouplingGraphs = tuple[CouplingGraph intra, CouplingGraph inter, CouplingGraph intraVisited, CouplingGraph cbo, CouplingGraph fanin];
 
 public CouplingGraph fanInGraph(list[Declaration] asts) {
 	set[Declaration] classes;
@@ -45,12 +58,22 @@ public CouplingGraph fanInGraph(list[Declaration] asts) {
 	return fanInGraph;
 }
 
-private CouplingGraph cleanCouplingGraph(CouplingGraph cg, Classes clsMap) {
+private CouplingGraph inCouplingGraph(CouplingGraph cg, Classes clsMap) {
 	CouplingGraph clean = ();
 	for (key <- cg) {
 		clean[key] = {};
 		for (cpl <- cg[key])
 			if (cpl in clsMap) clean[key] += cpl;
+	}
+	return clean;
+}
+
+private CouplingGraph outCouplingGraph(CouplingGraph cg, Classes clsMap) {
+	CouplingGraph clean = ();
+	for (key <- cg) {
+		clean[key] = {};
+		for (cpl <- cg[key])
+			if (cpl notin clsMap) clean[key] += cpl;
 	}
 	return clean;
 }
@@ -61,14 +84,23 @@ public CouplingGraphs genCouplingGraphs(list[Declaration] asts) {
 	<classes, imports> = getClasses(asts);
 	Classes clsMap = genClasses(classes);
 	CouplingGraph cg = genCouplingGraph(asts, classes, imports, clsMap, false);
-	CouplingGraph clean = cleanCouplingGraph(cg, clsMap);
+	CouplingGraph incg = inCouplingGraph(cg, clsMap);
+	CouplingGraph outcg = outCouplingGraph(cg, clsMap);
 	
 	bool updated = true;
 	CouplingGraph cgV = cg;
 	while (updated) <updated, cgV> = visitCouplingGraph(cgV, clsMap);
-	CouplingGraph cleanV = cleanCouplingGraph(cgV, clsMap);
+	CouplingGraph cleanV = inCouplingGraph(cgV, clsMap);
 	
-	return <cg, clean, cgV, cleanV>;
+	CouplingGraph fanIn = ();
+	for (loc cls <- cgV) {
+		fanIn[cls] = {};
+		str sCls = declToClass(cls);
+		for (loc cls1 <- cgV)
+			if (sCls in cgV[cls1]) fanIn[cls] += declToClass(cls1);
+	}
+	
+	return <incg, outcg, cleanV, cgV, fanIn>;
 }
 
 public CouplingGraph innerCouplingGraph(list[Declaration] asts, bool vst) {
@@ -77,7 +109,7 @@ public CouplingGraph innerCouplingGraph(list[Declaration] asts, bool vst) {
 	<classes, imports> = getClasses(asts);
 	Classes clsMap = genClasses(classes);
 	CouplingGraph cg = genCouplingGraph(asts, classes, imports, clsMap, vst);
-	CouplingGraph clean = cleanCouplingGraph(cg, clsMap);
+	CouplingGraph clean = inCouplingGraph(cg, clsMap);
 	return clean;
 }
 
