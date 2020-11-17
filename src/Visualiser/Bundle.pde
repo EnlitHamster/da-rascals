@@ -17,13 +17,17 @@ public class Bundle {
   final int rankUS;
   final int duplicateLines;
   final int rankDUP;
+  final int asserts;
+  final int testLOC;
+  final int rankTQ;
   // 0 -> ANALISABILITY
   // 1 -> CHANGEABILITY WITHOUT EXCEPTION HANDLING
   // 2 -> CHANGEABILITY WITH EXCEPTION HANDLING
-  // 3 -> TESTABILITY WITHOUT EXCPETION HANDLING
-  // 4 -> TESTABILITY WITH EXCEPTION HANDLING
-  // 5 -> OVERALL WITHOUT EXCEPTION HANDLING
-  // 6 -> OVERALL WITH EXCEPTION HANDLING
+  // 3 -> STABILITY
+  // 4 -> TESTABILITY WITHOUT EXCPETION HANDLING
+  // 5 -> TESTABILITY WITH EXCEPTION HANDLING
+  // 6 -> OVERALL WITHOUT EXCEPTION HANDLING
+  // 7 -> OVERALL WITH EXCEPTION HANDLING
   final int[] scores;
   
   final float[] percLOC;
@@ -45,6 +49,9 @@ public class Bundle {
       duplicateLines = int(split(database[11], ',')[skipBrkts ? 0 : 1]);
       rankDUP = int(split(database[12], ',')[skipBrkts ? 0 : 1]);
       scores = int(split(database[skipBrkts ? 13 : 14], ','));
+      asserts = int(database[15]);
+      testLOC = int(split(database[16], ',')[skipBrkts ? 0 : 1]);
+      rankTQ = int(split(database[17], ',')[skipBrkts ? 0 : 1]);
       
       int totalUCNE = sum(riskUCNE);
       int totalUCE = sum(riskUCE);

@@ -77,7 +77,7 @@ class PiesTab extends Tab {
 class ScoresTab extends Tab {
   
   public void setup() {
-    surface.setSize(520, 600); 
+    surface.setSize(600, 660); 
   } 
   
   public void draw() {
@@ -89,6 +89,7 @@ class ScoresTab extends Tab {
     text("Duplicated code", 20, 100);
     text("Unit Complexity", 20, 180);
     text("Unit Size", 20, 240);
+    text("Assertion Density", 20, 300);
     
     textAlign(CENTER);
     
@@ -96,23 +97,25 @@ class ScoresTab extends Tab {
     text(toScore(activeBundle.rankDUP), width/2, 100);
     text(toScore(exceptions.isChecked() ? activeBundle.ranksUC[1] : activeBundle.ranksUC[0]), width/2, 180);
     text(toScore(activeBundle.rankUS), width/2, 240);
+    text(toScore(activeBundle.rankTQ), width/2, 300);
     
     textFont(font, 12);
     textAlign(RIGHT);
     
     text(activeBundle.linesOfCode[0] + String.format(" (%4.2f%c)", (float) activeBundle.linesOfCode[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 60);
     text(activeBundle.duplicateLines + String.format(" (%4.2f%c)", (float) activeBundle.duplicateLines * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
+    text(activeBundle.duplicateLines + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
     
     printPercs(exceptions.isChecked() ? activeBundle.riskUCE : activeBundle.riskUCNE, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, 180);
     printPercs(activeBundle.riskUS, activeBundle.percRiskUS, 240);
     
     printHeader(140);
     String [][] mapping = createMapping();
-    printMap(mapping, 80, 340);
+    printMap(mapping, 80, 380);
   }
   
   String[][] createMapping() {
-    String[][] mapping = new String[6][6];
+    String[][] mapping = new String[7][7];
     mapping = addX(mapping);
     mapping = addLabels(mapping);
     mapping = addRankings(mapping);
@@ -122,35 +125,36 @@ class ScoresTab extends Tab {
   String[][] addLabels(String[][] mapping) {
     mapping[2][0] = "analysabilty";
     mapping[3][0] = "changeabilty";
-    mapping[4][0] = "testability";
-    mapping[5][0] = "overall";
+    mapping[4][0] = "stability";
+    mapping[5][0] = "testability";
+    mapping[6][0] = "overall";
     
     mapping[0][1] = "Volume";
     mapping[0][2] = "Complexity";
     mapping[0][3] = "Duplication";
     mapping[0][4] = "Unit Size";
+    mapping[0][5] = "Test Quality";
     return mapping;
   }
   
   String[][] addRankings(String[][] mapping) {
-    int offset = 0;
-    if (exceptions.isChecked()) {
-      offset = 1;
-    }
-    mapping[2][5] = toScore(activeBundle.scores[0]);
-    mapping[3][5] = toScore(activeBundle.scores[1+offset]);
-    mapping[4][5] = toScore(activeBundle.scores[3+offset]);
-    mapping[5][5] = toScore(activeBundle.scores[5+offset]);
+    int offset = exceptions.isChecked()? 1 : 0;
+    mapping[2][6] = toScore(activeBundle.scores[0]);
+    mapping[3][6] = toScore(activeBundle.scores[1+offset]);
+    mapping[4][6] = toScore(activeBundle.scores[3]);
+    mapping[5][6] = toScore(activeBundle.scores[4+offset]);
+    mapping[6][6] = toScore(activeBundle.scores[6+offset]);
     
     mapping[1][1] = toScore(activeBundle.rankLOC);
-    mapping[1][2] = toScore(exceptions.isChecked() ? activeBundle.ranksUC[1] : activeBundle.ranksUC[0]);
+    mapping[1][2] = toScore(activeBundle.ranksUC[offset]);
     mapping[1][3] = toScore(activeBundle.rankDUP);
     mapping[1][4] = toScore(activeBundle.rankUS);
+    mapping[1][5] = toScore(activeBundle.rankTQ);
     return mapping;
   }
   
   String[][] addX(String[][] mapping) {
-    int xs[][] = {{2,1}, {2,3}, {2,4}, {3,2}, {3,3}, {5,2}, {5,4}};
+    int xs[][] = {{2,1}, {2,3}, {2,4}, {2,5}, {3,2}, {3,3}, {4,5}, {5,2}, {5,4}, {5,5}};
     for(int []xy : xs) {
       mapping[xy[0]][xy[1]] = "x";
     }
@@ -168,7 +172,7 @@ class ScoresTab extends Tab {
             textAlign(RIGHT);
             text(mapping[i][j], x + 40, y+ i*yoff);
           } else if (j == (mapping[0].length)-1) {
-             textAlign(LEFT);
+            textAlign(LEFT);
             text(mapping[i][j], x + j*xoff - 40, y+ i*yoff);
           }
           else {
@@ -183,9 +187,9 @@ class ScoresTab extends Tab {
   
   void printLines(int x, int y, int xoff, int yoff) {
     stroke(0);
-    line(x+60, y+1*yoff+5, x+4.7*xoff, y+1*yoff+5); 
-    line(x+4.3*xoff, y+1*yoff+5, x+4.3*xoff, y+5.3*yoff); 
-    line(x+60, y+4*yoff+5, x+4.7*xoff, y+4*yoff+5);
+    line(x+60, y+1*yoff+5, x+5.7*xoff, y+1*yoff+5); 
+    line(x+5.3*xoff, y+1*yoff+5, x+5.3*xoff, y+6.3*yoff); 
+    line(x+60, y+5*yoff+5, x+5.7*xoff, y+5*yoff+5);
   }
   
   private void printPercs(int[] stats, float[] percs, int height) {
@@ -254,10 +258,9 @@ class DistribsTab extends Tab {
 // 3rd experiment
 class GraphTab extends Tab {
   
-  private int sWidth = 500, sHeight = 260;
+  private int sWidth = 500, sHeight = 300;
   
-  private Button generate, generateAll;
-  private RadioButton inner, visited;
+  private Button generateIntra, generateInter, generateIntraV, generateCbO, generateFanIn, generateAll;
   
   private String baseFile;
   
@@ -265,41 +268,48 @@ class GraphTab extends Tab {
   
   void setup() {
     surface.setSize(sWidth, sHeight);
-    inner = new RadioButton(20, 40, 20, "Consider only intra-coupling");
-    visited = new RadioButton(20, 70, 20, "Depth visit of the graph");
-    generate = new Button(20, 110, 80, 20, "Generate");
-    generateAll = new Button(120, 110, 80, 20, "Generate All");
+    generateIntra = new Button(sWidth/4 - 80, 80, 160, 20, "Direct intra-coupling");
+    generateInter = new Button(sWidth*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
+    generateIntraV = new Button(sWidth/4 - 80, 110, 160, 20, "Intra-coupling");
+    generateCbO = new Button(sWidth*3/4 - 80, 110, 160, 20, "Coupling between Objects");
+    generateFanIn = new Button(sWidth/4 - 80, 140, 160, 20, "Fan In");
+    generateAll = new Button(sWidth*3/4 - 80, 140, 160, 20, "Generate All");
   }
   
   void draw() {
-    inner.draw();
-    visited.draw();
-    generate.draw();
+    generateIntra.draw();
+    generateInter.draw();
+    generateIntraV.draw();
+    generateCbO.draw();
+    generateFanIn.draw();
     generateAll.draw();
     
-    textFont(font, 10);
     textAlign(LEFT,TOP);
     fill(0);
-    text("All generated graphs are saved as .dot files in the folder /Visualizer/Output/ of this application", 20, 150);
+    textFont(font, 16);
+    text("Generate graphs", 20, 40);
+    textFont(font, 10);
+    text("All generated graphs are saved as .dot files in the folder /Visualizer/Output/ of this application", 20, 185);
   }
   
   void mousePressed() {
-    if (inner.hover()) inner.check();
-    if (visited.hover()) visited.check();
-    if (generate.hover()) generateGraph(inner.isChecked(), visited.isChecked());
+    if (generateIntra.hover()) generateGraph("_intra_base", false);
+    if (generateInter.hover()) generateGraph("_inter_base", true);
+    if (generateIntraV.hover()) generateGraph("_intra", false);
+    if (generateCbO.hover()) generateGraph("_cbo", true);
+    if (generateFanIn.hover()) generateGraph("_fanin", true);
     if (generateAll.hover()) {
-      generateGraph(true, true);
-      generateGraph(true, false);
-      generateGraph(false, true);
-      generateGraph(false, false);
+      generateGraph("_intra_base", false);
+      generateGraph("_inter_base", true);
+      generateGraph("_intra", false);
+      generateGraph("_cbo", true);
+      generateGraph("_fanin", true);
     }
   }
   
-  private void generateGraph(boolean inr, boolean vst) {
+  private void generateGraph(String ext, boolean out) {
     File f = new File(baseFile);
-    String fileName = f.getName()
-                      + (inr ? "_intra" : "_inter")
-                      + (vst ? "_visited" : "_base");
+    String fileName = f.getName() + ext;
     
     String file = f.getParent() + "\\" + fileName + ".graph";
     String outputFile = "Output\\" + fileName + ".dot";
@@ -323,7 +333,7 @@ class GraphTab extends Tab {
       String name = nodeName(node);
       output.println("// --- Inner Class: " + node + " ---\n");
       output.println(name + " [label=\"" + node + "\\ncouplings: " + cpls.length + "\",fillcolor=white,color=blue]\n");
-      if (!inr) {
+      if (out) {
         output.println("// --- Phantom couplings of: " + node + " ---\n");
         for (String phtm : cpls)
           if (!couplings.containsKey(phtm)) output.println(nodeName(phtm) + "_" + name + "[label=\"" + phtm + "\",fillcolor=white,color=black]");

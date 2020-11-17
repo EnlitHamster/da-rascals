@@ -127,7 +127,7 @@ void processInput(String dbFile) {
   tabs.get(activeButton).setup();
   center();
   
-  changeDB = new Button(width - 120, 0, 120, 20, "Change metrics");
+  changeDB = new Button(width - 120, 0, 120, 20, "Open file");
   exceptions = new RadioButton(20, height - 70, 20, "Consider Exception Handling");
   brackets = new RadioButton(20, height - 40, 20, "Consider lines with closing brackets");
   

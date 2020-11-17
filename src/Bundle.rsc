@@ -47,8 +47,8 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  int asserts,
 							  int aLOCNB,
 							  int aLOCB,
-							  int ASSNB,
-							  int ASSB,
+							  int rankASSNB,
+							  int rankASSB,
 							  real ANNB,
 							  real ANB,
 							  real CHNENB,
@@ -190,7 +190,9 @@ void printBundle(loc projectLoc, loc outputFolder, str fileName) {
 			   "<bundle.rankDUPNB>,<bundle.rankDUPB>" + eof(),
 			   "<round(bundle.ANNB)>,<round(bundle.CHNENB)>,<round(bundle.CHENB)>,<round(bundle.STNB)>,<round(bundle.TSNENB)>,<round(bundle.TSENB)>,<round(bundle.OVNENB)>,<round(bundle.OVENB)>" + eof(),
 			   "<round(bundle.ANB)>,<round(bundle.CHNEB)>,<round(bundle.CHEB)>,<round(bundle.STNB)>,<round(bundle.TSNEB)>,<round(bundle.TSEB)>,<round(bundle.OVNEB)>,<round(bundle.OVEB)>" + eof(),
-			   "<bundle.asserts>,<bundle.aLOCNB>,<bundle.aLOCB>,,<bundle.ASSNB>,<bundle.ASSB>" );
+			   "<bundle.asserts>" + eof(),
+			   "<bundle.aLOCNB>,<bundle.aLOCB>" + eof(),
+			   "<bundle.rankASSNB>,<bundle.rankASSB>" );
 	print("File generated: ");
 	println(outputFile);
 	
@@ -216,7 +218,7 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 	str UCNE = parseScore(bundle.rankUCNE);
 	str US = parseScore(bundle.rankUS);
 	str DUP = parseScore(skipBrkts ? bundle.rankDUPNB : bundle.rankDUPB);
-	str ASS = parseScore(skipBrkts ? bundle.ASSNB : bundle.ASSB);
+	str ASS = parseScore(skipBrkts ? bundle.rankASSNB : bundle.rankASSB);
 	
 	int totalCCsE = max(1, bundle.riskCCsE[LOW_RISK] + bundle.riskCCsE[MID_RISK] + bundle.riskCCsE[HIGH_RISK] + bundle.riskCCsE[VERY_HIGH_RISK]);
 	int totalCCsNE = max(1, bundle.riskCCsNE[LOW_RISK] + bundle.riskCCsNE[MID_RISK] + bundle.riskCCsNE[HIGH_RISK] + bundle.riskCCsNE[VERY_HIGH_RISK]);
@@ -242,8 +244,8 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 	println("\> <toReal(bDUP) * 100 / toReal(bLOC.code)>% ratio of duplicates");
 	println("\nTEST DENSITY metric: <ASS>");
 	println("\> <bundle.asserts> number of assertions / <skipBrkts ? bundle.aLOCNB : bundle.aLOCB> test LOC");
-	println("\nCOUPLING metrics:");
-	println("! There are proofs of concept");
+	println("COUPLING metrics:");
+	println("! These are just proofs of concept");
 	println("! The thresholds are still being benchmarked");
 	printCouplingGraph(graphs.intra, "intra-project direct coupling");
 	printCouplingGraph(graphs.inter, "inter-project direct coupling");
@@ -297,7 +299,7 @@ void printCouplingGraphs(list[Declaration] asts, loc outputFile) {
 	println("Writing CbO graph...");
 	printCouplingGraph(graphs.cbo, toLocation(outputFile.uri + "_cbo.graph"));
 	println("Writing fan-in graph...");
-	printCouplingGraph(graphs.fanIn, toLocation(outputFile.uri + "_fanin.graph"));
+	printCouplingGraph(graphs.fanin, toLocation(outputFile.uri + "_fanin.graph"));
 }
 
 private void printCouplingGraph(CouplingGraph cg, loc outputFile) {

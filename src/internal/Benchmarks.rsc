@@ -20,12 +20,12 @@ import lang::java::jdt::m3::AST;
 
 void benchmarkCoupling(loc dumpFolder) {
 	list[loc] projects = [
-		//|project://androidannotations-develop|,
-		//|project://tool|, //ANTLR4
-		//|project://core|, //ARTHAS
-		//|project://cas-master|,
-		//|project://CNTK-master|,
-		//|project://dagli-master|,
+		|project://androidannotations-develop|,
+		|project://antlr4|, 
+		|project://arthas|, 
+		|project://cas-master|,
+		|project://CNTK-master|,
+		|project://dagli-master|,
 		|project://dropwizard-master|,
 		|project://elasticsearch-analysis-ik-master|,
 		|project://elasticsearch-master|,
