@@ -24,10 +24,9 @@ loc SRC = MOCK + "src";
 int CODELINECOUNTER = 0;
 int UNITCOUNTER = 0;
 int CODEFILECOUNT = 0;
-bool SETUP = false;
 
 bool getSetup() {
-	return SETUP;
+	return isDirectory(MOCK);
 }
 
 loc getMock() {
@@ -47,7 +46,6 @@ void setup() {
 	SRC = MOCK + "src";
 	mkDirectory(SRC);
 	setupProjectSettings(MOCK);
-	SETUP = true;
 }
 
 @docs {
@@ -102,7 +100,7 @@ loc genCommentFile(int n) {
 	commentFile = SRC + "comments.java";
 	//println(commentFile);
 	if (n == 0) {
-		writeFile(commentFile, "");	
+		remove(commentFile);	
 	} else {
 		writeFile(commentFile, 
 				"class comments {"+eof(),
@@ -185,20 +183,22 @@ str makeDoc(int len) {
 	.Synopsis
 	Generate "fileCount" files dividing "lineCount" lines of code across all files, with units conform "unitSize".
 }
-void genCodeFiles(int lineCount, int unitSize, int fileCount) {
+list[loc] genCodeFiles(int lineCount, int unitSize, int fileCount) {
+	CODEFILECOUNT = max(fileCount, CODEFILECOUNT);
+	list[loc] codeFiles = [];
 	if (lineCount == 0) {
-		for (fileCounter <- [0 .. fileCount]) {
+		for (fileCounter <- [0 .. fileCount + 100]) {
 			genCodeFile(0, unitSize, fileCounter);
 		}
-		return;
+		return codeFiles;
 	}
 	int linesPerFile = lineCount / fileCount;
 	int leftover = lineCount - linesPerFile * fileCount;
-	CODEFILECOUNT = max(fileCount, CODEFILECOUNT);
-	genCodeFile(linesPerFile + leftover, unitSize, 0);
+	codeFiles += genCodeFile(linesPerFile + leftover, unitSize, 0);
 	for (fileCounter <- [1 .. fileCount]) {
-		genCodeFile(linesPerFile, unitSize, fileCounter);
+		codeFiles += genCodeFile(linesPerFile, unitSize, fileCounter);
 	}
+	return codeFiles;
 }
 
 @doc {
@@ -209,7 +209,7 @@ loc genCodeFile(int lineCount, int unitSize, int fileCounter) {
 	loc codeFile = SRC + "code<fileCounter>.java";
 	//println(codeFile);
 	if (lineCount == 0) {
-		writeFile(codeFile, "");
+		remove(codeFile);
 	} else {
 		lineCount -= 1;
 		totalUnitCount = lineCount / unitSize;
@@ -267,9 +267,8 @@ str genCodeLines(int n) {
 }
 loc genDuplicationFile(int percentage){
 	loc dupFile = SRC + "duplication.java";
-	//println(dupFile);
 	if (percentage == -1) {
-		writeFile(dupFile, "");
+		remove(dupFile);
 	} else {
 		percentage = percentage % 101;
 		writeFile(dupFile,
@@ -298,7 +297,7 @@ str genDuplicateLines(int dupCount) {
 loc genComplexFile(int cc) {
 	loc cycloFile = SRC + "complex.java";
 	if (cc == 0) {
-		writeFile(cycloFile, "");
+		remove(cycloFile);
 	} else {
 		writeFile(cycloFile,
 			"class cyclomaticComplexity {" +eof(),
@@ -310,9 +309,9 @@ loc genComplexFile(int cc) {
 	return cycloFile;
 }
 
-list[str] ones = ["for(;;) {}", "int[] vars;" +eof()+"\tfor(int var:vars) {}", "if(true) {}", "throw new RemoteException();", "do{} while(true);", "while(true) {}"]; 
-list[str] twos = ["try{} catch (IOException e) {} finally {}", "if(true || false) {}", "if(true && false) {}"];
-list[str] trees = ["switch(1) {case 1: break; case 2:  break; default: int x = 0;}", "if(true && false || true) {}"];
+list[str] ones = ["for(;;) {}", "int[] vars;" +eof()+"\tfor(int var:vars) {}", "if(true) {}", "do{} while(true);", "while(true) {}"]; 
+list[str] twos = ["try{} catch (IOException e) {} catch (RuntimeException e) {} finally {}", "if(true || false) {}", "if(true && false) {}"];
+list[str] trees = ["switch(1) {case 1: break; case 2:  break; case 3:  break; default: int x = 0;}", "if(true && false || true) {}"];
 
 str genComplexLines(int cc) {
 	complex = "";

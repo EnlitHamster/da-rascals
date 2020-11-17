@@ -40,16 +40,26 @@ int setNumTests(int new) {
 test bool checkLOC() {
 	if (!getSetup()) setup();
 	allConform = true;
+	int LOC;
+	int lines;
+	list[loc] codeFilesLocs;
 	println("testing <NUMTESTS> random combinations of generated codefiles to see whether LOC calculation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
-		clearSrc();
-		int lines = arbInt(4000) + 200;	
+		clearSrc(); clearSrc();
+		lines = arbInt(4000) + 200;	
 		int unitSize = arbInt(91) +10;
 		int fileCount = arbInt(10) + 1;
-		genCodeFiles(lines, unitSize, fileCount);
-		allConform = allConform && countLinesFiles(getFiles(getMock()), false, true)[0] == lines;
+		codeFilesLocs = genCodeFiles(lines, unitSize, fileCount);
+		LOC = countLinesFiles(getFiles(getMock()), false, true)[0];
+		allConform = allConform && LOC  == lines;
+		if (!allConform) break;
 	}
-	clearSrc();
+	if (allConform) {
+		clearSrc();
+	} else {
+		println("Generated <lines> lines of code but calculated <LOC> LOC");
+		println("Generated file(s): <codeFilesLocs>");
+	}
 	return allConform;
 }
 
@@ -60,15 +70,25 @@ test bool checkLOC() {
 test bool checkComment() {
 	if (!getSetup()) setup();
 	allConform = true;
+	int comments;
+	loc comFile;
+	LineCount counts;
 	println("testing <NUMTESTS> random combinations of generated commentFiles to see whether comment counting holds:");
 	for (_ <- [0 .. NUMTESTS]) {
-		clearSrc();
-		int comments = arbInt(1000) + 100;	
-		genCommentFile(comments);
-		LineCount counts = countLinesFiles(getFiles(getMock()), false, true);
+		clearSrc(); clearSrc();
+		comments = arbInt(1000) + 100;	
+		comFile = genCommentFile(comments);
+		counts = countLinesFiles(getFiles(getMock()), false, true);
 		allConform = allConform && counts[2] == comments && counts[0] == 1;
+		if (!allConform) break;
 	}
-	clearSrc();
+	if (allConform) {
+		clearSrc();
+	} else {
+		println("Generated <comments> lines of different comments but calculated <counts[2]> comments");
+		println("Found LOC should be equal to one: LOC = <counts[0]>");
+		println("Generated file: <comFile>");
+	}	
 	return allConform;
 }
 
@@ -79,18 +99,28 @@ test bool checkComment() {
 test bool checkUnitSize() {
 	if (!getSetup()) setup();
 	allConform = true;
-	println("testing <NUMTESTS> random combinations of generated codefile with random unitsizes to see whether unit size evaluation holds:");
+	int unitSize;
+	list[loc] codeFilesLocs;
+	list[int] noDups;
+	println("testing <NUMTESTS> random combinations of generated codefiles with random unitsizes to see whether unit size evaluation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
-		clearSrc();
+		clearSrc(); clearSrc();
 		int lines = arbInt(1000) + 1000;	
-		int unitSize = arbInt(91) +10;
+		unitSize = arbInt(91) +10;
 		int fileCount = arbInt(10) + 1;
-		genCodeFiles(lines, unitSize, fileCount);
+		codeFilesLocs = genCodeFiles(lines, unitSize, fileCount);
 		list[int] unitSizes = getUnitsLoc(getASS(getMock()));
-		list[int] noDups = dup(unitSizes);
+		noDups = dup(unitSizes);
 		allConform = allConform && noDups[0] == unitSize && size(noDups) == 1;
+		if (!allConform) break;
 	}
-	clearSrc();
+	if (allConform) {
+		clearSrc();
+	} else {
+		println("\nGenerated units of size <unitSize> and calculated <noDups[0]> unit size");
+		println(noDups);
+		println("Generated file(s): <codeFilesLocs>\n");
+	}
 	return allConform;
 }
 
@@ -101,16 +131,27 @@ test bool checkUnitSize() {
 test bool checkComplexity() {
 	if (!getSetup()) setup();
 	allConform = true;
+	loc compFile;
+	int cc = 0;
+	list[CC] found = [];
 	println("testing <NUMTESTS> random combinations of generated files with complexity structures to see whether cyclomatic complexity evaluation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
-		clearSrc();
-		int cc = arbInt(200) + 100;	
-		genComplexFile(cc);
-		list[CC] found = calcAllCC(getASS(getMock()));
-		println("<cc>, <found>");
+		clearSrc(); clearSrc();
+		cc = arbInt(200) + 100;	
+		compFile = genComplexFile(cc);
+		found = calcAllCC(getASS(getMock()));
+		while (found == [] || found == [<1,0>]) { // sometimes eclipse struggles with reading in the file so keep trying to access it till it works
+			found = calcAllCC(getASS(getMock()));
+		}
 		allConform = allConform && (found[0][0] + found[0][1]) == cc;
+		if (!allConform) break;
 	}
-	clearSrc();
+	if (allConform) {
+		clearSrc();
+	} else {
+		println("\nGenerated structures with <cc> complexity and calculated <found[0][0]+found[0][1]> CC");
+		println("Generated file: <compFile>\n");
+	}
 	return allConform;
 }
 
@@ -121,19 +162,28 @@ test bool checkComplexity() {
 test bool checkDuplication() {
 	if (!getSetup()) setup();
 	allConform = true;
+	int dupPercent;
+	loc dupFile;
+	int dupLoc;
 	println("testing <NUMTESTS> random combinations of generated files with a set percentage of duplication to see whether the duplication calculation holds:");
 	for (_ <- [0 .. NUMTESTS]) {
 		clearSrc();
-		int dupPercent = arbInt(100) + 1;	
-		genDuplicationFile(dupPercent);
-		int dupLoc = getDuplicateLines(getMock(), false, true);
+		dupPercent = arbInt(100) + 1;	
+		dupFile = genDuplicationFile(dupPercent);
+		dupLoc = getDuplicateLines(getFiles(getMock()), false, true);
 		if (dupPercent <= 6) {
 			allConform = allConform && (dupLoc == 0);
 		} else {
 			if (dupPercent != dupLoc) return false;
 			allConform = allConform && (dupPercent == dupLoc);
 		}
+		if (!allConform) break;
 	}
-	clearSrc();
+	if (allConform) {
+		clearSrc();
+	} else {
+		println("\nGenerated <dupPercent> duplicated LOC and found <dupLoc> duplicated LOC");
+		println("Generated file: <dupFile>\n");
+	}	
 	return allConform;
 }
