@@ -10,11 +10,11 @@ import lang::java::m3::AST;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-int getAssertcount(list[Declaration] asts) {
-	int assertCount = 0;
+list[loc] getAssertcount(list[Declaration] asts) {
+	list[loc] asserters = [];
 	visit (asts) {
-		case \assert(_): assertCount += 1;
-		case \assert(_,_): assertCount += 1;
+		case ass: \assert(_): asserters += ass.src;
+		case ass: \assert(_,_): asserters += ass.src;
 	}
-	return assertCount;
+	return asserters;
 }
