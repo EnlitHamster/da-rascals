@@ -102,7 +102,7 @@ list[loc] getFiles (loc projectLoc) {
  	for (m <- model.containment, m[0].scheme == "java+compilationUnit") {
  		fileLocs += m[0];
 	}
-	return fileLocs;
+	return dup(fileLocs);
 }
 
 @doc {

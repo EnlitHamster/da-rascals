@@ -58,7 +58,7 @@ private alias Bundle = tuple[ LineCount LOCNB,
 
 private Bundle bundle(loc projectLoc, bool print, int skipBrkts) {
 	// Saving the project files/ASTs as they are used by all metric calculators
-	list[loc] projectFiles = toList(toSet(getFiles(projectLoc)));
+	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectFiles);
 	
 	// VOLUME
