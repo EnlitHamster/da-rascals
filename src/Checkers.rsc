@@ -27,6 +27,12 @@ import lang::java::jdt::m3::AST;
 
 int NUMTESTS = 100;
 
+// Open the mock project src dir for a cool show during tests :)
+
+@doc {
+	.Synopsis
+	Set the number of random checks done per test.
+}
 int setNumTests(int new) {
 	if (new < 1) throw IllegalArgument();
 	NUMTESTS = new;
