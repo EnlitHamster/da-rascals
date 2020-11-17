@@ -23,7 +23,7 @@ loc MOCK = |project://mock/|;
 loc SRC = MOCK + "src";
 int CODELINECOUNTER = 0;
 int UNITCOUNTER = 0;
-int FILECOUNT = 0;
+int CODEFILECOUNT = 0;
 bool SETUP = false;
 
 bool getSetup() {
@@ -85,10 +85,12 @@ void setupProjectSettings(loc projectLoc) {
 }
 void clearSrc() {
 	genCommentFile(0);
-	genCodeFiles(0, 0, FILECOUNT);
-	FILECOUNT = 0;
+	genCodeFiles(0, 0, CODEFILECOUNT);
 	genDuplicationFile(-1);
 	genComplexFile(0);
+	CODEFILECOUNT = 0;
+	CODELINECOUNTER = 0;
+	UNITCOUNTER = 0;
 }
 
 // ..................................................................GENERATE COMMENT FILE .................................................................. //
@@ -154,9 +156,10 @@ tuple[str, int] selectComment(int cur, int n) {
 }
 str makeMulti(int len) {
 	if (len == 0) return "";
+	if (len == 1) return "\t/* multi of length 1 */" +eof();
 	//println("length of multi: <len>");
 	multi = "\t/*";
-	for (_ <- [0..len-1]) {
+	for (_ <- [0..len-2]) {
 		multi += eof() + "\t *";
 	}
 	return multi + eof() + "\t */" +eof();
@@ -168,9 +171,10 @@ str makeMulti(int len) {
 }
 str makeDoc(int len) {
 	if (len == 0) return "";
+	if (len == 1) return "\t/** JavaDoc of length 1 **/" +eof();
 	//println("length of JavaDoc: <len>");
 	doc = "\t/**";
-	for (_ <- [0..len-1]) {
+	for (_ <- [0..len-2]) {
 		doc += eof() + "\t *";
 	}
 	return doc + eof() + "\t **/" +eof();
@@ -190,7 +194,7 @@ void genCodeFiles(int lineCount, int unitSize, int fileCount) {
 	}
 	int linesPerFile = lineCount / fileCount;
 	int leftover = lineCount - linesPerFile * fileCount;
-	FILECOUNT = max(fileCount, FILECOUNT);
+	CODEFILECOUNT = max(fileCount, CODEFILECOUNT);
 	genCodeFile(linesPerFile + leftover, unitSize, 0);
 	for (fileCounter <- [1 .. fileCount]) {
 		genCodeFile(linesPerFile, unitSize, fileCounter);
@@ -267,11 +271,11 @@ loc genDuplicationFile(int percentage){
 	if (percentage == -1) {
 		writeFile(dupFile, "");
 	} else {
-		percentage = percentage % 100;
+		percentage = percentage % 101;
 		writeFile(dupFile,
 			"class duplication {" +eof(),
 			"<genDuplicateLines(percentage)>" +eof(),
-			"<genCodeLines(100 - percentage)>" +eof(),
+			"<genCodeLines(100 - percentage-1)>",
 			"} ");
 	}
 	return dupFile;

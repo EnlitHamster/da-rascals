@@ -55,7 +55,7 @@ test bool checkLOC() {
 
 @doc {
 	.Synopsis
-	Check whether the comment counting, and skipping in terms of LOC, by randomly generating files with all types of comments.
+	Check whether the comment counting, and skipping in terms of LOC holds, by randomly generating files with all types of comments.
 }
 test bool checkComment() {
 	if (!getSetup()) setup();
