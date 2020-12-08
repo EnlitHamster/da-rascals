@@ -1,9 +1,10 @@
-module Duplicate_new
+module Duplicate
 
 // Project imports
 import Utility;
 import LineAnalysis;
 import Snippet;
+import TheTokening;
 
 // Rascal base imports
 import Set;
@@ -23,43 +24,69 @@ import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
 public alias Block = list[Snippet];
+public alias MapBlocks = map[str key, list[Block] blks];
+public alias KSnippets = list[tuple[str key, Snippet code]]; // Keyed Snippets
+public alias MapSnippets = map[str key, list[Snippet] snps];
+
 private map[str, str] whiteSpaces = (" ":"", "\t":"");
 
-map[str, list[Block]] mapBlocks(list[loc] fileLocs, bool skipBrkts) {
-	map[str, list[Block]] blocks = ();
-	for (fLoc <- fileLocs) { // -- O(#files) = O(n)
-		list[tuple[str, Snippet]] snps = filterSnippets(readFileSnippets(fLoc), skipBrkts);
+MapBlocks mapBlocks(list[KSnippets] ksnps, int step, str sep) {
+	MapBlocks blocks = ();
+	for (snps <- ksnps) { // -- O(#files) = O(n)
 		int len = size(snps);
 		// -- O(#lines in nth file) = O(m)
-		if (len > 5) { // If the file size is less than 5, it is obvious there cannot be any duplicate code.
-			for (i <- [0..len-5]) {
-				// 6-line block of code
-				list[tuple[str key, Snippet code]] roughBlk = slice(snps, i, 6);
+		if (len > step - 1) { // If the file size is less than step, it is obvious there cannot be any duplicate code.
+			for (i <- [0..len-step+1]) {
+				// step-line block of code
+				KSnippets roughBlk = slice(snps, i, step);
 				// mapping on escaped block
 				str key = roughBlk[0].key;
 				Block block = [roughBlk[0].code];
-				for (j <- [1..6]) { // -- O(6)
-					key += eof() + roughBlk[j].key;
+				for (j <- [1..step]) { // -- O(step)
+					key += sep + roughBlk[j].key;
 					block += roughBlk[j].code;
 				}
 				if (key in blocks) blocks[key] += [block];
 				else blocks[key] = [block];
 			}
 		}
-	} // O(n * 5/3 * m(n) * 6) = O(k * 10) approx O(k) linear 
+	} // O(n * 5/3 * m(n) * step) = O(k * 10) approx O(k) linear 
 	  // n * m(n) = k, where k is the number of lines in the project
 	return blocks;
 }
 
-list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps, bool skipBrkts) {
-	list[tuple[str, Snippet]] filtered = [];
+MapBlocks mapBlocksType2(list[loc] fileLocs, int threshold) {
+	list[KSnippets] ksnps = [];
+	for (fLoc <- fileLocs) {
+		list[Token] tokens = normalize(tokenize(reconnect(reconstruct(parse(readFileSnippets(fLoc))))));
+		ksnps += [kSnipTokens(tokens)];
+	}
+	return mapBlocks(ksnps, threshold, " ");
+}
+
+KSnippets kSnipTokens(list[Token] tokens) {
+	return [<k, <k, l>> | <k, l> <- tokens];
+}
+
+MapBlocks mapBlocksType1(list[loc] fileLocs, int threshold, bool skipBrkts) {
+	list[KSnippets] ksnps = [];
+	for (fLoc <- fileLocs) {
+		KSnippets snps = filterSnippets(readFileSnippets(fLoc), skipBrkts);
+		snps = escapeKeys(snps);
+		ksnps += [snps];
+	}
+	return mapBlocks(ksnps, threshold, eof());
+}
+
+KSnippets filterSnippets(list[Snippet] snps, bool skipBrkts) {
+	KSnippets filtered = [];
 	bool inCom = false;
 	for (snp <- snps) {
 		if (!(/^\s*$/ := snp.block)) {
 			tuple[str code, bool inCom] filteredLine = removeInlineComments(snp.block, inCom);
 			line = escape(filteredLine.code, whiteSpaces);
 		
-			if ((!skipBrkts || line != "}") && line != "") filtered += <line, snp>; 
+			if ((!skipBrkts || line != "}") && line != "") filtered += <filteredLine.code, snp>; 
 			
 			inCom = filteredLine.inCom;
 		}		
@@ -67,13 +94,26 @@ list[tuple[str, Snippet]] filterSnippets(list[Snippet] snps, bool skipBrkts) {
 	return filtered;
 }
 
+KSnippets escapeVariables(KSnippets ksnps) {
+	KSnippets escaped = [];
+}
+
+KSnippets escapeKeys(KSnippets ksnps) {
+	KSnippets escaped = [];
+	for (<key, code> <- ksnps) {
+		key = escape(key, whiteSpaces);
+		escaped += <key, code>;
+	}
+	return escaped;
+}
+
 @doc {
 	.Synopsis
 	Get the number of duplicated lines in a project.
 }
 int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
-	map[str, list[Block]] blocks = mapBlocks(files, skipBrkts);
-	map[str, list[Block]] dupBlocks = ();
+	MapBlocks blocks = mapBlocksType1(files, 6, skipBrkts);
+	MapBlocks dupBlocks = ();
 	
 	set[Snippet] dupSnps = {};
 	for (key <- blocks) {
@@ -85,7 +125,7 @@ int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
 	}
 	
 	if (print) {
-		map[str, list[Snippet]] clusters = clusterizator(dupSnps, dupBlocks);
+		MapSnippets clusters = clusterizator(dupSnps, dupBlocks);
 		for (key <- clusters) {
 			println("The following locations contain duplicate code:");
 			for (snp <- clusters[key]) println(snp.src);
@@ -99,7 +139,7 @@ int getDuplicationRank(real dp, bool print) {
 	return scoreRank(dp, 0.03, 0.05, 0.1, 0.2, print);
 }
 
-private list[Snippet] extender(FileClusters clusters, list[Block] blocks, bool forward) {
+private list[Snippet] extender(MapSnippets clusters, list[Block] blocks, bool forward) {
 	list[Snippet] nextStep = [];
 	for (snippets <- blocks) {
 		Snippet pivot = forward ? last(snippets) : head(snippets);
@@ -118,8 +158,8 @@ private list[Snippet] extender(FileClusters clusters, list[Block] blocks, bool f
 	return nextStep;
 }
 
-private list[Block] extendMost(FileClusters clusters, list[Block] blocks, bool forward) {
-	list[list[Snippet]] dupBlocks = blocks;
+private list[Block] extendMost(MapSnippets clusters, list[Block] blocks, bool forward) {
+	list[Block] dupBlocks = blocks;
 	list[Snippet] nextStep = extender(clusters, dupBlocks, forward);
 	while (nextStep != []) {
 		for (i <- [0..size(blocks)]) {
@@ -131,13 +171,13 @@ private list[Block] extendMost(FileClusters clusters, list[Block] blocks, bool f
 	return dupBlocks;
 }
 
-private map[str, list[Snippet]] clusterizator(set[Snippet] uniqueSnippets, map[str, list[Block]] duplicates) {
-	map[str, list[Snippet]] dupClusters = ();
-	FileClusters clusters = fileCluster(uniqueSnippets);
+private MapSnippets clusterizator(set[Snippet] uniqueSnippets, MapBlocks duplicates) {
+	MapSnippets dupClusters = ();
+	MapSnippets clusters = fileCluster(uniqueSnippets);
 	for (key <- duplicates) {
 		list[Block] blocks = extendMost(clusters, extendMost(clusters, duplicates[key], false), true);
 		list[Snippet] snps = [];
-		for (block <- blocks) snps += mergeSnippets(block);
+		for (block <- blocks) snps += mergeSnippets(block, true);
 		str kBlock = escape(snps[0].block, (" ": "", "\t": ""));
 		if (kBlock notin dupClusters) dupClusters[kBlock] = snps;
 	}
@@ -145,10 +185,8 @@ private map[str, list[Snippet]] clusterizator(set[Snippet] uniqueSnippets, map[s
 	return dupClusters;
 }
 
-private alias FileClusters = map[str file, list[Snippet] snps]; 
-
-private FileClusters fileCluster(set[Snippet] snippets) {
-	FileClusters cluster = ();
+private MapSnippets fileCluster(set[Snippet] snippets) {
+	MapSnippets cluster = ();
 	for (snp <- snippets) {
 		if (snp.src.uri in cluster) {
 			cluster[snp.src.uri] += snp;

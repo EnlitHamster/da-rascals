@@ -5,7 +5,7 @@ import Utility;
 import Volume;
 import UnitComplexity;
 import UnitSize;
-import Duplicate_new;
+import Duplicate;
 import Snippet;
 import LineAnalysis;
 import Coupling;
@@ -14,7 +14,6 @@ import TestQuality;
 // Rascal base imports
 import Set;
 import List;
-import Map;
 
 import IO;
 import String;

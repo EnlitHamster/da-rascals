@@ -7,7 +7,7 @@ import util::Math;
 
 import Utility;
 import Volume;
-import Duplicate_new;
+import Duplicate;
 
 @doc {
 	.Synopsis
@@ -27,7 +27,7 @@ void timeNruns(loc project, int runs) {
 	int result = 0;
 	starter = now();
 	for (_ <- [0..runs]) {
-		result = getDuplicateLines(project,  print, skip);
+		result = getDuplicateLines(filers,  print, skip);
 	}
 	end = now();
 	Duration total = createDuration(starter, end);

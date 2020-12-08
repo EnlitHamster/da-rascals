@@ -5,7 +5,7 @@ import Utility;
 import Volume;
 import UnitComplexity;
 import UnitSize;
-import Duplicate_new;
+import Duplicate;
 import Snippet;
 import LineAnalysis;
 import Gennies;
@@ -13,7 +13,6 @@ import Gennies;
 // Rascal base imports
 import Set;
 import List;
-import Map;
 import IO;
 import String;
 import util::Math;
@@ -22,8 +21,6 @@ import Exception;
 // M3 imports
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import lang::java::jdt::m3::Core;
-import lang::java::jdt::m3::AST;
 
 int NUMTESTS = 100;
 

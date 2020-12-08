@@ -6,7 +6,6 @@ import Utility;
 // Rascal base imports
 import Set;
 import List;
-import Map;
 
 import IO;
 import String;
@@ -15,8 +14,6 @@ import DateTime;
 // M3 imports
 import lang::java::m3::Core;
 import lang::java::m3::AST;
-import lang::java::jdt::m3::Core;
-import lang::java::jdt::m3::AST;
 
 @javaClass{internal.Snippet}
 public java str eof();
@@ -40,11 +37,10 @@ public alias Snippet = tuple[str block, loc src];
 	.Synopsis
 	Creates a single Snippet from a list of Snippets.
 }
-public Snippet mergeSnippets(list[Snippet] snippets) {
+public Snippet mergeSnippets(list[Snippet] snippets, bool addNewLines) {
 	str block = snippets[0].block;
-	for (snippet <- tail(snippets)) {
-		block += eof() + snippet.block;
-	}
+	for (snippet <- tail(snippets))
+		block += (addNewLines ? eof() : "") + snippet.block;
 	
 	int sz = size(snippets);
 	int offset = snippets[0].src.offset;
