@@ -116,9 +116,17 @@ list[Token] parse(list[Snippet] snps) {
 		prepared = trim(prepared);
 		prepared = replace(prepared, deconstructors);
 		prepared = squeeze(prepared, " ");
-		for (tkn <- split(" ", prepared))
-			if (!(/^\s*$/ := tkn))
-				tokens += <tkn, snp.src>;
+		
+		int nTkn = 0;
+		for (tkn <- split(" ", prepared)) {
+			if (!(/^\s*$/ := tkn)) {
+				loc l = snp.src;
+				l.begin.column = nTkn;
+				l.end.column = nTkn;
+				nTkn += 1;
+				tokens += <tkn, l>;
+			}
+		}
 	}
 	return tokens;
 }

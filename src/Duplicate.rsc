@@ -107,15 +107,26 @@ KSnippets escapeKeys(KSnippets ksnps) {
 	return escaped;
 }
 
-@doc {
-	.Synopsis
-	Get the number of duplicated lines in a project.
-}
-int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
-	MapBlocks blocks = mapBlocksType1(files, 6, skipBrkts);
+MapSnippets getClones(list[loc] files, int clnType, int threshold, bool skipBrkts) {
+	MapBlocks blocks = ();
 	MapBlocks dupBlocks = ();
-	
 	set[Snippet] dupSnps = {};
+	
+	if (clnType == 1)
+		blocks = mapBlocksType1(files, threshold, skipBrkts);
+	else if (clnType == 2)
+		blocks = mapBlocksType2(files, threshold);
+	else
+		error("Clone types: [1,2]");
+	
+	<dupBlocks, dupSnps> = genDupBlocks(blocks);
+	return clusterizator(dupSnps, dupBlocks);
+}
+
+tuple[MapBlocks, set[Snippet]] genDupBlocks(MapBlocks blocks) {
+	MapBlocks dupBlocks = ();
+	set[Snippet] dupSnps = {};
+
 	for (key <- blocks) {
 		if (size(blocks[key]) > 1)  {
 			dupBlocks[key] = blocks[key];
@@ -123,6 +134,20 @@ int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
 				dupSnps += toSet(block);
 		}
 	}
+	
+	return <dupBlocks, dupSnps>;
+}
+
+@doc {
+	.Synopsis
+	Get the number of duplicated lines in a project.
+}
+int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
+	MapBlocks blocks = mapBlocksType1(files, 6, skipBrkts);
+	MapBlocks dupBlocks = ();
+	set[Snippet] dupSnps = {};
+
+	<dupBlocks, dupSnps> = genDupBlocks(blocks);
 	
 	if (print) {
 		MapSnippets clusters = clusterizator(dupSnps, dupBlocks);
