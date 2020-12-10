@@ -170,16 +170,17 @@ public str UNKNOWN = "Unknown";
 public str declToClass(loc decl) {
 	str scheme = decl.scheme;	
 	switch (scheme) {
+		case "java+compilationUnit": return pathToClass(decl.path[..findLast(decl.path, ".")]);
 		case "java+enum": return pathToClass(decl.path);
 		case "java+enumConstant": {
 			list[str] paths = split("/", decl.path[1..]);
-			return intercalate(".", paths[0..size(paths)-2]);
+			return intercalate(".", paths[..size(paths)-2]);
 		}
 		case "java+class": return pathToClass(decl.path);
 		case "java+interface": return pathToClass(decl.path);
-		case "java+field": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
-		case "java+method": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
-		case "java+constructor": return pathToClass(decl.path[0..findLast(decl.path, "/")]);
+		case "java+field": return pathToClass(decl.path[..findLast(decl.path, "/")]);
+		case "java+method": return pathToClass(decl.path[..findLast(decl.path, "/")]);
+		case "java+constructor": return pathToClass(decl.path[..findLast(decl.path, "/")]);
 		default: return UNKNOWN;
 	}
 }
@@ -187,5 +188,6 @@ public str declToClass(loc decl) {
 public str pathToClass(str path) {
 	str clss = path;
 	if (clss[0] == "/") clss = clss[1..];
+	if (startsWith(clss, "src")) clss = clss[4..];
 	return replaceAll(clss, "/", ".");
 }

@@ -30,6 +30,15 @@ public alias MapSnippets = map[str key, list[Snippet] snps];
 
 private map[str, str] whiteSpaces = (" ":"", "\t":"");
 
+private int(bool, loc) fObjD = int(bool fwd, loc pos) {return -1;};
+private bool(int, loc) fValD = bool(int obj, loc pos) {return false;};
+
+private int(bool, loc) fObj1 = int(bool fwd, loc pos) {return fwd ? pos.end.line + 1 : pos.begin.line - 1;};
+private bool(int, loc) fVal1 = bool(int obj, loc pos) {return pos.begin.line == obj;};
+
+private int(bool, loc) fObj2 = int(bool fwd, loc pos) {return fwd ? pos.end.column + 1 : pos.begin.column - 1;};
+private bool(int, loc) fVal2 = bool(int obj, loc pos) {return pos.begin.column == obj;};
+
 MapBlocks mapBlocks(list[KSnippets] ksnps, int step, str sep) {
 	MapBlocks blocks = ();
 	for (snps <- ksnps) { // -- O(#files) = O(n)
@@ -55,6 +64,7 @@ MapBlocks mapBlocks(list[KSnippets] ksnps, int step, str sep) {
 	return blocks;
 }
 
+// TODO: Should the method prototype be considered as well?
 MapBlocks mapBlocksType2(list[loc] fileLocs, int threshold) {
 	list[KSnippets] ksnps = [];
 	for (fLoc <- fileLocs) {
@@ -94,10 +104,6 @@ KSnippets filterSnippets(list[Snippet] snps, bool skipBrkts) {
 	return filtered;
 }
 
-KSnippets escapeVariables(KSnippets ksnps) {
-	KSnippets escaped = [];
-}
-
 KSnippets escapeKeys(KSnippets ksnps) {
 	KSnippets escaped = [];
 	for (<key, code> <- ksnps) {
@@ -112,15 +118,26 @@ MapSnippets getClones(list[loc] files, int clnType, int threshold, bool skipBrkt
 	MapBlocks dupBlocks = ();
 	set[Snippet] dupSnps = {};
 	
-	if (clnType == 1)
+	int(bool, loc) fObj = fObjD;
+	bool(int, loc) fVal = fValD;
+	
+	if (clnType == 1) {
 		blocks = mapBlocksType1(files, threshold, skipBrkts);
-	else if (clnType == 2)
+		fObj = fObj1;
+		fVal = fVal1;
+	} else if (clnType == 2) {
 		blocks = mapBlocksType2(files, threshold);
-	else
+		fObj = fObj2;
+		fVal = fVal2;
+	} else
 		error("Clone types: [1,2]");
 	
 	<dupBlocks, dupSnps> = genDupBlocks(blocks);
-	return clusterizator(dupSnps, dupBlocks);
+	MapSnippets clones = clusterizator(dupSnps, dupBlocks, fObj, fVal);
+	for (key <- clones)
+		clones[key] = toList(toSet(clones[key]));
+	
+	return clones;
 }
 
 tuple[MapBlocks, set[Snippet]] genDupBlocks(MapBlocks blocks) {
@@ -146,14 +163,14 @@ int getDuplicateLines(list[loc] files, bool print, bool skipBrkts) {
 	MapBlocks blocks = mapBlocksType1(files, 6, skipBrkts);
 	MapBlocks dupBlocks = ();
 	set[Snippet] dupSnps = {};
-
+	
 	<dupBlocks, dupSnps> = genDupBlocks(blocks);
 	
 	if (print) {
-		MapSnippets clusters = clusterizator(dupSnps, dupBlocks);
+		MapSnippets clusters = clusterizator(dupSnps, dupBlocks, fObj1, fVal1);
 		for (key <- clusters) {
-			println("The following locations contain duplicate code:");
-			for (snp <- clusters[key]) println(snp.src);
+			println("The following locations with key<eof()><key><eof()>contain duplicate code:");
+			for (snp <- clusters[key]) println("<snp.src>:<snp.block>");
 		}
 	}
 	
@@ -164,14 +181,14 @@ int getDuplicationRank(real dp, bool print) {
 	return scoreRank(dp, 0.03, 0.05, 0.1, 0.2, print);
 }
 
-private list[Snippet] extender(MapSnippets clusters, list[Block] blocks, bool forward) {
+private list[Snippet] extender(MapSnippets clusters, list[Block] blocks, bool forward, int(bool, loc) fObj, bool(int, loc) fVal) {
 	list[Snippet] nextStep = [];
 	for (snippets <- blocks) {
 		Snippet pivot = forward ? last(snippets) : head(snippets);
-		int obj = forward ? pivot.src.end.line + 1 : pivot.src.begin.line - 1;
+		int obj = fObj(forward, pivot.src);
 		bool found = false;
 		for (snp <- clusters[pivot.src.uri]) {
-			if (snp.src.begin.line == obj) {
+			if (fVal(obj, snp.src)) {
 				nextStep += snp;
 				found = true;
 				break;
@@ -183,27 +200,27 @@ private list[Snippet] extender(MapSnippets clusters, list[Block] blocks, bool fo
 	return nextStep;
 }
 
-private list[Block] extendMost(MapSnippets clusters, list[Block] blocks, bool forward) {
+private list[Block] extendMost(MapSnippets clusters, list[Block] blocks, bool forward, int(bool, loc) fObj, bool(int, loc) fVal) {
 	list[Block] dupBlocks = blocks;
-	list[Snippet] nextStep = extender(clusters, dupBlocks, forward);
+	list[Snippet] nextStep = extender(clusters, dupBlocks, forward, fObj, fVal);
 	while (nextStep != []) {
 		for (i <- [0..size(blocks)]) {
 			if (forward) dupBlocks[i] = dupBlocks[i] + nextStep[i];
 			else dupBlocks[i] = nextStep[i] + dupBlocks[i];
 		}
-		nextStep = extender(clusters, dupBlocks, forward);
+		nextStep = extender(clusters, dupBlocks, forward, fObj, fVal);
 	}
 	return dupBlocks;
 }
 
-private MapSnippets clusterizator(set[Snippet] uniqueSnippets, MapBlocks duplicates) {
+private MapSnippets clusterizator(set[Snippet] uniqueSnippets, MapBlocks duplicates, int(bool, loc) fObj, bool(int, loc) fVal) {
 	MapSnippets dupClusters = ();
 	MapSnippets clusters = fileCluster(uniqueSnippets);
 	for (key <- duplicates) {
-		list[Block] blocks = extendMost(clusters, extendMost(clusters, duplicates[key], false), true);
+		list[Block] blocks = extendMost(clusters, extendMost(clusters, duplicates[key], false, fObj, fVal), true, fObj, fVal);
 		list[Snippet] snps = [];
 		for (block <- blocks) snps += mergeSnippets(block, true);
-		str kBlock = escape(snps[0].block, (" ": "", "\t": ""));
+		str kBlock = escape(snps[0].block, whiteSpaces);
 		if (kBlock notin dupClusters) dupClusters[kBlock] = snps;
 	}
 	

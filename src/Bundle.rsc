@@ -26,6 +26,8 @@ import lang::java::m3::AST;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
+private alias CloneClass = list[tuple[str pkg,loc src]];
+
 // Used to pass data from bundling to output
 private alias Bundle = tuple[ LineCount LOCNB,
 							  LineCount LOCB,
@@ -319,4 +321,38 @@ private void printCouplingGraph(CouplingGraph cg, loc outputFile) {
 	
 	print("File generated: ");
 	println(outputFile);
+}
+
+void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool skipBrkts) {
+	MapSnippets clnSnps = getClones(files, typ, threshold, skipBrkts);
+	list[CloneClass] clones = [];
+	
+	for (clnCls <- clnSnps) {
+		CloneClass cloneClass = [];
+		for (snp <- clnSnps[clnCls]) {
+			println(snp.block);
+			str pkg = getPkg(snp);
+			cloneClass += <pkg, snp.src>;
+		}
+		clones += [cloneClass];
+	}
+	
+	str output = "";
+	for (cloneClass <- clones) {
+		for (clone <- cloneClass)
+			output += ("<clone.pkg>^<clone.src>" + eof());
+		output += eof();
+	}
+	
+	println("output: " + output);
+	
+	writeFile(outputFile, output);
+}
+
+str getPkg(Snippet snp) {
+	str cls = declToClass(snp.src);
+	if (!contains(cls, "."))
+		return "default";
+	else
+		return cls[..findLast(cls, ".")];
 }

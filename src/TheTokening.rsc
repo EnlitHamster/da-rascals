@@ -117,16 +117,9 @@ list[Token] parse(list[Snippet] snps) {
 		prepared = replace(prepared, deconstructors);
 		prepared = squeeze(prepared, " ");
 		
-		int nTkn = 0;
-		for (tkn <- split(" ", prepared)) {
-			if (!(/^\s*$/ := tkn)) {
-				loc l = snp.src;
-				l.begin.column = nTkn;
-				l.end.column = nTkn;
-				nTkn += 1;
-				tokens += <tkn, l>;
-			}
-		}
+		for (tkn <- split(" ", prepared))
+			if (!(/^\s*$/ := tkn))
+				tokens += <tkn, snp.src>;
 	}
 	return tokens;
 }
@@ -434,7 +427,15 @@ list[Token] normalize(list[Token] tkns) {
 	for (i <- [0..size(strs)])
 		tokens += <strs[i], locs[i]>;
 		
-	return [<t, l> | <t, l> <- tokens, t notin dontChange];
+	tokens = [<t, l> | <t, l> <- tokens, t notin dontChange];
+	for (i <- [0..size(tokens)]) {
+		loc l = tokens[i].src;
+		l.end.column = i;
+		l.begin.column = i;
+		tokens[i].src = l;
+	}
+		
+	return tokens;
 }
 
 @javaClass{internal.Matchers}
@@ -442,6 +443,16 @@ private java str normPrototypes(str tokenized);
 
 @javaClass{internal.Matchers}
 private java str normDeclarations(str tokenized);
+
+list[tuple[int, int]] tester(loc file) {
+	list[Token] tokens = normalize(tokenize(reconnect(reconstruct(parse(readFileSnippets(file))))));
+	list[tuple[int, int]] lens = [];
+	
+	for (token <- tokens) 
+		lens += <token.src.begin.column, token.src.end.column>;
+
+	return lens;
+}
 
 str tester(loc file, loc output) {
 	//writeFile(output, intercalate(" ", normalize(tokenize(parse(readFile(file))))));
