@@ -38,6 +38,13 @@ void timeNruns(loc project, int runs) {
 	println(result);	
 }
 
+void timeDup(list[loc] files) {
+	srt = now();
+	getDuplicateLines(files, 1, 6, true, false);
+	end = now();
+	println(createDuration(srt, end));
+}
+
 @doc {
 	.Synopsis
 	Convert the duration d to the equavalent amount in seconds.

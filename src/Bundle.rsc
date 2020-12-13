@@ -10,6 +10,7 @@ import Snippet;
 import LineAnalysis;
 import Coupling;
 import TestQuality;
+import TheTokening;
 
 // Rascal base imports
 import Set;
@@ -26,11 +27,12 @@ import lang::java::m3::AST;
 import lang::java::jdt::m3::Core;
 import lang::java::jdt::m3::AST;
 
-private alias CloneClass = list[tuple[str pkg,loc src]];
+private alias CloneClass = list[tuple[str pkg, loc src]];
 
 // Used to pass data from bundling to output
 private alias Bundle = tuple[ LineCount LOCNB,
 							  LineCount LOCB,
+							  TokenCount TLOC,
 							  int rankLOCNB,
 							  int rankLOCB,
 							  list[CC] CCs,
@@ -43,6 +45,7 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  int rankUS,
 							  int DUPNB,
 							  int DUPB,
+							  int DUP2,
 							  int rankDUPNB,
 							  int rankDUPB,
 							  int asserts,
@@ -67,7 +70,7 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  real OVENB,
 							  real OVEB ];
 
-Bundle bundle(loc projectLoc, bool print, int skipBrkts) {
+Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts) {
 	// Saving the project files/ASTs as they are used by all metric calculators
 	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectFiles);
@@ -117,14 +120,21 @@ Bundle bundle(loc projectLoc, bool print, int skipBrkts) {
 	int rankDUPB = -1;
 	
 	if (skipBrkts % 2 == 0) {
-		duplicatesNB = getDuplicateLines(projectFiles, print, true);
+		duplicatesNB = getDuplicateLines(projectFiles, 1, thresholdType1Clones, print, true);
 		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), print);
 	}
 	
 	if (skipBrkts > 0) {
-		duplicatesB = getDuplicateLines(projectFiles, print, false);
+		duplicatesB = getDuplicateLines(projectFiles, 1, thresholdType1Clones, print, false);
 		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), print);
 	}
+	
+	list[list[Token]] tokens = [];
+	for (fLoc <- projectFiles)
+		tokens += [tokenizer(readFileSnippets(fLoc))];
+	
+	TokenCount tknStats = getTokenStats(tokens);
+	int duplicates2 = getClonesType2(tokens, thresholdType2Clones);
 	
 	// TEST QUALITY
 	list[loc] asserts = getAsserts(asts);
@@ -157,14 +167,23 @@ Bundle bundle(loc projectLoc, bool print, int skipBrkts) {
 	real OVEB = (ANB + CHEB + STB + TSEB) / 4.0;
 	
 	// Output
-	return <LOCNB, LOCB, rankLOCNB, rankLOCB, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, 
-			rankUS, duplicatesNB, duplicatesB, rankDUPNB, rankDUPB, size(asserts), aLOCNB, aLOCB, rankASSNB, rankASSB, ANNB, 
+	return <LOCNB, LOCB, tknStats, rankLOCNB, rankLOCB, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, 
+			rankUS, duplicatesNB, duplicatesB, duplicates2, rankDUPNB, rankDUPB, size(asserts), aLOCNB, aLOCB, rankASSNB, rankASSB, ANNB, 
 			ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
 }
 
-void printBundle(loc projectLoc, loc outputFolder, str fileName) {
+void printAllBundles(loc outputFolder, int threshold1, int threshold2) {
+	println("=== Testing codebase");
+	printBundle(|project://testing|, outputFolder, threshold1, threshold2, "db_testing");
+	println("=== SmallSql codebase");
+	printBundle(|project://smallsql0.21_src|, outputFolder, threshold1, threshold2, "db_smallsql");
+	println("=== HSqlDB codebase");
+	printBundle(|project://hsqldb-2.3.1|, outputFolder, threshold1, threshold2, "db_hsqldb");
+}
+
+void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold2, str fileName) {
 	println("Generating bundle...");
-	Bundle bundle = bundle(projectLoc, false, 2);
+	Bundle bundle = bundle(projectLoc, false, threshold1, threshold2, 2);
 	println("Processing lists...");
 	list[int] CCsNE = [];
 	list[int] CCsE = [];
@@ -176,6 +195,8 @@ void printBundle(loc projectLoc, loc outputFolder, str fileName) {
 	println("Dumping data...");
 	loc outputFile = outputFolder + "<fileName>.metrics";
 	writeFile( outputFile, 
+			   "<bundle.TLOC.ids>,<bundle.TLOC.literals>,<bundle.TLOC.methods>,<bundle.TLOC.total>" + eof(),
+			   "<bundle.DUP2>" + eof(),
 			   "<listToStr(CCsNE)>" + eof(),
 			   "<listToStr(CCsE)>" + eof(),
 			   "<bundle.riskCCsNE[LOW_RISK]>,<bundle.riskCCsNE[MID_RISK]>,<bundle.riskCCsNE[HIGH_RISK]>,<bundle.riskCCsNE[VERY_HIGH_RISK]>" + eof(),
@@ -208,8 +229,8 @@ str parseScore(int rank) {
 	else return "--";
 }
 
-void printBundle(loc projectLoc, bool print, bool skipBrkts) {
-	Bundle bundle = bundle(projectLoc, print, skipBrkts ? 0 : 1);
+void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, bool skipBrkts) {
+	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1);
 	
 	LineCount bLOC = skipBrkts ? bundle.LOCNB : bundle.LOCB;
 	int bDUP = skipBrkts ? bundle.DUPNB : bundle.DUPB;
@@ -229,6 +250,7 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 
 	println("=== SOURCE-LEVEL METRICS");
 	println("LOC metric: <LOC>");
+	println("\> <bundle.TLOC> number of tokens");
 	println("\> <bLOC.code> lines of code\t(<toReal(bLOC.code) * 100 / toReal(bLOC.total)>%)");
 	println("\nUNIT COMPLEXITY metric (with|without exception handling): <UCE> | <UCNE>");
 	println("\> <bundle.riskCCsE[LOW_RISK]> | <bundle.riskCCsNE[LOW_RISK]> low risk units\t(<toReal(bundle.riskCCsE[LOW_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[LOW_RISK]) * 100 / toReal(totalCCsNE)>%)");
@@ -241,8 +263,10 @@ void printBundle(loc projectLoc, bool print, bool skipBrkts) {
 	println("\> <bundle.riskUS[HIGH_RISK]> high risk units\t\t(<toReal(bundle.riskUS[HIGH_RISK]) * 100 / toReal(totalUS)>%)");
 	println("\> <bundle.riskUS[VERY_HIGH_RISK]> very high risk units\t(<toReal(bundle.riskUS[VERY_HIGH_RISK]) * 100 / toReal(totalUS)>%)");
 	println("\nDUPLICATION metric: <DUP>");
-	println("\> <bDUP> duplicate lines");
-	println("\> <toReal(bDUP) * 100 / toReal(bLOC.code)>% ratio of duplicates");
+	println("\> <bDUP> type 1 duplicate lines");
+	println("\> <bundle.DUP2> type 2 duplicate lines");
+	println("\> <toReal(bDUP) * 100 / toReal(bLOC.code)>% ratio of duplicates of type 1");
+	println("\> <toReal(bundle.DUP2) * 100 / toReal(bundle.TLOC)>% ratio of duplicates of type 2");
 	println("\nTEST DENSITY metric: <ASS>");
 	println("\> <bundle.asserts> number of assertions / <skipBrkts ? bundle.aLOCNB : bundle.aLOCB> test LOC");
 	println("COUPLING metrics:");
@@ -324,29 +348,65 @@ private void printCouplingGraph(CouplingGraph cg, loc outputFile) {
 }
 
 void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool skipBrkts) {
-	MapSnippets clnSnps = getClones(files, typ, threshold, skipBrkts);
+	MapSnippets clnSnps = ();
 	list[CloneClass] clones = [];
+	num total = 0.0;
 	
-	for (clnCls <- clnSnps) {
-		CloneClass cloneClass = [];
-		for (snp <- clnSnps[clnCls]) {
-			println(snp.block);
-			str pkg = getPkg(snp);
-			cloneClass += <pkg, snp.src>;
-		}
-		clones += [cloneClass];
-	}
+	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts);
+	clones = getCloneClasses(clnSnps);
 	
+	map[str, list[str]] fileLines = mapFiles(files);
 	str output = "";
 	for (cloneClass <- clones) {
 		for (clone <- cloneClass)
-			output += ("<clone.pkg>^<clone.src>" + eof());
+			output += ("<clone.pkg>^<clone.src>^<escapeCode(fileLines[clone.src.uri], clone.src)>" + eof());
 		output += eof();
 	}
 	
-	println("output: " + output);
-	
 	writeFile(outputFile, output);
+}
+
+private map[str, list[str]] mapFiles(list[loc] files) {
+	map[str, list[str]] mFiles = ();
+	for (file <- files)
+		if (file.uri notin mFiles)
+			mFiles[file.uri] = readFileLines(file);
+	return mFiles;
+}
+
+private list[CloneClass] getCloneClasses(MapSnippets clnSnps) {
+	list[CloneClass] clones = [];
+	for (clnCls <- clnSnps) {
+		CloneClass cloneClass = [];
+		for (isnp <- clnSnps[clnCls]) {
+			str pkg = getPkg(isnp.snp);
+			cloneClass += <pkg, isnp.snp.src>;
+		}
+		clones += [cloneClass];
+	}
+	return clones;
+}
+
+private str escapeCode(list[str] lines, loc src) {
+	int last = size(lines);
+	str code = intercalate(eof(), lines[src.begin.line..src.end.line+1]);
+	
+	str before = "";
+	str after = "";
+	
+	if (src.begin.line > 0)
+		before = intercalate(eof(), lines[max(src.begin.line - 5, 0)..src.begin.line]);
+	
+	if (src.end.line < last)
+		after = intercalate(eof(), lines[src.end.line+1..min(src.end.line + 6, last)]);
+		
+	map[str, str] replaces = (
+		"\t": "\\t",
+		"\r": "\\r",
+		"\n": "\\n"
+	);
+		
+	return "<replace(before, replaces)>^<replace(code, replaces)>^<replace(after, replaces)>";
 }
 
 str getPkg(Snippet snp) {

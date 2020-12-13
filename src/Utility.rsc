@@ -191,3 +191,9 @@ public str pathToClass(str path) {
 	if (startsWith(clss, "src")) clss = clss[4..];
 	return replaceAll(clss, "/", ".");
 }
+
+public str replace(str sbj, map[str, str] mapping) {
+	str im = sbj;
+	for (key <- mapping) im = replaceAll(im, key, mapping[key]);
+	return im;
+}

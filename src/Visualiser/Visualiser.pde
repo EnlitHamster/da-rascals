@@ -7,7 +7,7 @@ import java.io.File;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
-PFont font;
+PFont font, fontIt, fontBd;
 
 // NOT CONSIDERING BRACKETS
 Bundle brkts, noBrkts, activeBundle;
@@ -15,7 +15,7 @@ Bundle brkts, noBrkts, activeBundle;
 Map<Button, Tab> tabs;
 Button activeButton;
 
-Button piesButton, scoresButton, distribsButton, graphButton, changeDB;
+Button piesButton, scoresButton, dataButton, distribsButton, graphButton, changeDB;
 RadioButton exceptions, brackets;
 
 boolean run;
@@ -30,6 +30,7 @@ void draw() {
     tabs.get(activeButton).draw();
     piesButton.draw();
     scoresButton.draw();
+    dataButton.draw();
     distribsButton.draw();
     graphButton.draw();
     exceptions.draw();
@@ -58,6 +59,7 @@ void mousePressed() {
   tabs.get(activeButton).mousePressed();
   if (piesButton.hover() && activeButton != piesButton) activate(piesButton);
   if (scoresButton.hover() && activeButton != scoresButton) activate(scoresButton);
+  if (dataButton.hover() && activeButton != dataButton) activate(dataButton);
   if (distribsButton.hover() && activeButton != distribsButton) activate(distribsButton);
   if (graphButton.hover() && activeButton != graphButton) activate(graphButton);
   if (exceptions.hover()) exceptions.check();
@@ -108,16 +110,20 @@ void processInput(String dbFile) {
   activeBundle = noBrkts;
   
   font = createFont("Arial", 16, true);
+  fontIt = createFont("Arial Italic", 16, true);
+  fontBd = createFont("Arial Bold", 16, true);
   noStroke();
   
-  piesButton = new Button(0, 0, 80, 20, "Pie charts");
-  scoresButton = new Button(80, 0, 80, 20, "Scores");
-  distribsButton = new Button(160, 0, 80, 20, "Distributions");
-  graphButton = new Button(240, 0, 80, 20, "Graphs");
+  piesButton = new Button(-1, 0, 80, 20, "Pie charts");
+  scoresButton = new Button(79, 0, 80, 20, "Scores");
+  dataButton = new Button(159, 0, 80, 20, "Data");
+  distribsButton = new Button(239, 0, 80, 20, "Distributions");
+  graphButton = new Button(319, 0, 80, 20, "Graphs");
   
   tabs = new HashMap<Button, Tab>();
   tabs.put(piesButton, new PiesTab());
   tabs.put(scoresButton, new ScoresTab());
+  tabs.put(dataButton, new DataTab());
   tabs.put(distribsButton, new DistribsTab());
   tabs.put(graphButton, new GraphTab(dbFile.substring(0, dbFile.lastIndexOf('.'))));
   activeButton = piesButton;
@@ -133,4 +139,8 @@ void processInput(String dbFile) {
   
   loop();
   run = true;
+}
+
+void vizSize(int x, int y) {
+  surface.setSize(max(x - 1, MIN_X), max(y, MIN_Y)); 
 }
