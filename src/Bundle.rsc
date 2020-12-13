@@ -173,7 +173,7 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	int duplicates2 = -1;
 	
 	TokenCount tknStats = getTokenStats(tokens);
-	<clones2, duplicate2> = getClonesType2(tokens, thresholdType2Clones);
+	<clones2, duplicates2> = getClonesType2(tokens, thresholdType2Clones);
 	CloneStats stats2 = getClonesStats(clones2);
 	
 	// TEST QUALITY
@@ -206,7 +206,6 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	real OVENB = (ANNB + CHENB + STNB + TSENB) / 4.0;
 	real OVEB = (ANB + CHEB + STB + TSEB) / 4.0;
 	
-	println(duplicate2);
 	// Output
 	return <LOCNB, LOCB, tknStats, rankLOCNB, rankLOCB, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, 
 			rankUS, duplicatesNB, duplicatesB, duplicates2, stats1NB, stats1B, stats2, rankDUPNB, rankDUPB, size(asserts), aLOCNB, aLOCB, 
@@ -280,7 +279,6 @@ str parseScore(int rank) {
 
 void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, bool skipBrkts) {
 	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1);
-	println(bundle.DUP2);
 	
 	LineCount bLOC = skipBrkts ? bundle.LOCNB : bundle.LOCB;
 	int bDUP = skipBrkts ? bundle.DUPNB : bundle.DUPB;

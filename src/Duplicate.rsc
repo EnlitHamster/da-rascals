@@ -158,14 +158,15 @@ list[KSnippet] filterSnippets(list[Snippet] snps, bool skipBrkts) {
 			inCom = filteredLine.inCom;
 		}		
 	}
+		
 	return filtered;
 }
 
 list[KSnippet] escapeKeys(list[KSnippet] ksnps) {
 	list[KSnippet] escaped = [];
-	for (<key, <i ,<key, code>>> <- ksnps) {
-		filteredKey = escape(key, whiteSpaces);
-		escaped += <filteredKey, <i, <key, code>>>;
+	for (ksnp <- ksnps) {
+		filteredKey = escape(ksnp.code.snp.block, whiteSpaces);
+		escaped += <filteredKey, <ksnp.code.pos, <ksnp.code.snp.block, ksnp.code.snp.src>>>;
 	}
 	return escaped;
 }
