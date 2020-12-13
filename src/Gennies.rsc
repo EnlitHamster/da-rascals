@@ -141,24 +141,25 @@ loc genClass(int cloneCount, int classid, int typ, int threshold) {
 str genClones(int cloneCount, int classid, int typ, int threshold) {
 	str clones = "";
 	str codeLine = genCodeLines(1);
-	for(_ <- [0 .. cloneCount]) {
-		clones += genClone(classid, typ, threshold, codeLine);
+	for(cloneid <- [0 .. cloneCount]) {
+		clones += genClone(cloneid, classid, typ, threshold, codeLine);
 	}
 	return clones;
 }
+
+list[str] delimeters = ["abstract", "protected", "final", "native", "transient", "private", "public", "volatile","synchronized"];
+	
 
 @doc{
 	.Synopsis
 	Generate a clone for class classid of type typ satisfying the threshold.
 }
-str genClone(int classid, int typ, int threshold, str codeLine) {
+str genClone(int cloneid, int classid, int typ, int threshold, str codeLine) {
 	str clone = "";
 	
-	if (typ == 1) {
-		threshold += 1;
-	} else if (typ == 2) {
-		threshold /= (4 + classid*2);
-		threshold += (4 + classid*2);
+	int lines = threshold;
+	if (typ == 2) {
+		lines /= (4 + classid*2);
 		codeLine = replaceAll(codeLine, eof(), "");
 		codeLine = replaceAll(codeLine, ";", "");
 		for(_ <- [0 .. classid]) {
@@ -166,13 +167,17 @@ str genClone(int classid, int typ, int threshold, str codeLine) {
 		}
 		codeLine += ";" + eof();
 	}
-	
-	for(_ <- [0 .. threshold]) {
-			clone += codeLine;
-		
+	if (lines * (4 + classid *2) < threshold) {
+		lines += 1;
 	}
+	
+	for(_ <- [0 .. lines]) {
+			clone += codeLine;
+	}
+
 	str delim = genCodeLines(1);
-	return clone + delim+ eof();
+	if (typ == 2) delim = delimeters[classid];
+	return clone + delim + eof();
 }
 
 

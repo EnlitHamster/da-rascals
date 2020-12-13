@@ -36,9 +36,55 @@ int setNumTests(int new) {
 	return NUMTESTS;
 }
 
-test bool checkClone() {
+test bool checkClones() {
 	if (!getSetup()) setup();
-	return false;
+	bool allConform = true;
+	//int typ = 1;
+	list[loc] cloneClassFiles = [];
+	int classCount;
+	int clonePerClass;
+	int threshold;
+	int foundClassCount;
+	int foundCloneInstances;
+	for (typ <- [1.. 3]) {
+		println("testing <NUMTESTS> random combinations of generated clone class files  to see whether clone detection of type <typ> holds");
+		for (_ <- [0 .. NUMTESTS]) {
+			clearSrc(); clearSrc();
+			classCount= arbInt(9) +1;
+		 	clonePerClass = arbInt(10) + 10;
+	 		threshold = arbInt(21) + 5;
+	 		 if (typ == 2) {
+	 			threshold  = 4 * classCount * 2;
+	 			clonePerClass = 2;
+	 		}
+		 	
+		 	cloneClassFiles = genCloneClassFiles(classCount, clonePerClass, typ, threshold);
+		 	list[loc] filurs = getFiles(getMock());
+
+		 	tuple[MapSnippets, int] gottenClones = getClones(cloneClassFiles, typ, threshold, false);
+		 	MapSnippets clones = gottenClones[0];
+		 	int count = gottenClones[1];
+			foundClassCount = 0;
+			foundCloneInstances = 0;
+			for (key <- clones) {
+				foundClassCount += 1;
+				foundCloneInstances += size(clones[key]);
+			}
+			allConform = allConform && foundClassCount == classCount && foundCloneInstances == (classCount * clonePerClass);
+			if (!allConform) break;
+		}
+		if (allConform) {
+			clearSrc();
+		} else {
+			println("Threshold: <threshold>,");
+			println("Generated <classCount> classe(s) and found <foundClassCount> classe(s)");
+			println("Generated <classCount * clonePerClass> clone(s) and found <foundCloneInstances> clone(s)");
+			println("Generated file(s): <cloneClassFiles>");
+			return allConform;
+		}
+	}
+	clearSrc();
+	return allConform;
 }
 
 @doc {
@@ -178,7 +224,8 @@ test bool checkDuplication() {
 		clearSrc();
 		dupPercent = arbInt(100) + 1;	
 		dupFile = genDuplicationFile(dupPercent);
-		dupLoc = getDuplicateLines(getFiles(getMock()), false, true);
+		//list[loc] files, int typ, int threshold, bool print, bool skipBrkts		
+		dupLoc = getDuplicateLines(getFiles(getMock()), 1, 6, false, true);
 		if (dupPercent <= 6) {
 			allConform = allConform && (dupLoc == 0);
 		} else {
