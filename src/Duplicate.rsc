@@ -151,7 +151,7 @@ list[KSnippet] filterSnippets(list[Snippet] snps, bool skipBrkts) {
 			line = escape(filteredLine.code, whiteSpaces);
 		
 			if ((!skipBrkts || line != "}") && line != "") {
-				filtered += <filteredLine.code, <i, snp>>;
+				filtered += <line, <i, <filteredLine.code, snp.src>>>;
 				i += 1;
 			} 
 			
@@ -165,7 +165,7 @@ list[KSnippet] filterSnippets(list[Snippet] snps, bool skipBrkts) {
 list[KSnippet] escapeKeys(list[KSnippet] ksnps) {
 	list[KSnippet] escaped = [];
 	for (ksnp <- ksnps) {
-		filteredKey = escape(ksnp.code.snp.block, whiteSpaces);
+		filteredKey = escape(ksnp.key, whiteSpaces);
 		escaped += <filteredKey, <ksnp.code.pos, <ksnp.code.snp.block, ksnp.code.snp.src>>>;
 	}
 	return escaped;
@@ -271,7 +271,8 @@ private list[ISnippet] extender(MapKLSnippets clusters, list[Block] blocks, bool
 		KLKey klk = <pivot.snp.src.uri, obj>;
 		
 		// The snippet cannot be extended
-		if (klk notin clusters) return []; 
+		if (klk notin clusters)
+			return []; 
 		
 		str key = escape(clusters[klk].snp.block, whiteSpaces);
 		
@@ -279,7 +280,7 @@ private list[ISnippet] extender(MapKLSnippets clusters, list[Block] blocks, bool
 		if (extenderKey == "")			
 			extenderKey = key;	
 		// Following snippets check if the key is the same, to guarantee same code extension
-	 	else if (extenderKey != key)	
+	 	else if (extenderKey != key)
 	 		return [];
 		
 		nextStep += clusters[klk];
@@ -305,8 +306,10 @@ private MapSnippets clusterizator(MapBlocks duplicates) {
 	MapSnippets dupClusters = ();
 	MapBlocks fixedDups = fixOverlaps(duplicates);
 	MapKLSnippets clusters = dupClusterizator(fixedDups);
+	
 	for (key <- fixedDups) {
-		list[Block] blocks = extendMost(clusters, extendMost(clusters, fixedDups[key], false), true);
+		list[Block] blocks = extendMost(clusters, fixedDups[key], false);
+		blocks = extendMost(clusters, blocks, true);
 		list[ISnippet] snps = [];
 		for (block <- blocks) {
 			list[Snippet] bSnps = [];
