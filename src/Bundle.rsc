@@ -46,6 +46,9 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  int DUPNB,
 							  int DUPB,
 							  int DUP2,
+							  CloneStats statsDUPNB,
+							  CloneStats statsDUPB,
+							  CloneStats statsDUP2,
 							  int rankDUPNB,
 							  int rankDUPB,
 							  int asserts,
@@ -69,6 +72,31 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  real OVNEB,
 							  real OVENB,
 							  real OVEB ];
+
+public alias CloneStats = tuple[int cloneClasses, int biggestClone, int biggestClass, int cloneInsts];
+
+CloneStats getClonesStats(MapSnippets clones) {
+	int cloneClasses = 0;
+	int biggestClone = 0;
+	int biggestClass = 0;
+	int cloneInsts = 0;
+
+	for (key <- clones) {
+		cloneClasses += 1;
+		int nClones = 0;
+		for (isnp <- clones[key]) {
+			nClones += 1;
+			int len = isnp.snp.src.end.line - isnp.snp.src.begin.line + 1;
+			if (len > biggestClone)
+				biggestClone = len;
+		}
+		if (nClones > biggestClass)
+			biggestClass = nClones;
+		cloneInsts += nClones;
+	}
+	
+	return <cloneClasses, biggestClone, biggestClass, cloneInsts>;
+}
 
 Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts) {
 	// Saving the project files/ASTs as they are used by all metric calculators
@@ -119,22 +147,34 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	int rankDUPNB = -1;
 	int rankDUPB = -1;
 	
+	CloneStats stats1NB = <-1,-1,-1,-1>;
+	CloneStats stats1B = <-1,-1,-1,-1>;
+	
+	MapSnippets clones1NB = ();
+	MapSnippets clones1B = ();
+	
 	if (skipBrkts % 2 == 0) {
-		duplicatesNB = getDuplicateLines(projectFiles, 1, thresholdType1Clones, print, true);
+		<clones1NB, duplicatesNB> = getClones(projectFiles, 1, thresholdType1Clones, true);
 		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), print);
+		stats1NB = getClonesStats(clones1NB);
 	}
 	
 	if (skipBrkts > 0) {
-		duplicatesB = getDuplicateLines(projectFiles, 1, thresholdType1Clones, print, false);
+		<clones1B, duplicatesB> = getClones(projectFiles, 1, thresholdType1Clones, false);
 		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), print);
+		stats1B = getClonesStats(clones1B);
 	}
 	
 	list[list[Token]] tokens = [];
 	for (fLoc <- projectFiles)
 		tokens += [tokenizer(readFileSnippets(fLoc))];
 	
+	MapSnippets clones2 = ();
+	int duplicates2 = -1;
+	
 	TokenCount tknStats = getTokenStats(tokens);
-	int duplicates2 = getClonesType2(tokens, thresholdType2Clones);
+	<clones2, duplicate2> = getClonesType2(tokens, thresholdType2Clones);
+	CloneStats stats2 = getClonesStats(clones2);
 	
 	// TEST QUALITY
 	list[loc] asserts = getAsserts(asts);
@@ -166,10 +206,11 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	real OVENB = (ANNB + CHENB + STNB + TSENB) / 4.0;
 	real OVEB = (ANB + CHEB + STB + TSEB) / 4.0;
 	
+	println(duplicate2);
 	// Output
 	return <LOCNB, LOCB, tknStats, rankLOCNB, rankLOCB, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, 
-			rankUS, duplicatesNB, duplicatesB, duplicates2, rankDUPNB, rankDUPB, size(asserts), aLOCNB, aLOCB, rankASSNB, rankASSB, ANNB, 
-			ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
+			rankUS, duplicatesNB, duplicatesB, duplicates2, stats1NB, stats1B, stats2, rankDUPNB, rankDUPB, size(asserts), aLOCNB, aLOCB, 
+			rankASSNB, rankASSB, ANNB, ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
 }
 
 void printAllBundles(loc outputFolder, int threshold1, int threshold2) {
@@ -192,11 +233,12 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 		CCsE += (pi + piExp);
 	}
 	
+	// tuple[int cloneClasses, int biggestClone, int biggestClass, int cloneInsts];
 	println("Dumping data...");
 	loc outputFile = outputFolder + "<fileName>.metrics";
 	writeFile( outputFile, 
 			   "<bundle.TLOC.ids>,<bundle.TLOC.literals>,<bundle.TLOC.methods>,<bundle.TLOC.total>" + eof(),
-			   "<bundle.DUP2>" + eof(),
+			   "<bundle.DUP2>,<bundle.statsDUP2.cloneClasses>,<bundle.statsDUP2.biggestClone>,<bundle.statsDUP2.biggestClass>,<bundle.statsDUP2.cloneInsts>" + eof(),
 			   "<listToStr(CCsNE)>" + eof(),
 			   "<listToStr(CCsE)>" + eof(),
 			   "<bundle.riskCCsNE[LOW_RISK]>,<bundle.riskCCsNE[MID_RISK]>,<bundle.riskCCsNE[HIGH_RISK]>,<bundle.riskCCsNE[VERY_HIGH_RISK]>" + eof(),
@@ -208,7 +250,8 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 			   "<bundle.LOCNB.code>,<bundle.LOCNB.empty>,<bundle.LOCNB.comment>,<bundle.LOCNB.total>" + eof(),
 			   "<bundle.LOCB.code>,<bundle.LOCB.empty>,<bundle.LOCB.comment>,<bundle.LOCB.total>" + eof(),
 		       "<bundle.rankLOCNB>,<bundle.rankLOCB>" + eof(),
-			   "<bundle.DUPNB>,<bundle.DUPB>" + eof(),
+		       "<bundle.DUPNB>,<bundle.statsDUPNB.cloneClasses>,<bundle.statsDUPNB.biggestClone>,<bundle.statsDUPNB.biggestClass>,<bundle.statsDUPNB.cloneInsts>" + eof(),
+		       "<bundle.DUPB>,<bundle.statsDUPB.cloneClasses>,<bundle.statsDUPB.biggestClone>,<bundle.statsDUPB.biggestClass>,<bundle.statsDUPB.cloneInsts>" + eof(),
 			   "<bundle.rankDUPNB>,<bundle.rankDUPB>" + eof(),
 			   "<round(bundle.ANNB)>,<round(bundle.CHNENB)>,<round(bundle.CHENB)>,<round(bundle.STNB)>,<round(bundle.TSNENB)>,<round(bundle.TSENB)>,<round(bundle.OVNENB)>,<round(bundle.OVENB)>" + eof(),
 			   "<round(bundle.ANB)>,<round(bundle.CHNEB)>,<round(bundle.CHEB)>,<round(bundle.STNB)>,<round(bundle.TSNEB)>,<round(bundle.TSEB)>,<round(bundle.OVNEB)>,<round(bundle.OVEB)>" + eof(),
@@ -219,6 +262,12 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	println(outputFile);
 	
 	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
+	println("Generating Type I clones - Without brackets");
+	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1nb.clones", 1, threshold1, true);
+	println("Generating Type I clones - With brackets");
+	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1b.clones", 1, threshold1, false);
+	println("Generating Type II clones");
+	printClones(getFiles(projectLoc), outputFolder + "<fileName>_2.clones", 2, threshold2, false);
 }
 
 str parseScore(int rank) {
@@ -231,9 +280,11 @@ str parseScore(int rank) {
 
 void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, bool skipBrkts) {
 	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1);
+	println(bundle.DUP2);
 	
 	LineCount bLOC = skipBrkts ? bundle.LOCNB : bundle.LOCB;
 	int bDUP = skipBrkts ? bundle.DUPNB : bundle.DUPB;
+	CloneStats stats1 = skipBrkts ? bundle.statsDUPNB : bundle.statsDUPB;
 	
 	str LOC = parseScore(skipBrkts ? bundle.rankLOCNB : bundle.rankLOCB);
 	str UCE = parseScore(bundle.rankUCE);
@@ -266,7 +317,11 @@ void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, boo
 	println("\> <bDUP> type 1 duplicate lines");
 	println("\> <bundle.DUP2> type 2 duplicate lines");
 	println("\> <toReal(bDUP) * 100 / toReal(bLOC.code)>% ratio of duplicates of type 1");
-	println("\> <toReal(bundle.DUP2) * 100 / toReal(bundle.TLOC)>% ratio of duplicates of type 2");
+	println("\> <toReal(bundle.DUP2) * 100 / toReal(bundle.TLOC.total)>% ratio of duplicates of type 2");
+	println("\> type 1: <stats1.cloneClasses> clone classes and <stats1.cloneInsts> clones");
+	println("\> type 1: <stats1.biggestClass> biggest class (#instances) and <stats1.biggestClone> biggest clone (#lines)");
+	println("\> type 2: <bundle.statsDUP2.cloneClasses> clone classes and <bundle.statsDUP2.cloneInsts> clones");
+	println("\> type 2: <bundle.statsDUP2.biggestClass> biggest class (#instances) and <bundle.statsDUP2.biggestClone> biggest clone (#lines)");
 	println("\nTEST DENSITY metric: <ASS>");
 	println("\> <bundle.asserts> number of assertions / <skipBrkts ? bundle.aLOCNB : bundle.aLOCB> test LOC");
 	println("COUPLING metrics:");
@@ -363,7 +418,10 @@ void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool s
 		output += eof();
 	}
 	
-	writeFile(outputFile, output);
+	writeFile(outputFile, output);	
+	
+	print("File generated: ");
+	println(outputFile);
 }
 
 private map[str, list[str]] mapFiles(list[loc] files) {

@@ -448,11 +448,11 @@ TokenCount getTokenStats(list[list[Token]] tokens) {
 TokenCount getTokenStats(list[Token] tokens) {
 	TokenCount stats = <0, 0, 0, 0>;
 	for (token <- tokens) {
-		if (token == IDENTIFIER)
+		if (token.block == IDENTIFIER)
 			stats.ids += 1;
-		else if (token == LITERAL)
+		else if (token.block == LITERAL)
 			stats.literals += 1;
-		else if (token == "METHOD" || token == "CONSTRUCTOR")
+		else if (token.block == "METHOD" || token.block == "CONSTRUCTOR")
 			stats.methods += 1;
 		stats.total += 1;
 	}
@@ -464,44 +464,3 @@ private java str normPrototypes(str tokenized);
 
 @javaClass{internal.Matchers}
 private java str normDeclarations(str tokenized);
-
-void testerttt() {
-	tokens = tokenize(reconnect(reconstruct(parse(readFileSnippets(|file:///C:/Users/sandr/Documents/University/SE/Series1/Dump/Test.java|)))));
-	for (t <- tokens) println(t);
-}
-
-list[tuple[int, int]] tester(loc file) {
-	list[Token] tokens = normalize(tokenize(reconnect(reconstruct(parse(readFileSnippets(file))))));
-	list[tuple[int, int]] lens = [];
-	
-	for (token <- tokens) 
-		lens += <token.src.begin.column, token.src.end.column>;
-
-	return lens;
-}
-
-str tester(loc file, loc output) {
-	//writeFile(output, intercalate(" ", normalize(tokenize(parse(readFile(file))))));
-	list[Token] tokens = normalize(tokenize(reconnect(reconstruct(parse(readFileSnippets(file))))));
-	int len = last(tokens).src.begin.line;
-	
-	int line = 0;
-	int iTkn = 0;
-	str strTkns = "";
-	
-	while (line < len && iTkn < size(tokens)) {
-		Token token = tokens[iTkn];
-		if (token.src.begin.line == line) {
-			strTkns += token.block + " ";
-			iTkn += 1;
-		} else {
-			print(line);
-			print(" ");
-			println(token.src.begin.line);
-			strTkns += eof();
-			line += 1;
-		}
-	}
-
-	writeFile(output, strTkns);
-}

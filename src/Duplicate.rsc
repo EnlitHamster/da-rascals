@@ -183,10 +183,14 @@ tuple[MapSnippets, int] getClones(list[loc] files, int clnType, int threshold, b
 	return <clones, size(dupSnps)>;
 }
 
-int getClonesType2(list[list[Token]] tokens, int threshold) {
+tuple[MapSnippets, int] getClonesType2(list[list[Token]] tokens, int threshold) {
 	set[ISnippet] dupSnps = {};
-	<_, dupSnps> = genDupBlocks(mapBlocksType2(tokens, threshold));
-	return size(dupSnps);
+	MapBlocks dupBlocks = ();
+	
+	<dupBlocks, dupSnps> = genDupBlocks(mapBlocksType2(tokens, threshold));
+	MapSnippets clones = clusterizator(dupBlocks);
+	
+	return <clones, size(dupSnps)>;
 }
 
 num avgCloneLength(MapSnippets clones) {
@@ -253,29 +257,6 @@ int getDuplicateLines(list[loc] files, int typ, int threshold, bool print, bool 
 	return size(dupSnps);
 }
 
-void tester() {
-	MapBlocks blocks = mapBlocksType1(getFiles(|project://smallsql0.21_src|), 6, false);
-	MapBlocks dupBlocks = ();
-	set[ISnippet] dupSnps = {};
-	
-	<dupBlocks, dupSnps> = genDupBlocks(blocks);
-	MapSnippets clusters = clusterizator(dupBlocks);
-	
-	MapKLSnippets lClusters = dupClusterizator(dupBlocks);
-	for (lKey <- lClusters) 
-		println(lKey);
-	
-	str output = "";
-	for (key <- clusters) {
-		output += "<key>:<eof()>";
-		for (b <- clusters[key])
-			output += "-\t<b><eof()>";
-		output += "<eof()><eof()>";
-	}
-			
-	writeFile(|file:///C:/Users/sandr/Documents/University/SE/Series1/Dump/test_error.txt|, output);
-}
-
 int getDuplicationRank(real dp, bool print) {
 	return scoreRank(dp, 0.03, 0.05, 0.1, 0.2, print);
 }
@@ -338,6 +319,7 @@ private MapSnippets clusterizator(MapBlocks duplicates) {
 	return dupClusters;
 }
 
+// QUICK 'N' DIRTY SOLUTIONS LLC
 private MapBlocks fixOverlaps(MapBlocks blocks) {
 	MapBlocks fixedBlocks = ();
 
@@ -387,7 +369,7 @@ private MapBlocks fixOverlaps(MapBlocks blocks) {
 				if (pivotKey != blocksKey(newCloneClassBlocks[k]))
 					keyCheck = false;
 				k += 1;
-			}			
+			} // It Just Works - Hodd Toward
 			
 			if (keyCheck) {
 				if (pivotKey in fixedBlocks) 
@@ -398,13 +380,13 @@ private MapBlocks fixOverlaps(MapBlocks blocks) {
 				if (key in fixedBlocks) 
 					fixedBlocks[key] += blocks[key];
 				else
-					fixedBlocks[key] = [blocks[key]];
+					fixedBlocks[key] = blocks[key];
 			}
 		} else {
 			if (key in fixedBlocks) 
 				fixedBlocks[key] += blocks[key];
 			else
-				fixedBlocks[key] = [blocks[key]];
+				fixedBlocks[key] = blocks[key];
 		}
 	}
 	
