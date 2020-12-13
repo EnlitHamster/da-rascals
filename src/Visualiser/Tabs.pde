@@ -2,6 +2,13 @@ import java.util.Set;
 import java.util.HashSet;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 abstract class Tab {
   abstract public void setup();
@@ -221,34 +228,18 @@ class ScoresTab extends Tab {
 
 class DataTab extends Tab {
   
-  public void setup () {
-    
-  }
+  Button openCloneViz;
+  String file;
   
-  public void draw() {
-    fill(0);
-    textFont(fontBd, 12); 
-    textAlign(LEFT);
-    
-    int descWidth = 160;
-    int dataWidth = width - (descWidth + 40);
-    
-    text("Line count", 20, 60);
-    text("Token count", 20, 100);
-    text("Cyclomatic complexity", 20, 140);
-    
-    textAlign(CENTER);
+  public DataTab(String file) {this.file = file;}
+  
+  private void printStatHeads(int descWidth, int dataWidth, int h) {
     textFont(fontIt, 12);
     
-    text("code", descWidth + dataWidth/8, 60);
-    text("empty", descWidth + 3*dataWidth/8, 60);
-    text("commnet", descWidth + 5*dataWidth/8, 60);
-    text("total", descWidth + 7*dataWidth/8, 60);
-    
-    text("min", descWidth + dataWidth/8, 140);
-    text("max", descWidth + 3*dataWidth/8, 140);
-    text("mean", descWidth + 5*dataWidth/8, 140);
-    text("median", descWidth + 7*dataWidth/8, 140);
+    text("min", descWidth + dataWidth/8, h);
+    text("max", descWidth + 3*dataWidth/8, h);
+    text("mean", descWidth + 5*dataWidth/8, h);
+    text("median", descWidth + 7*dataWidth/8, h);
     
     float wP = textWidth("P");
     
@@ -259,27 +250,76 @@ class DataTab extends Tab {
     float w3 = textWidth("65");
     float w4 = textWidth("95");
     
-    text("5", descWidth + dataWidth/8 + wP/2, 182);
-    text("35", descWidth + 3*dataWidth/8 + wP/2, 182);
-    text("65", descWidth + 5*dataWidth/8 + wP/2, 182);
-    text("95", descWidth + 7*dataWidth/8 + wP/2, 182);
+    text("5", descWidth + dataWidth/8 + wP/2, h+42);
+    text("35", descWidth + 3*dataWidth/8 + wP/2, h+42);
+    text("65", descWidth + 5*dataWidth/8 + wP/2, h+42);
+    text("95", descWidth + 7*dataWidth/8 + wP/2, h+42);
     
     textSize(12);
     
-    text("P", descWidth + dataWidth/8 - w1/2, 180);
-    text("P", descWidth + 3*dataWidth/8 - w2/2, 180);
-    text("P", descWidth + 5*dataWidth/8 - w3/2, 180);
-    text("P", descWidth + 7*dataWidth/8 - w4/2, 180);
+    text("P", descWidth + dataWidth/8 - w1/2, h+40);
+    text("P", descWidth + 3*dataWidth/8 - w2/2, h+40);
+    text("P", descWidth + 5*dataWidth/8 - w3/2, h+40);
+    text("P", descWidth + 7*dataWidth/8 - w4/2, h+40);    
+  }
+  
+  public void setup () {
+    vizSize(520, 490);
+    openCloneViz = new Button(20, 380, 160, 20, "Open clones visualizer");
+  }
+  
+  public void draw() {
+    openCloneViz.draw();
+    
+    fill(0);
+    textFont(fontBd, 12); 
+    textAlign(LEFT);
+    
+    int descWidth = 160;
+    int dataWidth = width - (descWidth + 40);
+    
+    text("Line count", 20, 60);
+    text("Token count", 20, 100);
+    text("Cyclomatic complexity", 20, 140);
+    text("Unit Size", 20, 220);
+    text("Clones", 20, 300);
+    text("Asserts", 20, 340);
+    text("Lines of test", 20, 360);
+    
+    textAlign(CENTER);
+    textFont(fontIt, 12);
+    
+    text("code", descWidth + dataWidth/8, 60);
+    text("empty", descWidth + 3*dataWidth/8, 60);
+    text("commnet", descWidth + 5*dataWidth/8, 60);
+    text("total", descWidth + 7*dataWidth/8, 60);
+    
+    text("IDs", descWidth + dataWidth/8, 100);
+    text("LITERALs", descWidth + 3*dataWidth/8, 100);
+    text("METHODs", descWidth + 5*dataWidth/8, 100);
+    text("total", descWidth + 7*dataWidth/8, 100);
+    
+    printStatHeads(descWidth, dataWidth, 140);
+    printStatHeads(descWidth, dataWidth, 220);
+    
+    text("type 1", descWidth + dataWidth/4, 300);
+    text("type 2", descWidth + 3*dataWidth/4, 300);
     
     textFont(font, 12); 
     
     int[] CC = exceptions.isChecked() ? activeBundle.CCsE : activeBundle.CCsNE;
     int lenCC = CC.length;
+    int lenUS = activeBundle.USs.length;
     
     text(activeBundle.linesOfCode[0], descWidth + dataWidth/8, 80);
     text(activeBundle.linesOfCode[1], descWidth + 3*dataWidth/8, 80);
     text(activeBundle.linesOfCode[2], descWidth + 5*dataWidth/8, 80);
     text(activeBundle.linesOfCode[3], descWidth + 7*dataWidth/8, 80);
+    
+    text(activeBundle.nTokens[0], descWidth + dataWidth/8, 120);
+    text(activeBundle.nTokens[1], descWidth + 3*dataWidth/8, 120);
+    text(activeBundle.nTokens[2], descWidth + 5*dataWidth/8, 120);
+    text(activeBundle.nTokens[3], descWidth + 7*dataWidth/8, 120);
     
     text(min(CC), descWidth + dataWidth/8, 160);
     text(max(CC), descWidth + 3*dataWidth/8, 160);
@@ -290,6 +330,60 @@ class DataTab extends Tab {
     text(CC[(int) (lenCC * 0.35)], descWidth + 3*dataWidth/8, 200);
     text(CC[(int) (lenCC * 0.65)], descWidth + 5*dataWidth/8, 200);
     text(CC[(int) (lenCC * 0.95)], descWidth + 7*dataWidth/8, 200);
+    
+    text(min(activeBundle.USs), descWidth + dataWidth/8, 240);
+    text(max(activeBundle.USs), descWidth + 3*dataWidth/8, 240);
+    text(avg(activeBundle.USs), descWidth + 5*dataWidth/8, 240);
+    text(activeBundle.USs[lenUS / 2], descWidth + 7*dataWidth/8, 240);
+    
+    text(activeBundle.USs[(int) (lenUS * 0.05)], descWidth + dataWidth/8, 280);
+    text(activeBundle.USs[(int) (lenUS * 0.35)], descWidth + 3*dataWidth/8, 280);
+    text(activeBundle.USs[(int) (lenUS * 0.65)], descWidth + 5*dataWidth/8, 280);
+    text(activeBundle.USs[(int) (lenUS * 0.95)], descWidth + 7*dataWidth/8, 280);
+    
+    text(activeBundle.clonesType1, descWidth + dataWidth/4, 320);
+    text(activeBundle.clonesType2, descWidth + 3*dataWidth/4, 320);
+    
+    text(activeBundle.asserts, descWidth + dataWidth/2, 340);
+    text(activeBundle.testLOC, descWidth + dataWidth/2, 360);
+  }
+  
+  // C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\
+  void mousePressed() {
+    if (openCloneViz.hover()) {
+      try {
+        Path src1 = Paths.get(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
+        Path src2 = Paths.get(file + "_2.clones");
+        Path obj1 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type1.txt");
+        Path obj2 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type2.txt");
+        
+        Files.copy(src1, obj1, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(src2, obj2, StandardCopyOption.REPLACE_EXISTING);
+        
+        File file = new File("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation.exe");
+        Runtime.getRuntime().exec(file.getAbsolutePath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  // From https://www.geeksforgeeks.org/copy-file-using-filestreams-java/#:~:text=We%20can%20copy%20a%20file,and%20FileOutputStream%20classes%20in%20Java.&text=The%20main%20logic%20of%20copying,file%20associated%20with%20FileOutputStream%20variable.
+  void copy(String src, String obj) {
+    FileInputStream fis = null; 
+    FileOutputStream fos = null;
+    try {
+      fis = new FileInputStream(src);
+      fos = new FileOutputStream(obj);
+      int b; 
+      while  ((b=fis.read()) != -1) 
+        fos.write(b); 
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      if (fis != null) try {fis.close();} catch(IOException e1) {e1.printStackTrace();}
+      if (fos != null) try {fos.close();} catch(IOException e1) {e1.printStackTrace();}
+    }
   }
   
 }

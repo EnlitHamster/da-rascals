@@ -21,6 +21,7 @@ RadioButton exceptions, brackets;
 boolean run;
 
 void setup() {
+  try {println(new File(".").getCanonicalPath());} catch (IOException ignored) {}
   selectDB();
 }
 
@@ -123,7 +124,7 @@ void processInput(String dbFile) {
   tabs = new HashMap<Button, Tab>();
   tabs.put(piesButton, new PiesTab());
   tabs.put(scoresButton, new ScoresTab());
-  tabs.put(dataButton, new DataTab());
+  tabs.put(dataButton, new DataTab(dbFile.substring(0, dbFile.lastIndexOf('.'))));
   tabs.put(distribsButton, new DistribsTab());
   tabs.put(graphButton, new GraphTab(dbFile.substring(0, dbFile.lastIndexOf('.'))));
   activeButton = piesButton;

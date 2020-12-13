@@ -1,6 +1,9 @@
 import java.util.Random;
 import java.util.Arrays;
 
+static final int MIN_X = 519;
+static final int MIN_Y = 120;
+
 color[] colors4 = {
   color(127,255,0),
   color(255,255,0),
@@ -11,7 +14,7 @@ color[] colors4 = {
 color[] colorsLOC = {
   color(127,127,255),
   color(127,127,127),
-  color(127,255,127)
+  color(0,255,166)
 };
 
 int sum(int[] a) {
@@ -182,6 +185,12 @@ private int calcHeight(int count, int maxHeight, int h) {
 private void center() {
   GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
   surface.setLocation((gd.getDisplayMode().getWidth() - width) / 2, (gd.getDisplayMode().getHeight() - height) / 2);
+}
+
+float avg(int[] vals) {
+  int sum = 0;
+  for (int i : vals) sum += i;
+  return (float) sum / (float) vals.length;
 }
 
 /**

@@ -12,6 +12,8 @@ import java.awt.GraphicsEnvironment;
 import java.util.Set; 
 import java.util.HashSet; 
 import java.io.File; 
+import java.io.FileInputStream; 
+import java.io.FileOutputStream; 
 import java.util.Random; 
 import java.util.Arrays; 
 
@@ -35,7 +37,7 @@ public class Visualiser extends PApplet {
 
 
 
-PFont font;
+PFont font, fontIt, fontBd;
 
 // NOT CONSIDERING BRACKETS
 Bundle brkts, noBrkts, activeBundle;
@@ -43,12 +45,13 @@ Bundle brkts, noBrkts, activeBundle;
 Map<Button, Tab> tabs;
 Button activeButton;
 
-Button piesButton, scoresButton, distribsButton, graphButton, changeDB;
+Button piesButton, scoresButton, dataButton, distribsButton, graphButton, changeDB;
 RadioButton exceptions, brackets;
 
 boolean run;
 
 public void setup() {
+  try {println(new File(".").getCanonicalPath());} catch (IOException ignored) {}
   selectDB();
 }
 
@@ -58,6 +61,7 @@ public void draw() {
     tabs.get(activeButton).draw();
     piesButton.draw();
     scoresButton.draw();
+    dataButton.draw();
     distribsButton.draw();
     graphButton.draw();
     exceptions.draw();
@@ -86,6 +90,7 @@ public void mousePressed() {
   tabs.get(activeButton).mousePressed();
   if (piesButton.hover() && activeButton != piesButton) activate(piesButton);
   if (scoresButton.hover() && activeButton != scoresButton) activate(scoresButton);
+  if (dataButton.hover() && activeButton != dataButton) activate(dataButton);
   if (distribsButton.hover() && activeButton != distribsButton) activate(distribsButton);
   if (graphButton.hover() && activeButton != graphButton) activate(graphButton);
   if (exceptions.hover()) exceptions.check();
@@ -136,16 +141,20 @@ public void processInput(String dbFile) {
   activeBundle = noBrkts;
   
   font = createFont("Arial", 16, true);
+  fontIt = createFont("Arial Italic", 16, true);
+  fontBd = createFont("Arial Bold", 16, true);
   noStroke();
   
-  piesButton = new Button(0, 0, 80, 20, "Pie charts");
-  scoresButton = new Button(80, 0, 80, 20, "Scores");
-  distribsButton = new Button(160, 0, 80, 20, "Distributions");
-  graphButton = new Button(240, 0, 80, 20, "Graphs");
+  piesButton = new Button(-1, 0, 80, 20, "Pie charts");
+  scoresButton = new Button(79, 0, 80, 20, "Scores");
+  dataButton = new Button(159, 0, 80, 20, "Data");
+  distribsButton = new Button(239, 0, 80, 20, "Distributions");
+  graphButton = new Button(319, 0, 80, 20, "Graphs");
   
   tabs = new HashMap<Button, Tab>();
   tabs.put(piesButton, new PiesTab());
   tabs.put(scoresButton, new ScoresTab());
+  tabs.put(dataButton, new DataTab(dbFile.substring(0, dbFile.lastIndexOf('.'))));
   tabs.put(distribsButton, new DistribsTab());
   tabs.put(graphButton, new GraphTab(dbFile.substring(0, dbFile.lastIndexOf('.'))));
   activeButton = piesButton;
@@ -162,6 +171,10 @@ public void processInput(String dbFile) {
   loop();
   run = true;
 }
+
+public void vizSize(int x, int y) {
+  surface.setSize(max(x - 1, MIN_X), max(y, MIN_Y)); 
+}
 public interface AbstractButton {
   public void draw();
   public void update(int x, int y);
@@ -175,6 +188,7 @@ public interface AbstractButton {
 
 public class Bundle {
   final int[] linesOfCode;
+  final int[] nTokens;
   final int rankLOC;
   final int[] CCsNE;
   final int[] CCsE;
@@ -184,7 +198,8 @@ public class Bundle {
   final int[] USs;
   final int[] riskUS;
   final int rankUS;
-  final int duplicateLines;
+  final int clonesType1;
+  final int clonesType2;
   final int rankDUP;
   final int asserts;
   final int testLOC;
@@ -205,22 +220,24 @@ public class Bundle {
   final float[] percRiskUS;
   
   public Bundle(String[] database, boolean skipBrkts) {
-      CCsNE = PApplet.parseInt(split(database[0], ','));
-      CCsE = PApplet.parseInt(split(database[1], ','));
-      riskUCNE = PApplet.parseInt(split(database[2], ','));
-      riskUCE = PApplet.parseInt(split(database[3], ','));
-      ranksUC = PApplet.parseInt(split(database[4], ','));
-      USs = PApplet.parseInt(split(database[5], ','));
-      riskUS = PApplet.parseInt(split(database[6], ','));
-      rankUS = PApplet.parseInt(database[7]);
-      linesOfCode = PApplet.parseInt(split(database[skipBrkts ? 8 : 9], ','));
-      rankLOC = PApplet.parseInt(split(database[10], ',')[skipBrkts ? 0 : 1]);
-      duplicateLines = PApplet.parseInt(split(database[11], ',')[skipBrkts ? 0 : 1]);
-      rankDUP = PApplet.parseInt(split(database[12], ',')[skipBrkts ? 0 : 1]);
-      scores = PApplet.parseInt(split(database[skipBrkts ? 13 : 14], ','));
-      asserts = PApplet.parseInt(database[15]);
-      testLOC = PApplet.parseInt(split(database[16], ',')[skipBrkts ? 0 : 1]);
-      rankTQ = PApplet.parseInt(split(database[17], ',')[skipBrkts ? 0 : 1]);
+      nTokens = PApplet.parseInt(split(database[0], ','));
+      clonesType2 = PApplet.parseInt(database[1]);
+      CCsNE = sort(PApplet.parseInt(split(database[2], ',')));
+      CCsE = sort(PApplet.parseInt(split(database[3], ',')));
+      riskUCNE = PApplet.parseInt(split(database[4], ','));
+      riskUCE = PApplet.parseInt(split(database[5], ','));
+      ranksUC = PApplet.parseInt(split(database[6], ','));
+      USs = sort(PApplet.parseInt(split(database[7], ',')));
+      riskUS = PApplet.parseInt(split(database[8], ','));
+      rankUS = PApplet.parseInt(database[9]);
+      linesOfCode = PApplet.parseInt(split(database[skipBrkts ? 10 : 11], ','));
+      rankLOC = PApplet.parseInt(split(database[12], ',')[skipBrkts ? 0 : 1]);
+      clonesType1 = PApplet.parseInt(split(database[13], ',')[skipBrkts ? 0 : 1]);
+      rankDUP = PApplet.parseInt(split(database[14], ',')[skipBrkts ? 0 : 1]);
+      scores = PApplet.parseInt(split(database[skipBrkts ? 15 : 16], ','));
+      asserts = PApplet.parseInt(database[17]);
+      testLOC = PApplet.parseInt(split(database[18], ',')[skipBrkts ? 0 : 1]);
+      rankTQ = PApplet.parseInt(split(database[19], ',')[skipBrkts ? 0 : 1]);
       
       int totalUCNE = sum(riskUCNE);
       int totalUCE = sum(riskUCE);
@@ -327,6 +344,8 @@ public class RadioButton {
 
 
 
+
+
 abstract class Tab {
   abstract public void setup();
   abstract public void draw();
@@ -343,43 +362,44 @@ abstract class Tab {
 class PiesTab extends Tab {
   
   public void setup() {
-    surface.setSize(460, 630); 
+    vizSize(460, 630); 
   }
   
   public void draw() {  
     fill(0);
     textFont(font, 20);
     textAlign(CENTER);
+    int left = width/2 + 10;
     
-    text("Unit Complexity", 120, 60);
-    text("Unit Size", 120, 320);
-    text("Lines of code", 340, 60);
-    text("Legend", 340, 320);
+    text("Unit Complexity", width/4, 60);
+    text("Unit Size", width/4, 320);
+    text("Lines of code", 3*width/4, 60);
+    text("Legend", 3*width/4, 320);
     
     textAlign(LEFT);
     textFont(font, 16);
     
-    text("Low risk elements", 270, 356);
-    text("Medium risk elements", 270, 386);
-    text("High risk elements", 270, 416);
-    text("Very high risk elements", 270, 446);
-    text("Lines of code", 270, 476);
-    text("Empty lines", 270, 506);
-    text("Comment lines", 270, 536);
+    text("Low risk elements", left + 30, 356);
+    text("Medium risk elements", left + 30, 386);
+    text("High risk elements", left + 30, 416);
+    text("Very high risk elements", left + 30, 446);
+    text("Lines of code", left + 30, 476);
+    text("Empty lines", left + 30, 506);
+    text("Comment lines", left + 30, 536);
     
     noStroke();
     
-    fill(colors4[0]);    rect(240, 340, 20, 20);
-    fill(colors4[1]);    rect(240, 370, 20, 20);
-    fill(colors4[2]);    rect(240, 400, 20, 20);
-    fill(colors4[3]);    rect(240, 430, 20, 20);
-    fill(colorsLOC[0]);  rect(240, 460, 20, 20);
-    fill(colorsLOC[1]);  rect(240, 490, 20, 20);
-    fill(colorsLOC[2]);  rect(240, 520, 20, 20);    
+    fill(colors4[0]);    rect(left, 340, 20, 20);
+    fill(colors4[1]);    rect(left, 370, 20, 20);
+    fill(colors4[2]);    rect(left, 400, 20, 20);
+    fill(colors4[3]);    rect(left, 430, 20, 20);
+    fill(colorsLOC[0]);  rect(left, 460, 20, 20);
+    fill(colorsLOC[1]);  rect(left, 490, 20, 20);
+    fill(colorsLOC[2]);  rect(left, 520, 20, 20);    
     
-    pieChart(120, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
-    pieChart(120, 440, activeBundle.percRiskUS, colors4);
-    pieChart(340, 180, activeBundle.percLOC, colorsLOC); 
+    pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
+    pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
+    pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
   }
 
   private void pieChart(int x, int y, float[] data, int[] colors) {
@@ -401,7 +421,7 @@ class PiesTab extends Tab {
 class ScoresTab extends Tab {
   
   public void setup() {
-    surface.setSize(600, 660); 
+    vizSize(600, 660); 
   } 
   
   public void draw() {
@@ -427,8 +447,8 @@ class ScoresTab extends Tab {
     textAlign(RIGHT);
     
     text(activeBundle.linesOfCode[0] + String.format(" (%4.2f%c)", (float) activeBundle.linesOfCode[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 60);
-    text(activeBundle.duplicateLines + String.format(" (%4.2f%c)", (float) activeBundle.duplicateLines * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
-    text(activeBundle.duplicateLines + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
+    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.clonesType1 * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
+    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
     
     printPercs(exceptions.isChecked() ? activeBundle.riskUCE : activeBundle.riskUCNE, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, 180);
     printPercs(activeBundle.riskUS, activeBundle.percRiskUS, 240);
@@ -539,6 +559,171 @@ class ScoresTab extends Tab {
 }
 
 //-------------------
+//               DATA
+//-------------------
+
+class DataTab extends Tab {
+  
+  Button openCloneViz;
+  String file;
+  
+  public DataTab(String file) {this.file = file;}
+  
+  private void printStatHeads(int descWidth, int dataWidth, int h) {
+    textFont(fontIt, 12);
+    
+    text("min", descWidth + dataWidth/8, h);
+    text("max", descWidth + 3*dataWidth/8, h);
+    text("mean", descWidth + 5*dataWidth/8, h);
+    text("median", descWidth + 7*dataWidth/8, h);
+    
+    float wP = textWidth("P");
+    
+    textSize(10);
+    
+    float w1 = textWidth("5");
+    float w2 = textWidth("35");
+    float w3 = textWidth("65");
+    float w4 = textWidth("95");
+    
+    text("5", descWidth + dataWidth/8 + wP/2, h+42);
+    text("35", descWidth + 3*dataWidth/8 + wP/2, h+42);
+    text("65", descWidth + 5*dataWidth/8 + wP/2, h+42);
+    text("95", descWidth + 7*dataWidth/8 + wP/2, h+42);
+    
+    textSize(12);
+    
+    text("P", descWidth + dataWidth/8 - w1/2, h+40);
+    text("P", descWidth + 3*dataWidth/8 - w2/2, h+40);
+    text("P", descWidth + 5*dataWidth/8 - w3/2, h+40);
+    text("P", descWidth + 7*dataWidth/8 - w4/2, h+40);    
+  }
+  
+  public void setup () {
+    vizSize(520, 490);
+    openCloneViz = new Button(20, 380, 160, 20, "Open clones visualizer");
+  }
+  
+  public void draw() {
+    openCloneViz.draw();
+    
+    fill(0);
+    textFont(fontBd, 12); 
+    textAlign(LEFT);
+    
+    int descWidth = 160;
+    int dataWidth = width - (descWidth + 40);
+    
+    text("Line count", 20, 60);
+    text("Token count", 20, 100);
+    text("Cyclomatic complexity", 20, 140);
+    text("Unit Size", 20, 220);
+    text("Clones", 20, 300);
+    text("Asserts", 20, 340);
+    text("Lines of test", 20, 360);
+    
+    textAlign(CENTER);
+    textFont(fontIt, 12);
+    
+    text("code", descWidth + dataWidth/8, 60);
+    text("empty", descWidth + 3*dataWidth/8, 60);
+    text("commnet", descWidth + 5*dataWidth/8, 60);
+    text("total", descWidth + 7*dataWidth/8, 60);
+    
+    text("IDs", descWidth + dataWidth/8, 100);
+    text("LITERALs", descWidth + 3*dataWidth/8, 100);
+    text("METHODs", descWidth + 5*dataWidth/8, 100);
+    text("total", descWidth + 7*dataWidth/8, 100);
+    
+    printStatHeads(descWidth, dataWidth, 140);
+    printStatHeads(descWidth, dataWidth, 220);
+    
+    text("type 1", descWidth + dataWidth/4, 300);
+    text("type 2", descWidth + 3*dataWidth/4, 300);
+    
+    textFont(font, 12); 
+    
+    int[] CC = exceptions.isChecked() ? activeBundle.CCsE : activeBundle.CCsNE;
+    int lenCC = CC.length;
+    int lenUS = activeBundle.USs.length;
+    
+    text(activeBundle.linesOfCode[0], descWidth + dataWidth/8, 80);
+    text(activeBundle.linesOfCode[1], descWidth + 3*dataWidth/8, 80);
+    text(activeBundle.linesOfCode[2], descWidth + 5*dataWidth/8, 80);
+    text(activeBundle.linesOfCode[3], descWidth + 7*dataWidth/8, 80);
+    
+    text(activeBundle.nTokens[0], descWidth + dataWidth/8, 120);
+    text(activeBundle.nTokens[1], descWidth + 3*dataWidth/8, 120);
+    text(activeBundle.nTokens[2], descWidth + 5*dataWidth/8, 120);
+    text(activeBundle.nTokens[3], descWidth + 7*dataWidth/8, 120);
+    
+    text(min(CC), descWidth + dataWidth/8, 160);
+    text(max(CC), descWidth + 3*dataWidth/8, 160);
+    text(avg(CC), descWidth + 5*dataWidth/8, 160);
+    text(CC[lenCC / 2], descWidth + 7*dataWidth/8, 160);
+    
+    text(CC[(int) (lenCC * 0.05f)], descWidth + dataWidth/8, 200);
+    text(CC[(int) (lenCC * 0.35f)], descWidth + 3*dataWidth/8, 200);
+    text(CC[(int) (lenCC * 0.65f)], descWidth + 5*dataWidth/8, 200);
+    text(CC[(int) (lenCC * 0.95f)], descWidth + 7*dataWidth/8, 200);
+    
+    text(min(activeBundle.USs), descWidth + dataWidth/8, 240);
+    text(max(activeBundle.USs), descWidth + 3*dataWidth/8, 240);
+    text(avg(activeBundle.USs), descWidth + 5*dataWidth/8, 240);
+    text(activeBundle.USs[lenUS / 2], descWidth + 7*dataWidth/8, 240);
+    
+    text(activeBundle.USs[(int) (lenUS * 0.05f)], descWidth + dataWidth/8, 280);
+    text(activeBundle.USs[(int) (lenUS * 0.35f)], descWidth + 3*dataWidth/8, 280);
+    text(activeBundle.USs[(int) (lenUS * 0.65f)], descWidth + 5*dataWidth/8, 280);
+    text(activeBundle.USs[(int) (lenUS * 0.95f)], descWidth + 7*dataWidth/8, 280);
+    
+    text(activeBundle.clonesType1, descWidth + dataWidth/4, 320);
+    text(activeBundle.clonesType2, descWidth + 3*dataWidth/4, 320);
+    
+    text(activeBundle.asserts, descWidth + dataWidth/2, 340);
+    text(activeBundle.testLOC, descWidth + dataWidth/2, 360);
+  }
+  
+  public void mousePressed() {
+    if (openCloneViz.hover()) {
+      try {
+        File src1 = new File(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
+        File src2 = new File(file + "_2.clones");
+        File obj1 = new File("..\\Clone Visualisation_Data\\type1.txt");
+        File obj2 = new File("..\\Clone Visualisation_Data\\type2.txt");
+        
+        copy(src1.getAbsolutePath(), obj1.getAbsolutePath());
+        copy(src2.getAbsolutePath(), obj2.getAbsolutePath());
+        
+        File file = new File("..\\Clone Visualisation.exe");
+        Runtime.getRuntime().exec(file.getAbsolutePath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  // From https://www.geeksforgeeks.org/copy-file-using-filestreams-java/#:~:text=We%20can%20copy%20a%20file,and%20FileOutputStream%20classes%20in%20Java.&text=The%20main%20logic%20of%20copying,file%20associated%20with%20FileOutputStream%20variable.
+  public void copy(String src, String obj) {
+    FileInputStream fis = null; 
+    FileOutputStream fos = null;
+    try {
+      fis = new FileInputStream(src);
+      fos = new FileOutputStream(obj);
+      int b; 
+      while  ((b=fis.read()) != -1) 
+        fos.write(b); 
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      if (fis != null) try {fis.close();} catch(IOException e1) {e1.printStackTrace();}
+      if (fos != null) try {fos.close();} catch(IOException e1) {e1.printStackTrace();}
+    }
+  }
+  
+}
+
+//-------------------
 //      DISTRIBUTIONS
 //-------------------
 
@@ -547,7 +732,7 @@ class DistribsTab extends Tab {
   RadioButton logaritmic;
   
   public void setup() {
-    surface.setSize(520, 660);
+    vizSize(520, 660);
     logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
   }
   
@@ -582,8 +767,6 @@ class DistribsTab extends Tab {
 // 3rd experiment
 class GraphTab extends Tab {
   
-  private int sWidth = 500, sHeight = 300;
-  
   private Button generateIntra, generateInter, generateIntraV, generateCbO, generateFanIn, generateAll;
   
   private String baseFile;
@@ -591,13 +774,14 @@ class GraphTab extends Tab {
   GraphTab(String bf) {baseFile = bf;}
   
   public void setup() {
-    surface.setSize(sWidth, sHeight);
-    generateIntra = new Button(sWidth/4 - 80, 80, 160, 20, "Direct intra-coupling");
-    generateInter = new Button(sWidth*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
-    generateIntraV = new Button(sWidth/4 - 80, 110, 160, 20, "Intra-coupling");
-    generateCbO = new Button(sWidth*3/4 - 80, 110, 160, 20, "Coupling between Objects");
-    generateFanIn = new Button(sWidth/4 - 80, 140, 160, 20, "Fan In");
-    generateAll = new Button(sWidth*3/4 - 80, 140, 160, 20, "Generate All");
+    vizSize(500, 300);
+    
+    generateIntra = new Button(width/4 - 80, 80, 160, 20, "Direct intra-coupling");
+    generateInter = new Button(width*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
+    generateIntraV = new Button(width/4 - 80, 110, 160, 20, "Intra-coupling");
+    generateCbO = new Button(width*3/4 - 80, 110, 160, 20, "Coupling between Objects");
+    generateFanIn = new Button(width/4 - 80, 140, 160, 20, "Fan In");
+    generateAll = new Button(width*3/4 - 80, 140, 160, 20, "Generate All");
   }
   
   public void draw() {
@@ -694,11 +878,11 @@ class GraphTab extends Tab {
  
   DirectedGraph graph;
   
-  private int sWidth = 680, sHeight = 740;
+  private int width = 680, height = 740;
   private boolean stable = false;
   
   void setup() {
-    surface.setSize(sWidth, sHeight); 
+    surface.setSize(width, height); 
   }
   
   void draw() {
@@ -722,8 +906,8 @@ class GraphTab extends Tab {
     Map<String, Node> nodeMap = new HashMap<String, Node>();
     for (String cls : couplings.keySet()) {
       Node node = new Node( cls + ": " + couplings.get(cls).length, 
-                            (int) random(60, sWidth - 60), 
-                            (int) random(60, sHeight - 130)
+                            (int) random(60, width - 60), 
+                            (int) random(60, height - 130)
                           );
       nodeMap.put(cls, node);
       graph.addNode(node);
@@ -742,15 +926,15 @@ class GraphTab extends Tab {
 /*
 class GraphTab extends Tab {
   
-  private int sWidth = 620, sHeight = 720;
+  private int width = 620, height = 720;
   
   private boolean draw = true;
   
   Button switchButton;
   
   public void setup() {
-    surface.setSize(sWidth, sHeight);
-    switchButton = new Button(20, sHeight - 100, 80, 20, "Stop");
+    surface.setSize(width, height);
+    switchButton = new Button(20, height - 100, 80, 20, "Stop");
   }
   
   public void draw() {
@@ -797,7 +981,7 @@ class GraphTab extends Tab {
           graph.add(phantomNode(cpl, node));
     }
     
-    graph.set(60.0f, 60.0f, (float) sWidth - 120, (float) (sHeight - 190));
+    graph.set(60.0f, 60.0f, (float) width - 120, (float) (height - 190));
     graph.initializeNodeLocations();
     
     for (String id1 : couplings.keySet())
@@ -815,6 +999,9 @@ class GraphTab extends Tab {
 
 
 
+static final int MIN_X = 519;
+static final int MIN_Y = 120;
+
 int[] colors4 = {
   color(127,255,0),
   color(255,255,0),
@@ -825,7 +1012,7 @@ int[] colors4 = {
 int[] colorsLOC = {
   color(127,127,255),
   color(127,127,127),
-  color(127,255,127)
+  color(0,255,166)
 };
 
 public int sum(int[] a) {
@@ -996,6 +1183,12 @@ private int calcHeight(int count, int maxHeight, int h) {
 private void center() {
   GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
   surface.setLocation((gd.getDisplayMode().getWidth() - width) / 2, (gd.getDisplayMode().getHeight() - height) / 2);
+}
+
+public float avg(int[] vals) {
+  int sum = 0;
+  for (int i : vals) sum += i;
+  return (float) sum / (float) vals.length;
 }
 
 /**
