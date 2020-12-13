@@ -223,13 +223,14 @@ test bool checkDuplication() {
 	for (_ <- [0 .. NUMTESTS]) {
 		clearSrc();
 		dupPercent = arbInt(100) + 1;	
+		dupPercent = 99;
 		dupFile = genDuplicationFile(dupPercent);
 		//list[loc] files, int typ, int threshold, bool print, bool skipBrkts		
-		dupLoc = getDuplicateLines(getFiles(getMock()), 1, 6, false, true);
+		dupLoc = getDuplicateLines([dupFile], 1, 6, false, false);
 		if (dupPercent <= 6) {
 			allConform = allConform && (dupLoc == 0);
 		} else {
-			if (dupPercent != dupLoc) return false;
+			//if (dupPercent != dupLoc) break;
 			allConform = allConform && (dupPercent == dupLoc);
 		}
 		if (!allConform) break;
