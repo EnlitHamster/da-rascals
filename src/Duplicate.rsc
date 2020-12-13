@@ -28,7 +28,7 @@ public alias KSnippet = tuple[str key, ISnippet code]; // Keyed Snippet
 
 public alias KLKey = tuple[str src, int begin]; // Location based Keyed snippet
 public alias MapSnippets = map[str key, list[ISnippet] snps];
-public alias MapKLSnippets = map[KLKey, ISnippet]; // Mapped snippets keyed by the location and beginning line of each block of the duplicate class 
+public alias MapKLSnippets = map[KLKey, ISnippet]; // Mapped snippets keyed by the location and beginning line of each block of the duplicate class
 
 public alias Block = list[ISnippet];
 public alias KBlock = list[KSnippet];
@@ -321,9 +321,10 @@ private list[Block] extendMost(MapKLSnippets clusters, list[Block] blocks, bool 
 
 private MapSnippets clusterizator(MapBlocks duplicates) {
 	MapSnippets dupClusters = ();
-	MapKLSnippets clusters = dupClusterizator(duplicates);
-	for (key <- duplicates) {
-		list[Block] blocks = extendMost(clusters, extendMost(clusters, duplicates[key], false), true);
+	MapBlocks fixedDups = fixOverlaps(duplicates);
+	MapKLSnippets clusters = dupClusterizator(fixedDups);
+	for (key <- fixedDups) {
+		list[Block] blocks = extendMost(clusters, extendMost(clusters, fixedDups[key], false), true);
 		list[ISnippet] snps = [];
 		for (block <- blocks) {
 			list[Snippet] bSnps = [];
@@ -335,6 +336,94 @@ private MapSnippets clusterizator(MapBlocks duplicates) {
 	}
 	
 	return dupClusters;
+}
+
+private MapBlocks fixOverlaps(MapBlocks blocks) {
+	MapBlocks fixedBlocks = ();
+
+	for (key <- blocks) {
+		list[list[Block]] overlaps = [];		
+		for (block <- blocks[key]) {
+			bool done = false;
+			int objUp = block[0].pos - 1;
+			int objDown = block[0].pos + 1;
+			list[Block] olBlock = [block];
+			while (!done) {
+				done = true;
+				for (block2 <- blocks[key]) {
+					if (block2[0].pos == objUp) {
+						olBlock += [block2];
+						objUp -= 1;
+						done = false;
+					} else if (block2[0].pos == objDown) {
+						olBlock += [block2];
+						objDown += 1;
+						done = false;
+					}
+				}
+			}
+			overlaps += [olBlock];
+		}
+		
+		int pivot = size(overlaps[0]);
+		bool overlapCheck = true;
+		int i = 1;
+		while (overlapCheck && i < size(overlaps)) {
+			if (size(overlaps[i]) != pivot)
+				overlapCheck = false;
+			i += 1;
+		}
+		
+		if (overlapCheck) {
+			list[Block] newCloneClassBlocks = [];
+			for (olBlock <- overlaps)
+				newCloneClassBlocks += [mergeBlocks(olBlock)];
+			
+			newCloneClassBlocks = toList(toSet(newCloneClassBlocks));
+			str pivotKey = blocksKey(newCloneClassBlocks[0]);
+			bool keyCheck = true;
+			int k = 1;
+			while (keyCheck && k < size(newCloneClassBlocks)) {
+				if (pivotKey != blocksKey(newCloneClassBlocks[k]))
+					keyCheck = false;
+				k += 1;
+			}			
+			
+			if (keyCheck) {
+				if (pivotKey in fixedBlocks) 
+					fixedBlocks[pivotKey] += newCloneClassBlocks;
+				else
+					fixedBlocks[pivotKey] = newCloneClassBlocks;
+			} else {
+				if (key in fixedBlocks) 
+					fixedBlocks[key] += blocks[key];
+				else
+					fixedBlocks[key] = [blocks[key]];
+			}
+		} else {
+			if (key in fixedBlocks) 
+				fixedBlocks[key] += blocks[key];
+			else
+				fixedBlocks[key] = [blocks[key]];
+		}
+	}
+	
+	return fixedBlocks;
+}
+
+private Block mergeBlocks(list[Block] blocks) {
+	set[ISnippet] snips = {};
+	for (block <- blocks)
+		for (snip <- block)
+			snips += snip;
+	return sort(toList(snips), bool(ISnippet a, ISnippet b) {return a.pos < b.pos;});
+}
+
+private str blocksKey(Block block) {
+	str key = escape(block[0].snp.block, whiteSpaces);
+	for (isnp <- block[1..])
+		key += "<eof()><escape(isnp.snp.block, whiteSpaces)>";
+	return key;
 }
 
 private MapKLSnippets dupClusterizator(MapBlocks duplicates) {
