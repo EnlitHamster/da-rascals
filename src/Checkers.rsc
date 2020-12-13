@@ -36,6 +36,11 @@ int setNumTests(int new) {
 	return NUMTESTS;
 }
 
+test bool checkClone() {
+	if (!getSetup()) setup();
+	return false;
+}
+
 @doc {
 	.Synopsis
 	Check whether the LOC metric is correct, by randomly generating sets of files with an amount of lines across the set.

@@ -13,6 +13,7 @@ import Set;
 import List;
 import IO;
 import util::Math;
+import String;
  
 // M3 imports
 import lang::java::m3::Core;
@@ -24,6 +25,8 @@ loc SRC = MOCK + "src";
 int CODELINECOUNTER = 0;
 int UNITCOUNTER = 0;
 int CODEFILECOUNT = 0;
+
+int CLONECLASSFILECOUNT = 0;
 
 bool getSetup() {
 	return isDirectory(MOCK);
@@ -81,8 +84,9 @@ void setupProjectSettings(loc projectLoc) {
 	Clear all the .java files in the mock project.
 }
 void clearSrc() {
-	genCommentFile(0);
+	genCloneClassFiles(CLONECLASSFILECOUNT, 0, 0, 0);
 	genCodeFiles(0, 0, CODEFILECOUNT);
+	genCommentFile(0);
 	genDuplicationFile(-1);
 	genComplexFile(0);
 	CODEFILECOUNT = 0;
@@ -90,7 +94,172 @@ void clearSrc() {
 	UNITCOUNTER = 0;
 }
 
-// ..................................................................GENERATE COMMENT FILE .................................................................. //
+// ..................................................................GENERATE CLONECLASS FILES .................................................................. //
+@doc{
+	.Synopsis 
+	Generate classCount distinct clone classes each contained in their own file, for each class generate clonesPerClass
+	Clones of type typ and with a size large enough to fulfil the threshold.
+}
+list[loc] genCloneClassFiles(int classesCount, int clonesPerClass,  int typ, int threshold) {
+	CLONECLASSFILECOUNT = max(classesCount, CLONECLASSFILECOUNT);
+	list[loc] cloneClassFiles = [];
+	if (classesCount == 0) {
+		for (classid <- [0 .. classesCount + 100]) {
+			genClass(0, classid, typ, threshold);
+		}
+		return cloneClassFiles;
+	}
+	
+	for (classid <- [0 .. classesCount]) {
+		cloneClassFiles += genClass(clonesPerClass, classid, typ, threshold);
+	}
+	
+	
+	return cloneClassFiles;
+}
+
+@doc {
+	.Synopsis
+	Generate a clone class file with id=classid, containing cloneCount clones of type typ large enough for threshold.
+}
+loc genClass(int cloneCount, int classid, int typ, int threshold) {
+	loc classFile = SRC + "cloneclass<classid>.java";
+	if (cloneCount == 0) {
+		remove(classFile);
+	} else {
+		writeFile(classFile, 
+						"class CloneClass<classid>{" + eof(), 
+						"<genClones(cloneCount, classid, typ, threshold)>" + eof(),
+						"}");
+	}
+	return classFile;
+}
+
+@doc {
+	Generate cloneCount clones of type typ satisfying the threshold.
+}
+str genClones(int cloneCount, int classid, int typ, int threshold) {
+	str clones = "";
+	str codeLine = genCodeLines(1);
+	for(_ <- [0 .. cloneCount]) {
+		clones += genClone(classid, typ, threshold, codeLine);
+	}
+	return clones;
+}
+
+@doc{
+	.Synopsis
+	Generate a clone for class classid of type typ satisfying the threshold.
+}
+str genClone(int classid, int typ, int threshold, str codeLine) {
+	str clone = "";
+	
+	if (typ == 1) {
+		threshold += 1;
+	} else if (typ == 2) {
+		threshold /= (4 + classid*2);
+		threshold += (4 + classid*2);
+		codeLine = replaceAll(codeLine, eof(), "");
+		codeLine = replaceAll(codeLine, ";", "");
+		for(_ <- [0 .. classid]) {
+			codeLine += " + 1";
+		}
+		codeLine += ";" + eof();
+	}
+	
+	for(_ <- [0 .. threshold]) {
+			clone += codeLine;
+		
+	}
+	str delim = genCodeLines(1);
+	return clone + delim+ eof();
+}
+
+
+
+// ..................................................................GENERATE CODE FILE .................................................................. //
+@doc {
+	.Synopsis
+	Generate "fileCount" files dividing "lineCount" lines of code across all files, with units conform "unitSize".
+}
+list[loc] genCodeFiles(int lineCount, int unitSize, int fileCount) {
+	CODEFILECOUNT = max(fileCount, CODEFILECOUNT);
+	list[loc] codeFiles = [];
+	if (lineCount == 0) {
+		for (fileCounter <- [0 .. fileCount + 100]) {
+			genCodeFile(0, unitSize, fileCounter);
+		}
+		return codeFiles;
+	}
+	int linesPerFile = lineCount / fileCount;
+	int leftover = lineCount - linesPerFile * fileCount;
+	codeFiles += genCodeFile(linesPerFile + leftover, unitSize, 0);
+	for (fileCounter <- [1 .. fileCount]) {
+		codeFiles += genCodeFile(linesPerFile, unitSize, fileCounter);
+	}
+	return codeFiles;
+}
+
+@doc {
+	.Synopsis
+	Generate a codefile with lineCount
+}
+loc genCodeFile(int lineCount, int unitSize, int fileCounter) {
+	loc codeFile = SRC + "code<fileCounter>.java";
+	//println(codeFile);
+	if (lineCount == 0) {
+		remove(codeFile);
+	} else {
+		lineCount -= 1;
+		totalUnitCount = lineCount / unitSize;
+		leftover = lineCount - (totalUnitCount * unitSize);
+		writeFile(codeFile,
+			"class code<fileCounter>{" +eof(),
+			"<genCodeLines(leftover)>" +eof(),
+			"<genUnits(totalUnitCount, unitSize)>" +eof(),
+			"} ");
+	}
+	return codeFile;
+}
+
+@doc {
+	.Synopsis
+	Generate "totalUnitCount" unique functions of length "unitSize".
+}
+str genUnits(int totalUnitCount, int unitSize) {
+	units = "";
+	for (_ <- [0 .. totalUnitCount]) {
+		units += genUnit(unitSize);
+	}
+	return units;
+}
+
+@doc {
+	.Synopsis
+	Generate a unit of length "unitSize".
+}
+str genUnit(int unitSize) {
+	unit = "\tvoid unit<UNITCOUNTER>() {" + eof();;
+	UNITCOUNTER += 1;
+	unit += genCodeLines(unitSize-1);
+	unit += "\t}" +eof();
+	return unit;
+}
+
+@doc {
+	.Synopsis
+	Generate n unique codelines.
+}
+str genCodeLines(int n) {
+	code = "";
+	for (_ <- [0 .. n]) {
+		code += "\tint i_<CODELINECOUNTER> = 0;" +eof();
+		CODELINECOUNTER += 1;
+	}
+	return code;
+}
+
+// ..................................................................GENERATE COMMENT FILES .................................................................. //
 @doc {
 	.Synopsis
 	Generate a file with n comments in the mock project containing all kinds of comments.
@@ -177,88 +346,6 @@ str makeDoc(int len) {
 		doc += eof() + "\t *";
 	}
 	return doc + eof() + "\t **/" +eof();
-}
-
-// ..................................................................GENERATE CODE FILE .................................................................. //
-@doc {
-	.Synopsis
-	Generate "fileCount" files dividing "lineCount" lines of code across all files, with units conform "unitSize".
-}
-list[loc] genCodeFiles(int lineCount, int unitSize, int fileCount) {
-	CODEFILECOUNT = max(fileCount, CODEFILECOUNT);
-	list[loc] codeFiles = [];
-	if (lineCount == 0) {
-		for (fileCounter <- [0 .. fileCount + 100]) {
-			genCodeFile(0, unitSize, fileCounter);
-		}
-		return codeFiles;
-	}
-	int linesPerFile = lineCount / fileCount;
-	int leftover = lineCount - linesPerFile * fileCount;
-	codeFiles += genCodeFile(linesPerFile + leftover, unitSize, 0);
-	for (fileCounter <- [1 .. fileCount]) {
-		codeFiles += genCodeFile(linesPerFile, unitSize, fileCounter);
-	}
-	return codeFiles;
-}
-
-@doc {
-	.Synopsis
-	Generate a codefile with lineCount
-}
-loc genCodeFile(int lineCount, int unitSize, int fileCounter) {
-	loc codeFile = SRC + "code<fileCounter>.java";
-	//println(codeFile);
-	if (lineCount == 0) {
-		remove(codeFile);
-	} else {
-		lineCount -= 1;
-		totalUnitCount = lineCount / unitSize;
-		leftover = lineCount - (totalUnitCount * unitSize);
-		writeFile(codeFile,
-			"class code<fileCounter>{" +eof(),
-			"<genCodeLines(leftover)>" +eof(),
-			"<genUnits(totalUnitCount, unitSize)>" +eof(),
-			"} ");
-	}
-	return codeFile;
-}
-
-@doc {
-	.Synopsis
-	Generate "totalUnitCount" unique functions of length "unitSize".
-}
-str genUnits(int totalUnitCount, int unitSize) {
-	units = "";
-	for (_ <- [0 .. totalUnitCount]) {
-		units += genUnit(unitSize);
-	}
-	return units;
-}
-
-@doc {
-	.Synopsis
-	Generate a unit of length "unitSize".
-}
-str genUnit(int unitSize) {
-	unit = "\tvoid unit<UNITCOUNTER>() {" + eof();;
-	UNITCOUNTER += 1;
-	unit += genCodeLines(unitSize-1);
-	unit += "\t}" +eof();
-	return unit;
-}
-
-@doc {
-	.Synopsis
-	Generate n unique codelines.
-}
-str genCodeLines(int n) {
-	code = "";
-	for (_ <- [0 .. n]) {
-		code += "\tint i_<CODELINECOUNTER> = 0;" +eof();
-		CODELINECOUNTER += 1;
-	}
-	return code;
 }
 
 // ..................................................................GENERATE DUPLICATION FILE .................................................................. //
