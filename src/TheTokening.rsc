@@ -16,6 +16,7 @@ import DateTime;
 import util::Math;
 
 public alias Token = Snippet;
+public alias TokenCount = tuple[int ids, int literals, int methods, int total];
 
 /*** STACK GENERATOR ***/
 
@@ -174,12 +175,6 @@ list[Token] reconnect(list[Token] tkns) {
 	return tokens;
 }
 
-private str replace(str sbj, map[str, str] mapping) {
-	str im = sbj;
-	for (key <- mapping) im = replaceAll(im, key, mapping[key]);
-	return im;
-}
-
 /*** TOKENIZER ***/
 
 private str TYPE = "TYPE";
@@ -298,12 +293,12 @@ list[str] tokenize(list[str] words) {
 	for (token <- words) {
 		if (!ignoreNext) {
 			if (inStr) {
-				if (token == "\"") {
+				if (endsWith(token, "\"")) {
 					tokens += LITERAL;
 					inStr = false;
 				}
 			} else if (inChr) {
-				if (token == "\'") {
+				if (endsWith(token, "\'")) {
 					tokens += LITERAL;
 					inChr = false;
 				}
@@ -315,9 +310,9 @@ list[str] tokenize(list[str] words) {
 						ignoreNext = true;
 					else
 						tokens += keywords[token];
-				} else if (token == "\"") 
+				} else if (startsWith(token, "\"")) 
 					inStr = true;
-				else if (token == "\'")
+				else if (startsWith(token, "\'"))
 					inChr = true;
 				else if (/^[+-]?([0-9]*[.])?[0-9]+$/ := token) // Numbers
 					tokens += LITERAL;
@@ -341,13 +336,13 @@ list[Token] tokenize(list[Token] tkns) {
 	for (token <- tkns) {
 		if (!ignoreNext) {
 			if (inStr) {
-				if (token.block == "\"") {
+				if (endsWith(token.block, "\"")) {
 					token.block = LITERAL;
 					tokens += token;
 					inStr = false;
 				}
 			} else if (inChr) {
-				if (token.block == "\'") {
+				if (endsWith(token.block, "\'")) {
 					token.block = LITERAL;
 					tokens += token;
 					inChr = false;
@@ -362,9 +357,9 @@ list[Token] tokenize(list[Token] tkns) {
 						token.block = keywords[token.block];
 						tokens += token;
 					}
-				} else if (token.block == "\"")
+				} else if (endsWith(token.block, "\""))
 					inStr = true;
-				else if (token.block == "\'")
+				else if (startsWith(token.block, "\'"))
 					inChr = true;
 				else if (/^[+-]?([0-9]*[.])?[0-9]+$/ := token.block) { // Number
 					token.block = LITERAL;
@@ -427,15 +422,41 @@ list[Token] normalize(list[Token] tkns) {
 	for (i <- [0..size(strs)])
 		tokens += <strs[i], locs[i]>;
 		
-	tokens = [<t, l> | <t, l> <- tokens, t notin dontChange];
-	for (i <- [0..size(tokens)]) {
-		loc l = tokens[i].src;
-		l.end.column = i;
-		l.begin.column = i;
-		tokens[i].src = l;
+	return [<t, l> | <t, l> <- tokens, t notin dontChange];
+}
+
+list[Token] tokenizer(list[Snippet] code) {
+	return normalize(tokenize(reconnect(reconstruct(parse(code)))));
+}
+
+list[str] tokenizer(str code) {
+	return normalize(tokenize(parse(code)));
+}
+
+TokenCount getTokenStats(list[list[Token]] tokens) {
+	TokenCount stats = <0, 0, 0, 0>;
+	for (token <- tokens) {
+		TokenCount statsIn = getTokenStats(token);
+		stats.ids += statsIn.ids;
+		stats.literals += statsIn.literals;
+		stats.methods += statsIn.methods;
+		stats.total += statsIn.total;
 	}
-		
-	return tokens;
+	return stats;
+}
+
+TokenCount getTokenStats(list[Token] tokens) {
+	TokenCount stats = <0, 0, 0, 0>;
+	for (token <- tokens) {
+		if (token == IDENTIFIER)
+			stats.ids += 1;
+		else if (token == LITERAL)
+			stats.literals += 1;
+		else if (token == "METHOD" || token == "CONSTRUCTOR")
+			stats.methods += 1;
+		stats.total += 1;
+	}
+	return stats;
 }
 
 @javaClass{internal.Matchers}
@@ -443,6 +464,11 @@ private java str normPrototypes(str tokenized);
 
 @javaClass{internal.Matchers}
 private java str normDeclarations(str tokenized);
+
+void testerttt() {
+	tokens = tokenize(reconnect(reconstruct(parse(readFileSnippets(|file:///C:/Users/sandr/Documents/University/SE/Series1/Dump/Test.java|)))));
+	for (t <- tokens) println(t);
+}
 
 list[tuple[int, int]] tester(loc file) {
 	list[Token] tokens = normalize(tokenize(reconnect(reconstruct(parse(readFileSnippets(file))))));

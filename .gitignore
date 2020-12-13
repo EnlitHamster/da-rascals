@@ -34,3 +34,9 @@ build.properties
 META-INF/
 
 *.txt
+
+Dump/
+
+src/Visualiser/Input/
+
+*.vlw

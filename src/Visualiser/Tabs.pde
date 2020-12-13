@@ -19,43 +19,44 @@ abstract class Tab {
 class PiesTab extends Tab {
   
   public void setup() {
-    surface.setSize(460, 630); 
+    vizSize(460, 630); 
   }
   
   public void draw() {  
     fill(0);
     textFont(font, 20);
     textAlign(CENTER);
+    int left = width/2 + 10;
     
-    text("Unit Complexity", 120, 60);
-    text("Unit Size", 120, 320);
-    text("Lines of code", 340, 60);
-    text("Legend", 340, 320);
+    text("Unit Complexity", width/4, 60);
+    text("Unit Size", width/4, 320);
+    text("Lines of code", 3*width/4, 60);
+    text("Legend", 3*width/4, 320);
     
     textAlign(LEFT);
     textFont(font, 16);
     
-    text("Low risk elements", 270, 356);
-    text("Medium risk elements", 270, 386);
-    text("High risk elements", 270, 416);
-    text("Very high risk elements", 270, 446);
-    text("Lines of code", 270, 476);
-    text("Empty lines", 270, 506);
-    text("Comment lines", 270, 536);
+    text("Low risk elements", left + 30, 356);
+    text("Medium risk elements", left + 30, 386);
+    text("High risk elements", left + 30, 416);
+    text("Very high risk elements", left + 30, 446);
+    text("Lines of code", left + 30, 476);
+    text("Empty lines", left + 30, 506);
+    text("Comment lines", left + 30, 536);
     
     noStroke();
     
-    fill(colors4[0]);    rect(240, 340, 20, 20);
-    fill(colors4[1]);    rect(240, 370, 20, 20);
-    fill(colors4[2]);    rect(240, 400, 20, 20);
-    fill(colors4[3]);    rect(240, 430, 20, 20);
-    fill(colorsLOC[0]);  rect(240, 460, 20, 20);
-    fill(colorsLOC[1]);  rect(240, 490, 20, 20);
-    fill(colorsLOC[2]);  rect(240, 520, 20, 20);    
+    fill(colors4[0]);    rect(left, 340, 20, 20);
+    fill(colors4[1]);    rect(left, 370, 20, 20);
+    fill(colors4[2]);    rect(left, 400, 20, 20);
+    fill(colors4[3]);    rect(left, 430, 20, 20);
+    fill(colorsLOC[0]);  rect(left, 460, 20, 20);
+    fill(colorsLOC[1]);  rect(left, 490, 20, 20);
+    fill(colorsLOC[2]);  rect(left, 520, 20, 20);    
     
-    pieChart(120, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
-    pieChart(120, 440, activeBundle.percRiskUS, colors4);
-    pieChart(340, 180, activeBundle.percLOC, colorsLOC); 
+    pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
+    pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
+    pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
   }
 
   private void pieChart(int x, int y, float[] data, color[] colors) {
@@ -77,7 +78,7 @@ class PiesTab extends Tab {
 class ScoresTab extends Tab {
   
   public void setup() {
-    surface.setSize(600, 660); 
+    vizSize(600, 660); 
   } 
   
   public void draw() {
@@ -103,8 +104,8 @@ class ScoresTab extends Tab {
     textAlign(RIGHT);
     
     text(activeBundle.linesOfCode[0] + String.format(" (%4.2f%c)", (float) activeBundle.linesOfCode[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 60);
-    text(activeBundle.duplicateLines + String.format(" (%4.2f%c)", (float) activeBundle.duplicateLines * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
-    text(activeBundle.duplicateLines + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
+    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.clonesType1 * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
+    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
     
     printPercs(exceptions.isChecked() ? activeBundle.riskUCE : activeBundle.riskUCNE, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, 180);
     printPercs(activeBundle.riskUS, activeBundle.percRiskUS, 240);
@@ -215,6 +216,85 @@ class ScoresTab extends Tab {
 }
 
 //-------------------
+//               DATA
+//-------------------
+
+class DataTab extends Tab {
+  
+  public void setup () {
+    
+  }
+  
+  public void draw() {
+    fill(0);
+    textFont(fontBd, 12); 
+    textAlign(LEFT);
+    
+    int descWidth = 160;
+    int dataWidth = width - (descWidth + 40);
+    
+    text("Line count", 20, 60);
+    text("Token count", 20, 100);
+    text("Cyclomatic complexity", 20, 140);
+    
+    textAlign(CENTER);
+    textFont(fontIt, 12);
+    
+    text("code", descWidth + dataWidth/8, 60);
+    text("empty", descWidth + 3*dataWidth/8, 60);
+    text("commnet", descWidth + 5*dataWidth/8, 60);
+    text("total", descWidth + 7*dataWidth/8, 60);
+    
+    text("min", descWidth + dataWidth/8, 140);
+    text("max", descWidth + 3*dataWidth/8, 140);
+    text("mean", descWidth + 5*dataWidth/8, 140);
+    text("median", descWidth + 7*dataWidth/8, 140);
+    
+    float wP = textWidth("P");
+    
+    textSize(10);
+    
+    float w1 = textWidth("5");
+    float w2 = textWidth("35");
+    float w3 = textWidth("65");
+    float w4 = textWidth("95");
+    
+    text("5", descWidth + dataWidth/8 + wP/2, 182);
+    text("35", descWidth + 3*dataWidth/8 + wP/2, 182);
+    text("65", descWidth + 5*dataWidth/8 + wP/2, 182);
+    text("95", descWidth + 7*dataWidth/8 + wP/2, 182);
+    
+    textSize(12);
+    
+    text("P", descWidth + dataWidth/8 - w1/2, 180);
+    text("P", descWidth + 3*dataWidth/8 - w2/2, 180);
+    text("P", descWidth + 5*dataWidth/8 - w3/2, 180);
+    text("P", descWidth + 7*dataWidth/8 - w4/2, 180);
+    
+    textFont(font, 12); 
+    
+    int[] CC = exceptions.isChecked() ? activeBundle.CCsE : activeBundle.CCsNE;
+    int lenCC = CC.length;
+    
+    text(activeBundle.linesOfCode[0], descWidth + dataWidth/8, 80);
+    text(activeBundle.linesOfCode[1], descWidth + 3*dataWidth/8, 80);
+    text(activeBundle.linesOfCode[2], descWidth + 5*dataWidth/8, 80);
+    text(activeBundle.linesOfCode[3], descWidth + 7*dataWidth/8, 80);
+    
+    text(min(CC), descWidth + dataWidth/8, 160);
+    text(max(CC), descWidth + 3*dataWidth/8, 160);
+    text(avg(CC), descWidth + 5*dataWidth/8, 160);
+    text(CC[lenCC / 2], descWidth + 7*dataWidth/8, 160);
+    
+    text(CC[(int) (lenCC * 0.05)], descWidth + dataWidth/8, 200);
+    text(CC[(int) (lenCC * 0.35)], descWidth + 3*dataWidth/8, 200);
+    text(CC[(int) (lenCC * 0.65)], descWidth + 5*dataWidth/8, 200);
+    text(CC[(int) (lenCC * 0.95)], descWidth + 7*dataWidth/8, 200);
+  }
+  
+}
+
+//-------------------
 //      DISTRIBUTIONS
 //-------------------
 
@@ -223,7 +303,7 @@ class DistribsTab extends Tab {
   RadioButton logaritmic;
   
   public void setup() {
-    surface.setSize(520, 660);
+    vizSize(520, 660);
     logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
   }
   
@@ -258,8 +338,6 @@ class DistribsTab extends Tab {
 // 3rd experiment
 class GraphTab extends Tab {
   
-  private int sWidth = 500, sHeight = 300;
-  
   private Button generateIntra, generateInter, generateIntraV, generateCbO, generateFanIn, generateAll;
   
   private String baseFile;
@@ -267,13 +345,14 @@ class GraphTab extends Tab {
   GraphTab(String bf) {baseFile = bf;}
   
   void setup() {
-    surface.setSize(sWidth, sHeight);
-    generateIntra = new Button(sWidth/4 - 80, 80, 160, 20, "Direct intra-coupling");
-    generateInter = new Button(sWidth*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
-    generateIntraV = new Button(sWidth/4 - 80, 110, 160, 20, "Intra-coupling");
-    generateCbO = new Button(sWidth*3/4 - 80, 110, 160, 20, "Coupling between Objects");
-    generateFanIn = new Button(sWidth/4 - 80, 140, 160, 20, "Fan In");
-    generateAll = new Button(sWidth*3/4 - 80, 140, 160, 20, "Generate All");
+    vizSize(500, 300);
+    
+    generateIntra = new Button(width/4 - 80, 80, 160, 20, "Direct intra-coupling");
+    generateInter = new Button(width*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
+    generateIntraV = new Button(width/4 - 80, 110, 160, 20, "Intra-coupling");
+    generateCbO = new Button(width*3/4 - 80, 110, 160, 20, "Coupling between Objects");
+    generateFanIn = new Button(width/4 - 80, 140, 160, 20, "Fan In");
+    generateAll = new Button(width*3/4 - 80, 140, 160, 20, "Generate All");
   }
   
   void draw() {
@@ -370,11 +449,11 @@ class GraphTab extends Tab {
  
   DirectedGraph graph;
   
-  private int sWidth = 680, sHeight = 740;
+  private int width = 680, height = 740;
   private boolean stable = false;
   
   void setup() {
-    surface.setSize(sWidth, sHeight); 
+    surface.setSize(width, height); 
   }
   
   void draw() {
@@ -398,8 +477,8 @@ class GraphTab extends Tab {
     Map<String, Node> nodeMap = new HashMap<String, Node>();
     for (String cls : couplings.keySet()) {
       Node node = new Node( cls + ": " + couplings.get(cls).length, 
-                            (int) random(60, sWidth - 60), 
-                            (int) random(60, sHeight - 130)
+                            (int) random(60, width - 60), 
+                            (int) random(60, height - 130)
                           );
       nodeMap.put(cls, node);
       graph.addNode(node);
@@ -418,15 +497,15 @@ class GraphTab extends Tab {
 /*
 class GraphTab extends Tab {
   
-  private int sWidth = 620, sHeight = 720;
+  private int width = 620, height = 720;
   
   private boolean draw = true;
   
   Button switchButton;
   
   public void setup() {
-    surface.setSize(sWidth, sHeight);
-    switchButton = new Button(20, sHeight - 100, 80, 20, "Stop");
+    surface.setSize(width, height);
+    switchButton = new Button(20, height - 100, 80, 20, "Stop");
   }
   
   public void draw() {
@@ -473,7 +552,7 @@ class GraphTab extends Tab {
           graph.add(phantomNode(cpl, node));
     }
     
-    graph.set(60.0f, 60.0f, (float) sWidth - 120, (float) (sHeight - 190));
+    graph.set(60.0f, 60.0f, (float) width - 120, (float) (height - 190));
     graph.initializeNodeLocations();
     
     for (String id1 : couplings.keySet())
