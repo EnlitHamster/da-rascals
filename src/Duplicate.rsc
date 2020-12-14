@@ -28,7 +28,7 @@ public alias KSnippet = tuple[str key, ISnippet code]; // Keyed Snippet
 
 public alias KLKey = tuple[str src, int begin]; // Location based Keyed snippet
 public alias MapSnippets = map[str key, list[ISnippet] snps];
-public alias MapKLSnippets = map[KLKey, ISnippet]; // Mapped snippets keyed by the location and beginning line of each block of the duplicate class
+public alias MapKLSnippets = map[str key, map[int pos, ISnippet snp] isnps]; // Mapped snippets keyed by the location and beginning line of each block of the duplicate class
 
 public alias Block = list[ISnippet];
 public alias KBlock = list[KSnippet];
@@ -38,7 +38,11 @@ private map[str, str] whiteSpaces = (" ":"", "\t":"");
 
 MapBlocks mapBlocks(list[list[KSnippet]] ksnps, int step, str sep) {
 	MapBlocks blocks = ();
+	int _len = size(ksnps);
+	int _i = 1;
 	for (snps <- ksnps) { // -- O(#files) = O(n)
+		print("Mapping block <_i>/<_len>...");
+		_i += 1;
 		int len = size(snps);
 		// -- O(#lines in nth file) = O(m)
 		if (len > step) { // If the file size is less than step, it is obvious there cannot be any duplicate code.
@@ -56,6 +60,7 @@ MapBlocks mapBlocks(list[list[KSnippet]] ksnps, int step, str sep) {
 				else blocks[key] = [block];
 			}
 		}
+		println(" Done.");
 	} // O(n * 5/3 * m(n) * step) = O(k * 10) approx O(k) linear 
 	  // n * m(n) = k, where k is the number of lines in the project
 	return blocks;
@@ -115,9 +120,14 @@ MapBlocks mapBlocksType2(list[list[Token]] tokens, int threshold) {
 
 MapBlocks mapBlocksType2(list[loc] fileLocs, int threshold, bool strict) {
 	list[list[KSnippet]] ksnps = [];
+	int _len = size(fileLocs);
+	int _i = 1;
 	for (fLoc <- fileLocs) {
+		print("Tokening file <_i>/<_len>...");
+		_i += 1;
 		list[Token] tokens = tokenizer(readFileSnippets(fLoc), strict);
 		ksnps += [kSnipTokens(tokens)];
+		println(" Done.");
 	}
 	return mapBlocks(ksnps, threshold, " ");
 }
@@ -176,9 +186,12 @@ tuple[MapSnippets, int] getClones(list[loc] files, int clnType, int threshold, b
 	MapBlocks dupBlocks = ();
 	set[ISnippet] dupSnps = {};
 	
+	println("Mapping snippets...");
 	blocks = typeSel(files, clnType, threshold, skipBrkts, strict);
 	
+	println("Generating duplication blocks...");
 	<dupBlocks, dupSnps> = genDupBlocks(blocks);
+	println("Clusterizing blocks...");
 	MapSnippets clones = clusterizator(dupBlocks);
 	
 	return <clones, size(dupSnps)>;
@@ -268,13 +281,13 @@ private list[ISnippet] extender(MapKLSnippets clusters, list[Block] blocks, bool
 	for (snippets <- blocks) {
 		ISnippet pivot = forward ? last(snippets) : head(snippets);
 		int obj = forward ? pivot.pos + 1 : pivot.pos - 1;
-		KLKey klk = <pivot.snp.src.uri, obj>;
+		str file = pivot.snp.src.uri;
 		
 		// The snippet cannot be extended
-		if (klk notin clusters)
-			return []; 
-		
-		str key = escape(clusters[klk].snp.block, whiteSpaces);
+		if (obj notin clusters[file])
+			return [];
+				
+		str key = escape(clusters[file][obj].snp.block, whiteSpaces);
 		
 		// First snippet sets the key used to check if the extending is possible
 		if (extenderKey == "")			
@@ -283,7 +296,7 @@ private list[ISnippet] extender(MapKLSnippets clusters, list[Block] blocks, bool
 	 	else if (extenderKey != key)
 	 		return [];
 		
-		nextStep += clusters[klk];
+		nextStep += clusters[file][obj];
 	}
 	
 	return nextStep;
@@ -306,10 +319,13 @@ private MapSnippets clusterizator(MapBlocks duplicates) {
 	MapSnippets dupClusters = ();
 	MapBlocks fixedDups = fixOverlaps(duplicates);
 	MapKLSnippets clusters = dupClusterizator(fixedDups);
+	int _len = size(fixedDups);
+	int _i = 1;
 	
 	for (key <- fixedDups) {
-		list[Block] blocks = extendMost(clusters, fixedDups[key], false);
-		blocks = extendMost(clusters, blocks, true);
+		print("Clustering class <_i>/<_len>..."); 
+		_i += 1;
+		list[Block] blocks = extendMost(clusters, extendMost(clusters, fixedDups[key], false), true);
 		list[ISnippet] snps = [];
 		for (block <- blocks) {
 			list[Snippet] bSnps = [];
@@ -318,6 +334,7 @@ private MapSnippets clusterizator(MapBlocks duplicates) {
 		}
 		str kBlock = escape(snps[0].snp.block, whiteSpaces);
 		if (kBlock notin dupClusters) dupClusters[kBlock] = snps;
+		println(" Done.");
 	}
 	
 	return dupClusters;
@@ -326,8 +343,12 @@ private MapSnippets clusterizator(MapBlocks duplicates) {
 // QUICK 'N' DIRTY SOLUTIONS LLC
 private MapBlocks fixOverlaps(MapBlocks blocks) {
 	MapBlocks fixedBlocks = ();
+	int _len = size(blocks);
+	int _i = 1;
 
 	for (key <- blocks) {
+		print("Checking overlaps <_i>/<_len>...");
+		_i += 1;
 		list[list[Block]] overlaps = [];		
 		for (block <- blocks[key]) {
 			bool done = false;
@@ -380,17 +401,20 @@ private MapBlocks fixOverlaps(MapBlocks blocks) {
 					fixedBlocks[pivotKey] += newCloneClassBlocks;
 				else
 					fixedBlocks[pivotKey] = newCloneClassBlocks;
+				println(" Fixed.");
 			} else {
 				if (key in fixedBlocks) 
 					fixedBlocks[key] += blocks[key];
 				else
 					fixedBlocks[key] = blocks[key];
+				println(" Done.");
 			}
 		} else {
 			if (key in fixedBlocks) 
 				fixedBlocks[key] += blocks[key];
 			else
 				fixedBlocks[key] = blocks[key];
+			println(" Done.");
 		}
 	}
 	
@@ -414,15 +438,25 @@ private str blocksKey(Block block) {
 
 private MapKLSnippets dupClusterizator(MapBlocks duplicates) {
 	MapKLSnippets lsnps = ();
+	int _len = size(duplicates);
+	int _i = 1;
 	for (key <- duplicates) {
+		print("Block duplicate clusterizer <_i>/<_len>...");
+		_i += 1;
 		list[Block] blocks = duplicates[key];
 		for (i <- [0..size(blocks[0])]) {
 			for (block <- blocks) {
 				ISnippet is = block[i];
-				KLKey kls = <is.snp.src.uri, is.pos>;
-				lsnps[kls] = is;
+				str file = is.snp.src.uri;
+				int pos = is.pos;
+				if (file notin lsnps)
+					lsnps[file] = ();
+				
+				if (pos notin lsnps[file])
+					lsnps[file][pos] = is;
 			}
 		}
+		println(" Done.");
 	}
 	return lsnps;
 }

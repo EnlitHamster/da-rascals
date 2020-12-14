@@ -46,9 +46,11 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  int DUPNB,
 							  int DUPB,
 							  int DUP2,
+							  int DUP25,
 							  CloneStats statsDUPNB,
 							  CloneStats statsDUPB,
 							  CloneStats statsDUP2,
+							  CloneStats statsDUP25,
 							  int rankDUPNB,
 							  int rankDUPB,
 							  int asserts,
@@ -98,7 +100,7 @@ CloneStats getClonesStats(MapSnippets clones) {
 	return <cloneClasses, biggestClone, biggestClass, cloneInsts>;
 }
 
-Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts, bool strict) {
+Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts, int strict) {
 	// Saving the project files/ASTs as they are used by all metric calculators
 	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectFiles);
@@ -154,27 +156,43 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	MapSnippets clones1B = ();
 	
 	if (skipBrkts % 2 == 0) {
-		<clones1NB, duplicatesNB> = getClones(projectFiles, 1, thresholdType1Clones, true, strict);
+		<clones1NB, duplicatesNB> = getClones(projectFiles, 1, thresholdType1Clones, true, false);
 		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), print);
 		stats1NB = getClonesStats(clones1NB);
 	}
 	
 	if (skipBrkts > 0) {
-		<clones1B, duplicatesB> = getClones(projectFiles, 1, thresholdType1Clones, false, strict);
+		<clones1B, duplicatesB> = getClones(projectFiles, 1, thresholdType1Clones, false, false);
 		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), print);
 		stats1B = getClonesStats(clones1B);
 	}
 	
-	list[list[Token]] tokens = [];
-	for (fLoc <- projectFiles)
-		tokens += [tokenizer(readFileSnippets(fLoc), strict)];
-	
 	MapSnippets clones2 = ();
+	MapSnippets clones25 = ();
 	int duplicates2 = -1;
+	int duplicates25 = -1;
+	CloneStats stats2 = <-1,-1,-1,-1>;
+	CloneStats stats25 = <-1,-1,-1,-1>;
+	TokenCount tknStats = <-1,-1,-1,-1>;
 	
-	TokenCount tknStats = getTokenStats(tokens);
-	<clones2, duplicates2> = getClonesType2(tokens, thresholdType2Clones);
-	CloneStats stats2 = getClonesStats(clones2);
+	if (strict % 2 == 0) {
+		list[list[Token]] tokens = [];
+		for (fLoc <- projectFiles)
+			tokens += [tokenizer(readFileSnippets(fLoc), true)];
+		<clones2, duplicates2> = getClonesType2(tokens, thresholdType2Clones);
+		stats2 = getClonesStats(clones2);
+		tknStats = getTokenStats(tokens);
+	}
+	
+	if (strict > 0) {
+		list[list[Token]] tokens = [];
+		for (fLoc <- projectFiles)
+			tokens += [tokenizer(readFileSnippets(fLoc), false)];
+		<clones25, duplicates25> = getClonesType2(tokens, thresholdType2Clones);
+		stats25 = getClonesStats(clones25);
+		if (strict == 1)
+			tknStats = getTokenStats(tokens);
+	}
 	
 	// TEST QUALITY
 	list[loc] asserts = getAsserts(asts);
@@ -208,22 +226,22 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	
 	// Output
 	return <LOCNB, LOCB, tknStats, rankLOCNB, rankLOCB, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, 
-			rankUS, duplicatesNB, duplicatesB, duplicates2, stats1NB, stats1B, stats2, rankDUPNB, rankDUPB, size(asserts), aLOCNB, aLOCB, 
-			rankASSNB, rankASSB, ANNB, ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
+			rankUS, duplicatesNB, duplicatesB, duplicates2, duplicates25, stats1NB, stats1B, stats2, stats25, rankDUPNB, rankDUPB, size(asserts), 
+			aLOCNB, aLOCB, rankASSNB, rankASSB, ANNB, ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
 }
 
-void printAllBundles(loc outputFolder, int threshold1, int threshold2, bool strict) {
+void printAllBundles(loc outputFolder, int threshold1, int threshold2) {
 	println("=== Testing codebase");
-	printBundle(|project://testing|, outputFolder, threshold1, threshold2, strict, "db_testing");
+	printBundle(|project://testing|, outputFolder, threshold1, threshold2, "db_testing");
 	println("=== SmallSql codebase");
-	printBundle(|project://smallsql0.21_src|, outputFolder, threshold1, threshold2, strict, "db_smallsql");
+	printBundle(|project://smallsql0.21_src|, outputFolder, threshold1, threshold2, "db_smallsql");
 	println("=== HSqlDB codebase");
-	printBundle(|project://hsqldb-2.3.1|, outputFolder, threshold1, threshold2, strict, "db_hsqldb");
+	printBundle(|project://hsqldb-2.3.1|, outputFolder, threshold1, threshold2, "db_hsqldb");
 }
 
-void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold2, bool strict, str fileName) {
+void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold2, str fileName) {
 	println("Generating bundle...");
-	Bundle bundle = bundle(projectLoc, false, threshold1, threshold2, 2, strict);
+	Bundle bundle = bundle(projectLoc, false, threshold1, threshold2, 2, 2);
 	println("Processing lists...");
 	list[int] CCsNE = [];
 	list[int] CCsE = [];
@@ -260,13 +278,16 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	print("File generated: ");
 	println(outputFile);
 	
+	list[loc] projectFiles = getFiles(projectLoc);
 	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
 	println("Generating Type I clones - Without brackets");
-	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1nb.clones", 1, threshold1, true, strict);
+	printClones(projectFiles, outputFolder + "<fileName>_1nb.clones", 1, threshold1, true, false);
 	println("Generating Type I clones - With brackets");
-	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1b.clones", 1, threshold1, false, strict);
+	printClones(projectFiles, outputFolder + "<fileName>_1b.clones", 1, threshold1, false, false);
 	println("Generating Type II clones");
-	printClones(getFiles(projectLoc), outputFolder + "<fileName>_2.clones", 2, threshold2, false, strict);
+	printClones(projectFiles, outputFolder + "<fileName>_2.clones", 2, threshold2, false, true);
+	println("Generating Type II.5 clones");
+	printClones(projectFiles, outputFolder + "<fileName>_2.5.clones", 2, threshold2, false, false);
 }
 
 str parseScore(int rank) {
@@ -405,11 +426,15 @@ void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool s
 	list[CloneClass] clones = [];
 	num total = 0.0;
 	
+	println("Generating clones...");
 	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts, strict);
+	println("Generating clone classes...");
 	clones = getCloneClasses(clnSnps);
 	
+	println("Mapping file lines...");
 	map[str, list[str]] fileLines = mapFiles(files);
 	str output = "";
+	println("Generating output...");
 	for (cloneClass <- clones) {
 		for (clone <- cloneClass)
 			output += ("<clone.pkg>^<clone.src>^<escapeCode(fileLines[clone.src.uri], clone.src)>" + eof());

@@ -8,6 +8,7 @@ import util::Math;
 import Utility;
 import Volume;
 import Duplicate;
+import Bundle;
 
 @doc {
 	.Synopsis
@@ -40,7 +41,7 @@ void timeNruns(loc project, int runs) {
 
 void timeDup(list[loc] files) {
 	srt = now();
-	getDuplicateLines(files, 1, 6, true, false);
+	printClones(files, |file:///C:/Users/sandr/Documents/University/SE/Series1/src/Visualiser/Input/db_hsqldb_2.5.clones|, 2, 40, false, true);
 	end = now();
 	println(createDuration(srt, end));
 }
