@@ -113,10 +113,10 @@ MapBlocks mapBlocksType2(list[list[Token]] tokens, int threshold) {
 	return mapBlocks(ksnps, threshold, " ");
 }
 
-MapBlocks mapBlocksType2(list[loc] fileLocs, int threshold) {
+MapBlocks mapBlocksType2(list[loc] fileLocs, int threshold, bool strict) {
 	list[list[KSnippet]] ksnps = [];
 	for (fLoc <- fileLocs) {
-		list[Token] tokens = tokenizer(readFileSnippets(fLoc));
+		list[Token] tokens = tokenizer(readFileSnippets(fLoc), strict);
 		ksnps += [kSnipTokens(tokens)];
 	}
 	return mapBlocks(ksnps, threshold, " ");
@@ -171,12 +171,12 @@ list[KSnippet] escapeKeys(list[KSnippet] ksnps) {
 	return escaped;
 }
 
-tuple[MapSnippets, int] getClones(list[loc] files, int clnType, int threshold, bool skipBrkts) {
+tuple[MapSnippets, int] getClones(list[loc] files, int clnType, int threshold, bool skipBrkts, bool strict) {
 	MapBlocks blocks = ();
 	MapBlocks dupBlocks = ();
 	set[ISnippet] dupSnps = {};
 	
-	blocks = typeSel(files, clnType, threshold, skipBrkts);
+	blocks = typeSel(files, clnType, threshold, skipBrkts, strict);
 	
 	<dupBlocks, dupSnps> = genDupBlocks(blocks);
 	MapSnippets clones = clusterizator(dupBlocks);
@@ -194,12 +194,12 @@ tuple[MapSnippets, int] getClonesType2(list[list[Token]] tokens, int threshold) 
 	return <clones, size(dupSnps)>;
 }
 
-num avgCloneLength(MapSnippets clones) {
+num avgCloneLength(MapSnippets clones, bool strict) {
 	int nVals = 0;
 	num sum = 0.0;
 	for (key <- clones) {
 		for (isnp <- clones[key]) {
-			list[str] tokens = tokenizer(isnp.snp.block);
+			list[str] tokens = tokenizer(isnp.snp.block, strict);
 			sum += size(tokens);
 			nVals += 1;
 		}
@@ -222,13 +222,13 @@ tuple[MapBlocks, set[ISnippet]] genDupBlocks(MapBlocks blocks) {
 	return <dupBlocks, dupSnps>;
 }
 
-private MapBlocks typeSel(list[loc] files, int typ, int threshold, bool skipBrkts) {
+private MapBlocks typeSel(list[loc] files, int typ, int threshold, bool skipBrkts, bool strict) {
 	MapBlocks res = (); 
 	
 	if (typ == 1) 
 		res = mapBlocksType1(files, threshold, skipBrkts);
 	else if (typ == 2)
-		res = mapBlocksType2(files, threshold);
+		res = mapBlocksType2(files, threshold, strict);
 	else
 		error("Computable clone types: [1,2]");
 	
@@ -239,12 +239,12 @@ private MapBlocks typeSel(list[loc] files, int typ, int threshold, bool skipBrkt
 	.Synopsis
 	Get the number of duplicated lines in a project.
 }
-int getDuplicateLines(list[loc] files, int typ, int threshold, bool print, bool skipBrkts) {
+int getDuplicateLines(list[loc] files, int typ, int threshold, bool print, bool skipBrkts, bool strict) {
 	MapBlocks blocks = ();
 	MapBlocks dupBlocks = ();
 	set[ISnippet] dupSnps = {};
 	
-	blocks = typeSel(files, typ, threshold, skipBrkts);
+	blocks = typeSel(files, typ, threshold, skipBrkts, strict);
 	<dupBlocks, dupSnps> = genDupBlocks(blocks);
 	
 	if (print) {

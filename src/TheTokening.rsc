@@ -201,6 +201,88 @@ private list[str] dontChange = [
 	";"
 ];
 
+private map[str, str] keywordsStrict = (
+	"abstract"		:		"ABSTRACT",
+	"assert"		:		"ASSERT",
+	"boolean"		:		TYPE,
+	"break"			:		"BREAK",
+	"byte"			:		TYPE,
+	"case"			:		"CASE",
+	"catch"			:		"CATCH",
+	"char"			:		TYPE,
+	"class"			:		"CLASS",
+	"const"			:		"CONST",
+	"continue"		:		"CONTINUE",
+	"default"		:		"DEFAULT",
+	"do"			:		"DO",
+	"double"		:		TYPE,
+	"else"			:		"ELSE",
+	"enum"			:		"ENUM",
+	"extends"		:		"EXTENDS",
+	"false"			:		LITERAL,
+	"final"			:		"FINAL",
+	"finally"		:		"FINALLY",
+	"float"			:		TYPE,
+	"for"			:		"FOR",
+	"goto"			:		"NOODLE",
+	"if"			:		"IF",
+	"implements"	:		"IMPLEMENTS",
+	"import"		:		"IMPORT",
+	"instanceof"	:		"INSTANCEOF",
+	"int"			:		TYPE,
+	"interface"		:		"INTERFACE",
+	"long"			:		TYPE,
+	"native"		:		"NATIVE",
+	"new"			:		CONSTRUCTOR,
+	"package"		:		"PACKAGE",
+	"private"		:		"PRIVATE",
+	"protected"		:		"PROTECTED",
+	"public"		:		"PUBLIC",
+	"return"		:		"RETURN",
+	"short"			:		TYPE,
+	"static"		:		"STATIC",
+	"strictfp"		:		"STRICTFP",
+	"super"			:		IDENTIFIER,
+	"switch"		:		"SWITCH",
+	"synchronized"	:		"SYNCHRONIZED",
+	"this"			:		IDENTIFIER,
+	"throw"			:		"THROW",
+	"throws"		:		"THROWS",
+	"transient"		:		"TRAINSIENT",
+	"true"			:		LITERAL,
+	"try"			:		"TRY",
+	"void"			:		TYPE,
+	"volatile"		:		"VOLATILE",
+	"while"			:		"WHILE",
+	
+	// OPERATORS
+	
+	"="			:		ASSIGNMENT,
+	"+"			:		"+",
+	"-"			:		"-",
+	"*"			:		"*",
+	"/"			:		"/",
+	"%"			:		"%",
+	"++"		:		"++",
+	"--"		:		"--",
+	"!"			:		"!",
+	"&&"		:		"&&",
+	"||"		:		"||",
+	"=="		:		"==",
+	"!="		:		"!=",
+	"\>"		:		"\>",
+	"\<"		:		"\<",
+	"\>="		:		"\>=",
+	"\<="		:		"\<=",
+	"~"			:		"~",
+	"\<\<"		:		"\<\<",
+	"\>\>"		:		"\>\>",
+	"\>\>\>"	:		"\>\>\>",
+	"&"			:		"&",
+	"^"			:		"^",
+	"|"			:		"|"
+);
+
 private map[str, str] keywords = (
 	"abstract"		:		MODIFIER,
 	"assert"		:		"ASSERT",
@@ -326,12 +408,13 @@ list[str] tokenize(list[str] words) {
 	return tokens;
 }
 
-list[Token] tokenize(list[Token] tkns) {
+list[Token] tokenize(list[Token] tkns, bool strict) {
 	list[Token] tokens = [];
 	
 	bool inStr = false;
 	bool inChr = false;
 	bool ignoreNext = false;
+	map[str, str] kw = strict ? keywordsStrict : keywords;
 	
 	for (token <- tkns) {
 		if (!ignoreNext) {
@@ -350,11 +433,11 @@ list[Token] tokenize(list[Token] tkns) {
 			} else if (token.block in dontChange)
 				tokens += token;
 			else {
-				if (token.block in keywords) {
+				if (token.block in kw) {
 					if (token.block in ignores)
 						ignoreNext = true;
 					else {
-						token.block = keywords[token.block];
+						token.block = kw[token.block];
 						tokens += token;
 					}
 				} else if (endsWith(token.block, "\""))
@@ -425,8 +508,8 @@ list[Token] normalize(list[Token] tkns) {
 	return [<t, l> | <t, l> <- tokens, t notin dontChange];
 }
 
-list[Token] tokenizer(list[Snippet] code) {
-	return normalize(tokenize(reconnect(reconstruct(parse(code)))));
+list[Token] tokenizer(list[Snippet] code, bool strict) {
+	return normalize(tokenize(reconnect(reconstruct(parse(code))), strict));
 }
 
 list[str] tokenizer(str code) {

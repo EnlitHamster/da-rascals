@@ -98,7 +98,7 @@ CloneStats getClonesStats(MapSnippets clones) {
 	return <cloneClasses, biggestClone, biggestClass, cloneInsts>;
 }
 
-Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts) {
+Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts, bool strict) {
 	// Saving the project files/ASTs as they are used by all metric calculators
 	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectFiles);
@@ -154,20 +154,20 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	MapSnippets clones1B = ();
 	
 	if (skipBrkts % 2 == 0) {
-		<clones1NB, duplicatesNB> = getClones(projectFiles, 1, thresholdType1Clones, true);
+		<clones1NB, duplicatesNB> = getClones(projectFiles, 1, thresholdType1Clones, true, strict);
 		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), print);
 		stats1NB = getClonesStats(clones1NB);
 	}
 	
 	if (skipBrkts > 0) {
-		<clones1B, duplicatesB> = getClones(projectFiles, 1, thresholdType1Clones, false);
+		<clones1B, duplicatesB> = getClones(projectFiles, 1, thresholdType1Clones, false, strict);
 		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), print);
 		stats1B = getClonesStats(clones1B);
 	}
 	
 	list[list[Token]] tokens = [];
 	for (fLoc <- projectFiles)
-		tokens += [tokenizer(readFileSnippets(fLoc))];
+		tokens += [tokenizer(readFileSnippets(fLoc), strict)];
 	
 	MapSnippets clones2 = ();
 	int duplicates2 = -1;
@@ -212,18 +212,18 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 			rankASSNB, rankASSB, ANNB, ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
 }
 
-void printAllBundles(loc outputFolder, int threshold1, int threshold2) {
+void printAllBundles(loc outputFolder, int threshold1, int threshold2, bool strict) {
 	println("=== Testing codebase");
-	printBundle(|project://testing|, outputFolder, threshold1, threshold2, "db_testing");
+	printBundle(|project://testing|, outputFolder, threshold1, threshold2, strict, "db_testing");
 	println("=== SmallSql codebase");
-	printBundle(|project://smallsql0.21_src|, outputFolder, threshold1, threshold2, "db_smallsql");
+	printBundle(|project://smallsql0.21_src|, outputFolder, threshold1, threshold2, strict, "db_smallsql");
 	println("=== HSqlDB codebase");
-	printBundle(|project://hsqldb-2.3.1|, outputFolder, threshold1, threshold2, "db_hsqldb");
+	printBundle(|project://hsqldb-2.3.1|, outputFolder, threshold1, threshold2, strict, "db_hsqldb");
 }
 
-void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold2, str fileName) {
+void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold2, bool strict, str fileName) {
 	println("Generating bundle...");
-	Bundle bundle = bundle(projectLoc, false, threshold1, threshold2, 2);
+	Bundle bundle = bundle(projectLoc, false, threshold1, threshold2, 2, strict);
 	println("Processing lists...");
 	list[int] CCsNE = [];
 	list[int] CCsE = [];
@@ -262,11 +262,11 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	
 	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
 	println("Generating Type I clones - Without brackets");
-	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1nb.clones", 1, threshold1, true);
+	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1nb.clones", 1, threshold1, true, strict);
 	println("Generating Type I clones - With brackets");
-	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1b.clones", 1, threshold1, false);
+	printClones(getFiles(projectLoc), outputFolder + "<fileName>_1b.clones", 1, threshold1, false, strict);
 	println("Generating Type II clones");
-	printClones(getFiles(projectLoc), outputFolder + "<fileName>_2.clones", 2, threshold2, false);
+	printClones(getFiles(projectLoc), outputFolder + "<fileName>_2.clones", 2, threshold2, false, strict);
 }
 
 str parseScore(int rank) {
@@ -277,8 +277,8 @@ str parseScore(int rank) {
 	else return "--";
 }
 
-void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, bool skipBrkts) {
-	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1);
+void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, bool skipBrkts, bool strict) {
+	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1, strict);
 	
 	LineCount bLOC = skipBrkts ? bundle.LOCNB : bundle.LOCB;
 	int bDUP = skipBrkts ? bundle.DUPNB : bundle.DUPB;
@@ -400,12 +400,12 @@ private void printCouplingGraph(CouplingGraph cg, loc outputFile) {
 	println(outputFile);
 }
 
-void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool skipBrkts) {
+void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool skipBrkts, bool strict) {
 	MapSnippets clnSnps = ();
 	list[CloneClass] clones = [];
 	num total = 0.0;
 	
-	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts);
+	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts, strict);
 	clones = getCloneClasses(clnSnps);
 	
 	map[str, list[str]] fileLines = mapFiles(files);

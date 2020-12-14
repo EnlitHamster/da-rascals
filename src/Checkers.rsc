@@ -61,7 +61,7 @@ test bool checkClones() {
 		 	cloneClassFiles = genCloneClassFiles(classCount, clonePerClass, typ, threshold);
 		 	list[loc] filurs = getFiles(getMock());
 
-		 	tuple[MapSnippets, int] gottenClones = getClones(cloneClassFiles, typ, threshold, false);
+		 	tuple[MapSnippets, int] gottenClones = getClones(cloneClassFiles, typ, threshold, false, false);
 		 	MapSnippets clones = gottenClones[0];
 		 	int count = gottenClones[1];
 			foundClassCount = 0;
@@ -226,7 +226,7 @@ test bool checkDuplication() {
 		dupPercent = 99;
 		dupFile = genDuplicationFile(dupPercent);
 		//list[loc] files, int typ, int threshold, bool print, bool skipBrkts		
-		dupLoc = getDuplicateLines([dupFile], 1, 6, false, false);
+		dupLoc = getDuplicateLines([dupFile], 1, 6, false, false, false);
 		if (dupPercent <= 6) {
 			allConform = allConform && (dupLoc == 0);
 		} else {
