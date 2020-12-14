@@ -256,6 +256,7 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	writeFile( outputFile, 
 			   "<bundle.TLOC.ids>,<bundle.TLOC.literals>,<bundle.TLOC.methods>,<bundle.TLOC.total>" + eof(),
 			   "<bundle.DUP2>,<bundle.statsDUP2.cloneClasses>,<bundle.statsDUP2.biggestClone>,<bundle.statsDUP2.biggestClass>,<bundle.statsDUP2.cloneInsts>" + eof(),
+			   "<bundle.DUP25>,<bundle.statsDUP25.cloneClasses>,<bundle.statsDUP25.biggestClone>,<bundle.statsDUP25.biggestClass>,<bundle.statsDUP25.cloneInsts>" + eof(),
 			   "<listToStr(CCsNE)>" + eof(),
 			   "<listToStr(CCsE)>" + eof(),
 			   "<bundle.riskCCsNE[LOW_RISK]>,<bundle.riskCCsNE[MID_RISK]>,<bundle.riskCCsNE[HIGH_RISK]>,<bundle.riskCCsNE[VERY_HIGH_RISK]>" + eof(),

@@ -14,6 +14,10 @@ import java.util.HashSet;
 import java.io.File; 
 import java.io.FileInputStream; 
 import java.io.FileOutputStream; 
+import java.nio.file.Files; 
+import java.nio.file.Paths; 
+import java.nio.file.Path; 
+import java.nio.file.StandardCopyOption; 
 import java.util.Random; 
 import java.util.Arrays; 
 
@@ -339,6 +343,11 @@ public class RadioButton {
   }
   
 }
+
+
+
+
+
 
 
 
@@ -684,16 +693,17 @@ class DataTab extends Tab {
     text(activeBundle.testLOC, descWidth + dataWidth/2, 360);
   }
   
+  // C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\
   public void mousePressed() {
     if (openCloneViz.hover()) {
       try {
-        File src1 = new File(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
-        File src2 = new File(file + "_2.clones");
-        File obj1 = new File("..\\Clone Visualisation_Data\\type1.txt");
-        File obj2 = new File("..\\Clone Visualisation_Data\\type2.txt");
+        Path src1 = Paths.get(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
+        Path src2 = Paths.get(file + "_2.clones");
+        Path obj1 = Paths.get("..\\Clone Visualisation_Data\\type1.txt");
+        Path obj2 = Paths.get("..\\Clone Visualisation_Data\\type2.txt");
         
-        copy(src1.getAbsolutePath(), obj1.getAbsolutePath());
-        copy(src2.getAbsolutePath(), obj2.getAbsolutePath());
+        Files.copy(src1, obj1, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(src2, obj2, StandardCopyOption.REPLACE_EXISTING);
         
         File file = new File("..\\Clone Visualisation.exe");
         Runtime.getRuntime().exec(file.getAbsolutePath());
