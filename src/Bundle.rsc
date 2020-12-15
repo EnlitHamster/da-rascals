@@ -73,7 +73,11 @@ private alias Bundle = tuple[ LineCount LOCNB,
 							  real OVNENB,
 							  real OVNEB,
 							  real OVENB,
-							  real OVEB ];
+							  real OVEB,
+							  MapSnippets clones1NB,
+							  MapSnippets clones1B,
+							  MapSnippets clones2,
+							  MapSnippets clones25 ];
 
 public alias CloneStats = tuple[int cloneClasses, int biggestClone, int biggestClass, int cloneInsts];
 
@@ -227,7 +231,8 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	// Output
 	return <LOCNB, LOCB, tknStats, rankLOCNB, rankLOCB, CCs, riskCCsNoExp, riskCCsExp, rankUCNoExp, rankUCExp, unitSizes, riskUnitSizes, 
 			rankUS, duplicatesNB, duplicatesB, duplicates2, duplicates25, stats1NB, stats1B, stats2, stats25, rankDUPNB, rankDUPB, size(asserts), 
-			aLOCNB, aLOCB, rankASSNB, rankASSB, ANNB, ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, OVENB, OVEB>;
+			aLOCNB, aLOCB, rankASSNB, rankASSB, ANNB, ANB, CHNENB, CHNEB, CHENB, CHEB, STNB, STB, TSNENB, TSNEB, TSENB, TSEB, OVNENB, OVNEB, 
+			OVENB, OVEB, clones1NB, clones1B, clones2, clones25>;
 }
 
 void printAllBundles(loc outputFolder, int threshold1, int threshold2) {
@@ -279,16 +284,15 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	print("File generated: ");
 	println(outputFile);
 	
-	list[loc] projectFiles = getFiles(projectLoc);
 	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
 	println("Generating Type I clones - Without brackets");
-	printClones(projectFiles, outputFolder + "<fileName>_1nb.clones", 1, threshold1, true, false);
+	printClones(bundle.clones1NB, bundle.DUPNB, outputFolder + "<fileName>_1nb.clones");
 	println("Generating Type I clones - With brackets");
-	printClones(projectFiles, outputFolder + "<fileName>_1b.clones", 1, threshold1, false, false);
+	printClones(bundle.clones1B, bundle.DUPB, outputFolder + "<fileName>_1b.clones");
 	println("Generating Type II clones");
-	printClones(projectFiles, outputFolder + "<fileName>_2.clones", 2, threshold2, false, true);
+	printClones(bundle.clones2, bundle.DUP2, outputFolder + "<fileName>_2.clones");
 	println("Generating Type II.5 clones");
-	printClones(projectFiles, outputFolder + "<fileName>_2.5.clones", 2, threshold2, false, false);
+	printClones(bundle.clones25, bundle.DUP25, outputFolder + "<fileName>_2.5.clones");
 }
 
 str parseScore(int rank) {
@@ -424,11 +428,17 @@ private void printCouplingGraph(CouplingGraph cg, loc outputFile) {
 
 void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool skipBrkts, bool strict) {
 	MapSnippets clnSnps = ();
-	list[CloneClass] clones = [];
 	num total = 0.0;
 	
 	println("Generating clones...");
 	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts, strict);
+	
+	printClones(clnSnps, total, outputFile);
+}
+
+void printClones(MapSnippets clnSnps, num total, loc outputFile) {
+	list[CloneClass] clones = [];
+	
 	println("Generating clone classes...");
 	clones = getCloneClasses(clnSnps);
 	
