@@ -39,9 +39,10 @@ void timeNruns(loc project, int runs) {
 	println(result);	
 }
 
-void timeDup(list[loc] files) {
+void timeDup() {
 	srt = now();
-	printClones(files, |file:///C:/Users/sandr/Documents/University/SE/Series1/src/Visualiser/Input/db_hsqldb_2.5.clones|, 2, 40, false, true);
+	//printClones(files, |file:///C:/Users/sandr/Documents/University/SE/Series1/src/Visualiser/Input/db_hsqldb_2.5.clones|, 2, 40, false, true);
+	printAllBundles(|file:///C:/Users/sandr/Documents/University/SE/Series1/src/Visualiser/Input|, 6, 40);
 	end = now();
 	println(createDuration(srt, end));
 }

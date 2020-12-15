@@ -202,8 +202,14 @@ public class Bundle {
   final int[] USs;
   final int[] riskUS;
   final int rankUS;
-  final int clonesType1;
-  final int clonesType2;
+  // 0 -> NUMBER OF DUPLICATE UNITS (LINES/TOKENS)
+  // 1 -> NUMBER OF CLONE CLASSES
+  // 2 -> BIGGEST CLONE
+  // 3 -> BIGGEST CLASS
+  // 4 -> NUMBER OF CLONES
+  final int[] clonesType1;
+  final int[] clonesType2;
+  final int[] clonesType25;
   final int rankDUP;
   final int asserts;
   final int testLOC;
@@ -225,23 +231,24 @@ public class Bundle {
   
   public Bundle(String[] database, boolean skipBrkts) {
       nTokens = PApplet.parseInt(split(database[0], ','));
-      clonesType2 = PApplet.parseInt(database[1]);
-      CCsNE = sort(PApplet.parseInt(split(database[2], ',')));
-      CCsE = sort(PApplet.parseInt(split(database[3], ',')));
-      riskUCNE = PApplet.parseInt(split(database[4], ','));
-      riskUCE = PApplet.parseInt(split(database[5], ','));
-      ranksUC = PApplet.parseInt(split(database[6], ','));
-      USs = sort(PApplet.parseInt(split(database[7], ',')));
-      riskUS = PApplet.parseInt(split(database[8], ','));
-      rankUS = PApplet.parseInt(database[9]);
-      linesOfCode = PApplet.parseInt(split(database[skipBrkts ? 10 : 11], ','));
-      rankLOC = PApplet.parseInt(split(database[12], ',')[skipBrkts ? 0 : 1]);
-      clonesType1 = PApplet.parseInt(split(database[13], ',')[skipBrkts ? 0 : 1]);
-      rankDUP = PApplet.parseInt(split(database[14], ',')[skipBrkts ? 0 : 1]);
-      scores = PApplet.parseInt(split(database[skipBrkts ? 15 : 16], ','));
-      asserts = PApplet.parseInt(database[17]);
-      testLOC = PApplet.parseInt(split(database[18], ',')[skipBrkts ? 0 : 1]);
-      rankTQ = PApplet.parseInt(split(database[19], ',')[skipBrkts ? 0 : 1]);
+      clonesType2 = PApplet.parseInt(split(database[1], ','));
+      clonesType25 = PApplet.parseInt(split(database[2], ','));
+      CCsNE = sort(PApplet.parseInt(split(database[3], ',')));
+      CCsE = sort(PApplet.parseInt(split(database[4], ',')));
+      riskUCNE = PApplet.parseInt(split(database[5], ','));
+      riskUCE = PApplet.parseInt(split(database[6], ','));
+      ranksUC = PApplet.parseInt(split(database[7], ','));
+      USs = sort(PApplet.parseInt(split(database[8], ',')));
+      riskUS = PApplet.parseInt(split(database[9], ','));
+      rankUS = PApplet.parseInt(database[10]);
+      linesOfCode = PApplet.parseInt(split(database[skipBrkts ? 11 : 12], ','));
+      rankLOC = PApplet.parseInt(split(database[13], ',')[skipBrkts ? 0 : 1]);
+      clonesType1 = PApplet.parseInt(split(database[skipBrkts ? 14 : 15], ','));
+      rankDUP = PApplet.parseInt(split(database[16], ',')[skipBrkts ? 0 : 1]);
+      scores = PApplet.parseInt(split(database[skipBrkts ? 17 : 18], ','));
+      asserts = PApplet.parseInt(database[19]);
+      testLOC = PApplet.parseInt(split(database[20], ',')[skipBrkts ? 0 : 1]);
+      rankTQ = PApplet.parseInt(split(database[21], ',')[skipBrkts ? 0 : 1]);
       
       int totalUCNE = sum(riskUCNE);
       int totalUCE = sum(riskUCE);
@@ -370,11 +377,20 @@ abstract class Tab {
 
 class PiesTab extends Tab {
   
+  RadioButton anaMode;
+  boolean save_check;
+  
+  public PiesTab() {save_check = false;}
+  
   public void setup() {
-    vizSize(460, 630); 
+    vizSize(460, 660); 
+    anaMode = new RadioButton(20, height - 100, 20, "Ana safe mode");
+    if (save_check) anaMode.check();
   }
   
-  public void draw() {  
+  public void draw() {
+    anaMode.draw();
+    
     fill(0);
     textFont(font, 20);
     textAlign(CENTER);
@@ -406,9 +422,16 @@ class PiesTab extends Tab {
     fill(colorsLOC[1]);  rect(left, 490, 20, 20);
     fill(colorsLOC[2]);  rect(left, 520, 20, 20);    
     
-    pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
-    pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
-    pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
+    if (anaMode.isChecked()) {
+      float[] risks = exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE;
+      makeBlock(width/4 - 100, 80, 200, 200, risks, sum(risks), colors4);
+      makeBlock(width/4 - 100, 340, 200, 200, activeBundle.percRiskUS, sum(activeBundle.percRiskUS), colors4); 
+      makeBlock(3*width/4 - 100, 80, 200, 200, activeBundle.percLOC, sum(activeBundle.percLOC), colorsLOC);
+    } else {
+      pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
+      pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
+      pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
+    }
   }
 
   private void pieChart(int x, int y, float[] data, int[] colors) {
@@ -418,6 +441,13 @@ class PiesTab extends Tab {
       float angle = radians(p2d(data[i]));
       arc(x, y, 200, 200, lastAngle, lastAngle + angle);
       lastAngle += angle;
+    }
+  }
+  
+  public void mousePressed() {
+    if (anaMode.hover()) {
+      save_check = !save_check;
+      anaMode.check(); 
     }
   }
   
@@ -456,7 +486,7 @@ class ScoresTab extends Tab {
     textAlign(RIGHT);
     
     text(activeBundle.linesOfCode[0] + String.format(" (%4.2f%c)", (float) activeBundle.linesOfCode[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 60);
-    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.clonesType1 * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
+    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.clonesType1[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
     text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
     
     printPercs(exceptions.isChecked() ? activeBundle.riskUCE : activeBundle.riskUCNE, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, 180);
@@ -574,9 +604,14 @@ class ScoresTab extends Tab {
 class DataTab extends Tab {
   
   Button openCloneViz;
+  RadioButton strict;
   String file;
+  boolean save_check;
   
-  public DataTab(String file) {this.file = file;}
+  public DataTab(String file) {
+    this.file = file;
+    save_check = false;
+  }
   
   private void printStatHeads(int descWidth, int dataWidth, int h) {
     textFont(fontIt, 12);
@@ -609,12 +644,15 @@ class DataTab extends Tab {
   }
   
   public void setup () {
-    vizSize(520, 490);
-    openCloneViz = new Button(20, 380, 160, 20, "Open clones visualizer");
+    vizSize(520, 530);
+    openCloneViz = new Button(20, 400, 160, 20, "Open clones visualizer");
+    strict = new RadioButton(20, height - 100, 20, "Strict Type II clones");
+    if (save_check) strict.check();
   }
   
   public void draw() {
     openCloneViz.draw();
+    strict.draw();
     
     fill(0);
     textFont(fontBd, 12); 
@@ -627,9 +665,10 @@ class DataTab extends Tab {
     text("Token count", 20, 100);
     text("Cyclomatic complexity", 20, 140);
     text("Unit Size", 20, 220);
-    text("Clones", 20, 300);
-    text("Asserts", 20, 340);
-    text("Lines of test", 20, 360);
+    text("Clones Type I", 20, 320);
+    text("Clones Type II", 20, 340);
+    text("Asserts", 20, 360);
+    text("Lines of test", 20, 380);
     
     textAlign(CENTER);
     textFont(fontIt, 12);
@@ -647,8 +686,11 @@ class DataTab extends Tab {
     printStatHeads(descWidth, dataWidth, 140);
     printStatHeads(descWidth, dataWidth, 220);
     
-    text("type 1", descWidth + dataWidth/4, 300);
-    text("type 2", descWidth + 3*dataWidth/4, 300);
+    text("#units", descWidth + dataWidth/10, 300);
+    text("#clones", descWidth + 3*dataWidth/10, 300);
+    text("#classes", descWidth + 5*dataWidth/10, 300);
+    text("max clone", descWidth + 7*dataWidth/10, 300);
+    text("max class", descWidth + 9*dataWidth/10, 300);
     
     textFont(font, 12); 
     
@@ -686,26 +728,51 @@ class DataTab extends Tab {
     text(activeBundle.USs[(int) (lenUS * 0.65f)], descWidth + 5*dataWidth/8, 280);
     text(activeBundle.USs[(int) (lenUS * 0.95f)], descWidth + 7*dataWidth/8, 280);
     
-    text(activeBundle.clonesType1, descWidth + dataWidth/4, 320);
-    text(activeBundle.clonesType2, descWidth + 3*dataWidth/4, 320);
+    text(activeBundle.clonesType1[0], descWidth + dataWidth/10, 320);
+    text(activeBundle.clonesType1[4], descWidth + 3*dataWidth/10, 320);
+    text(activeBundle.clonesType1[1], descWidth + 5*dataWidth/10, 320);
+    text(activeBundle.clonesType1[2], descWidth + 7*dataWidth/10, 320);
+    text(activeBundle.clonesType1[3], descWidth + 9*dataWidth/10, 320);
     
-    text(activeBundle.asserts, descWidth + dataWidth/2, 340);
-    text(activeBundle.testLOC, descWidth + dataWidth/2, 360);
+    if (strict.isChecked()) {
+      text(activeBundle.clonesType2[0], descWidth + dataWidth/10, 340);
+      text(activeBundle.clonesType2[4], descWidth + 3*dataWidth/10, 340);
+      text(activeBundle.clonesType2[1], descWidth + 5*dataWidth/10, 340);
+      text(activeBundle.clonesType2[2], descWidth + 7*dataWidth/10, 340);
+      text(activeBundle.clonesType2[3], descWidth + 9*dataWidth/10, 340);
+    } else {
+      text(activeBundle.clonesType25[0], descWidth + dataWidth/10, 340);
+      text(activeBundle.clonesType25[4], descWidth + 3*dataWidth/10, 340);
+      text(activeBundle.clonesType25[1], descWidth + 5*dataWidth/10, 340);
+      text(activeBundle.clonesType25[2], descWidth + 7*dataWidth/10, 340);
+      text(activeBundle.clonesType25[3], descWidth + 9*dataWidth/10, 340);
+    }
+    
+    text(activeBundle.asserts, descWidth + dataWidth/2, 360);
+    text(activeBundle.testLOC, descWidth + dataWidth/2, 380);
   }
   
   // C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\
   public void mousePressed() {
+    if (strict.hover()) {
+      save_check = !save_check; 
+      strict.check();
+    }
+    
     if (openCloneViz.hover()) {
       try {
         Path src1 = Paths.get(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
-        Path src2 = Paths.get(file + "_2.clones");
+        Path src2 = Paths.get(file + (strict.isChecked() ? "_2.clones" : "_2.5.clones"));
         Path obj1 = Paths.get("..\\Clone Visualisation_Data\\type1.txt");
         Path obj2 = Paths.get("..\\Clone Visualisation_Data\\type2.txt");
+        //Path obj1 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type1.txt");
+        //Path obj2 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type2.txt");
         
         Files.copy(src1, obj1, StandardCopyOption.REPLACE_EXISTING);
         Files.copy(src2, obj2, StandardCopyOption.REPLACE_EXISTING);
         
         File file = new File("..\\Clone Visualisation.exe");
+        //File file = new File("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation.exe");
         Runtime.getRuntime().exec(file.getAbsolutePath());
       } catch (IOException e) {
         e.printStackTrace();
@@ -740,10 +807,16 @@ class DataTab extends Tab {
 class DistribsTab extends Tab {
   
   RadioButton logaritmic;
+  boolean save_check;
+  
+  public DistribsTab() {
+    save_check = false;
+  }
   
   public void setup() {
     vizSize(520, 660);
     logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
+    if (save_check) logaritmic.check();
   }
   
   public void draw() {
@@ -761,7 +834,10 @@ class DistribsTab extends Tab {
   }
   
   public void mousePressed() {
-    if (logaritmic.hover()) logaritmic.check();
+    if (logaritmic.hover()) {
+      save_check = !save_check;
+      logaritmic.check();
+    }
   }
   
   public int distributionMagnitude(int[] data) {
@@ -781,11 +857,12 @@ class GraphTab extends Tab {
   
   private String baseFile;
   
-  GraphTab(String bf) {baseFile = bf;}
+  GraphTab(String bf) {
+    baseFile = bf;
+  }
   
   public void setup() {
     vizSize(500, 300);
-    
     generateIntra = new Button(width/4 - 80, 80, 160, 20, "Direct intra-coupling");
     generateInter = new Button(width*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
     generateIntraV = new Button(width/4 - 80, 110, 160, 20, "Intra-coupling");
@@ -1006,6 +1083,173 @@ class GraphTab extends Tab {
   }
   
 }*/
+// By Felix Menard from https://www.openprocessing.org/sketch/24927
+
+public void drawRect(int x1,int y1,int w1, int h1, float value, float total, int clr){
+  stroke(1);
+  fill(clr);
+  rect(x1, y1, w1, h1); //we draw a rectangle    
+  fill(1);
+  String myPcntStr ;
+  int myPcnt = PApplet.parseInt(round ((value / total) *100)) ;
+  
+  float myPcntDecimal = PApplet.parseInt(round ((value / total) *1000)) ;
+  myPcntDecimal = myPcntDecimal/10;
+  
+  if (myPcntDecimal > 10) //bigger than 10%, we round it up.
+    myPcntStr = str(myPcnt) + "%";
+  else 
+    myPcntStr = str(myPcntDecimal) + "%";
+  
+  // Rotation fix by Sandro Massa
+  if (myPcntDecimal > 0.0f) {
+    float wPcnt = textWidth(myPcntStr);
+    float hPcnt = textAscent() + textDescent();
+    fill(color(0,0,0));
+    if (h1 > w1) {
+      pushMatrix();
+      translate(x1+(w1/2)-hPcnt/4, y1+(h1/2)-wPcnt/2);
+      rotate(HALF_PI);
+      text(myPcntStr, 0, 0);
+      popMatrix();
+    } else text(myPcntStr, x1+(w1/2)-10, y1+(h1/2)+5);
+  }
+}
+
+////////////////////////////////////////////////////////
+///   FIND GOOD SPLIT NUMBER - advantagous block aspect ratio.
+////////////////////////////////////////////////////////
+public int getPerfectSplitNumber(float[] numbers, int blockW, int blockH){
+  // This is where well'll need to calculate the possibilities
+  // We'll need to calculate the average ratios of created blocks.
+  // For now we just try with TWO for the sake of the new functionn...
+  
+  //Let's just split in either one or two to start...
+  
+  float valueA = numbers[0];//our biggest value
+  float valueB = 0.0f;//value B will correspond to the sum of all remmaining objects in array
+  for( int i=1; i < numbers.length; i++ )
+    valueB += numbers[i];
+  
+  float ratio = valueA / (valueB + valueA);
+  
+  int heightA, widthA;
+  if(blockW >= blockH){
+    heightA = blockH;
+    widthA  = floor(blockW * ratio);
+  }else {
+    heightA = floor(blockH * ratio);
+    widthA  = blockW;
+  }
+  
+  float ratioWH = PApplet.parseFloat(widthA) / PApplet.parseFloat(heightA) ;
+  float ratioHW = PApplet.parseFloat(heightA) / PApplet.parseFloat(widthA);
+  float diff;
+  
+  if(widthA >= heightA) // Larger rect //ratio = largeur sur hauteur,
+  //we should spit vertically...
+    diff = 1 - ratioHW ;
+  else //taller rectangle ratio
+    diff = 1- ratioWH;
+  
+  if((diff > 0.5f) && (numbers.length >= 3)) //this is a bit elongated (bigger than 2:1 ratio)
+    return 2; //TEMPORARY !!!!
+  else //it's a quite good ratio! we don't touch it OR, it's the last one, sorry, no choice.
+    return 1;
+  
+  //diff is the difference (between 0...1) to the square ratio.
+  // 0 mean we have a square (don't touch, it's beautifull!)
+  // 0.9 mean we have a very long rectangle.
+}
+
+////////////////////////////////////////////////////////
+///   MAKE BLOCK
+////////////////////////////////////////////////////////
+public void makeBlock(int refX, int refY, int blockW, int blockH, float[] numbers, float total, int[] clrs){
+  // We sort the received array.
+  ///////////////////////////////////////////////////////////////
+  numbers = reverse(sort(numbers));// we sort the array from biggest to smallest value.
+  
+  //First we need to asses the optimal number of item to be used for block A
+  // How do we do that?
+  int nbItemsInABlock = getPerfectSplitNumber(numbers, blockW, blockH); //return the numbers of elements that should be taken for A block. 
+   
+  float valueA = 0;//the biggest value
+  float valueB = 0;//value B will correspond to the sum of all remmaining objects in array
+  float[] numbersA = { }; //in the loop, we'll populate these two out of our main array.
+  float[] numbersB = { }; 
+  int[] colorsA = { };
+  int[] colorsB = { };
+   
+  for( int i=0; i < numbers.length; i++ ) {
+    if(i < nbItemsInABlock){//item has to be placed in A array...
+      numbersA = append(numbersA, numbers[i]);
+      colorsA = append(colorsA, clrs[i]);
+      //we populate our new array of values, we'll send it recursivly...
+      valueA += numbers[i];
+    }else{
+      numbersB = append(numbersB, numbers[i]);
+      colorsB = append(colorsB, clrs[i]); 
+      //we populate our new array of values, we'll send it recursivly...
+      valueB += numbers[i];
+    }
+  }
+  float ratio = valueA / (valueB + valueA);
+  
+  //now we split the block in two according to the right ratio...
+  
+  /////////////// WE SET THE X, Y, WIDTH, AND HEIGHT VALUES FOR BOTH RECTANGLES.
+  
+  int xA, yA, heightA, widthA, xB ,yB, heightB, widthB;
+  if(blockW > blockH){ //si plus large que haut...
+    //we split vertically; so height will stay the same...
+    xA = refX;
+    yA = refY;// we draw the square in top right corner, so same value.
+    heightA = blockH;
+    widthA  = floor(blockW * ratio);
+    
+    xB = refX + widthA;
+    yB = refY;
+    heightB = blockH;
+    widthB = blockW - widthA; //the remaining portion of the width...
+  }else{//tall rectangle, we split horizontally.
+    xA = refX;
+    yA = refY;// we draw the square in top right corner, so same value.
+    heightA = floor(blockH * ratio);
+    widthA  = blockW;
+    
+    xB = refX;
+    yB = refY+ heightA;
+    heightB = blockH - heightA;
+    widthB = blockW; //the remaining portion of the width...
+  }
+  
+  /////////////// END OF Block maths.
+  
+  // if the ratio of the A block is too small (elongated rectangle)
+  // we take an extra value for the A sqare, don't draw it, then send the 2 element 
+  // it represents to this function (treat it recusvily as if it was a B block).
+  // We dont care about the ratio of B block because they are divided after...
+  
+  // We add the block A to the display List
+  // for now, we just draw the thing, let's convert to OOP later...
+  
+  if(numbersA.length >= 2) //this mean there is still stuff in this arary...
+    makeBlock(xA, yA, widthA, heightA, numbersA, total, colorsA);
+  else
+  //if it's done, we add the B to display list, and that's it for recussivity, we return to main level... 
+  // the main function will then deal with all the data...
+    drawRect(xA, yA, widthA, heightA, valueA, total, colorsA[0]);
+  
+  if(numbersB.length >= 2) //this mean there is still stuff in this arary...
+    makeBlock(xB, yB, widthB, heightB, numbersB, total, colorsB);
+  else
+  //if it's done, we add the B to display list, and that's it for recussivity, we return to main level... 
+  // the main function will then deal with all the data...
+    drawRect(xB, yB, widthB, heightB, valueB, total, colorsB[0]);
+  
+  //If it represent more than one value, we send the block B to be split again (recursivly)
+}
 
 
 
@@ -1199,6 +1443,12 @@ public float avg(int[] vals) {
   int sum = 0;
   for (int i : vals) sum += i;
   return (float) sum / (float) vals.length;
+}
+
+public float sum(float[] vals) {
+  float sum = 0.0f;
+  for (float f : vals) sum += f;
+  return sum;
 }
 
 /**

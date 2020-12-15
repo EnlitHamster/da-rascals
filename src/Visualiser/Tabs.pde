@@ -26,13 +26,14 @@ abstract class Tab {
 class PiesTab extends Tab {
   
   RadioButton anaMode;
+  boolean save_check;
   
-  public PiesTab() {
-    anaMode = new RadioButton(20, height - 100, 20, "Ana safe mode");
-  }
+  public PiesTab() {save_check = false;}
   
   public void setup() {
     vizSize(460, 660); 
+    anaMode = new RadioButton(20, height - 100, 20, "Ana safe mode");
+    if (save_check) anaMode.check();
   }
   
   public void draw() {
@@ -92,7 +93,10 @@ class PiesTab extends Tab {
   }
   
   public void mousePressed() {
-    if (anaMode.hover()) anaMode.check(); 
+    if (anaMode.hover()) {
+      save_check = !save_check;
+      anaMode.check(); 
+    }
   }
   
 }
@@ -250,11 +254,11 @@ class DataTab extends Tab {
   Button openCloneViz;
   RadioButton strict;
   String file;
+  boolean save_check;
   
   public DataTab(String file) {
     this.file = file;
-    openCloneViz = new Button(20, 400, 160, 20, "Open clones visualizer");
-    strict = new RadioButton(20, height - 100, 20, "Strict Type II clones");
+    save_check = false;
   }
   
   private void printStatHeads(int descWidth, int dataWidth, int h) {
@@ -289,6 +293,9 @@ class DataTab extends Tab {
   
   public void setup () {
     vizSize(520, 530);
+    openCloneViz = new Button(20, 400, 160, 20, "Open clones visualizer");
+    strict = new RadioButton(20, height - 100, 20, "Strict Type II clones");
+    if (save_check) strict.check();
   }
   
   public void draw() {
@@ -395,21 +402,25 @@ class DataTab extends Tab {
   
   // C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\
   void mousePressed() {
-    if (strict.hover()) strict.check();
+    if (strict.hover()) {
+      save_check = !save_check; 
+      strict.check();
+    }
+    
     if (openCloneViz.hover()) {
       try {
         Path src1 = Paths.get(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
-        Path src2 = Paths.get(file + "_2.clones");
-        //Path obj1 = Paths.get("..\\Clone Visualisation_Data\\type1.txt");
-        //Path obj2 = Paths.get("..\\Clone Visualisation_Data\\type2.txt");
-        Path obj1 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type1.txt");
-        Path obj2 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type2.txt");
+        Path src2 = Paths.get(file + (strict.isChecked() ? "_2.clones" : "_2.5.clones"));
+        Path obj1 = Paths.get("..\\Clone Visualisation_Data\\type1.txt");
+        Path obj2 = Paths.get("..\\Clone Visualisation_Data\\type2.txt");
+        //Path obj1 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type1.txt");
+        //Path obj2 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type2.txt");
         
         Files.copy(src1, obj1, StandardCopyOption.REPLACE_EXISTING);
         Files.copy(src2, obj2, StandardCopyOption.REPLACE_EXISTING);
         
-        //File file = new File("..\\Clone Visualisation.exe");
-        File file = new File("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation.exe");
+        File file = new File("..\\Clone Visualisation.exe");
+        //File file = new File("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation.exe");
         Runtime.getRuntime().exec(file.getAbsolutePath());
       } catch (IOException e) {
         e.printStackTrace();
@@ -444,13 +455,16 @@ class DataTab extends Tab {
 class DistribsTab extends Tab {
   
   RadioButton logaritmic;
+  boolean save_check;
   
   public DistribsTab() {
-    logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
+    save_check = false;
   }
   
   public void setup() {
     vizSize(520, 660);
+    logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
+    if (save_check) logaritmic.check();
   }
   
   public void draw() {
@@ -468,7 +482,10 @@ class DistribsTab extends Tab {
   }
   
   public void mousePressed() {
-    if (logaritmic.hover()) logaritmic.check();
+    if (logaritmic.hover()) {
+      save_check = !save_check;
+      logaritmic.check();
+    }
   }
   
   int distributionMagnitude(int[] data) {
@@ -490,16 +507,16 @@ class GraphTab extends Tab {
   
   GraphTab(String bf) {
     baseFile = bf;
+  }
+  
+  void setup() {
+    vizSize(500, 300);
     generateIntra = new Button(width/4 - 80, 80, 160, 20, "Direct intra-coupling");
     generateInter = new Button(width*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
     generateIntraV = new Button(width/4 - 80, 110, 160, 20, "Intra-coupling");
     generateCbO = new Button(width*3/4 - 80, 110, 160, 20, "Coupling between Objects");
     generateFanIn = new Button(width/4 - 80, 140, 160, 20, "Fan In");
     generateAll = new Button(width*3/4 - 80, 140, 160, 20, "Generate All");
-  }
-  
-  void setup() {
-    vizSize(500, 300);
   }
   
   void draw() {

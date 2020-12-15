@@ -16,8 +16,14 @@ public class Bundle {
   final int[] USs;
   final int[] riskUS;
   final int rankUS;
-  final int clonesType1;
-  final int clonesType2;
+  // 0 -> NUMBER OF DUPLICATE UNITS (LINES/TOKENS)
+  // 1 -> NUMBER OF CLONE CLASSES
+  // 2 -> BIGGEST CLONE
+  // 3 -> BIGGEST CLASS
+  // 4 -> NUMBER OF CLONES
+  final int[] clonesType1;
+  final int[] clonesType2;
+  final int[] clonesType25;
   final int rankDUP;
   final int asserts;
   final int testLOC;
@@ -39,23 +45,24 @@ public class Bundle {
   
   public Bundle(String[] database, boolean skipBrkts) {
       nTokens = int(split(database[0], ','));
-      clonesType2 = int(database[1]);
-      CCsNE = sort(int(split(database[2], ',')));
-      CCsE = sort(int(split(database[3], ',')));
-      riskUCNE = int(split(database[4], ','));
-      riskUCE = int(split(database[5], ','));
-      ranksUC = int(split(database[6], ','));
-      USs = sort(int(split(database[7], ',')));
-      riskUS = int(split(database[8], ','));
-      rankUS = int(database[9]);
-      linesOfCode = int(split(database[skipBrkts ? 10 : 11], ','));
-      rankLOC = int(split(database[12], ',')[skipBrkts ? 0 : 1]);
-      clonesType1 = int(split(database[13], ',')[skipBrkts ? 0 : 1]);
-      rankDUP = int(split(database[14], ',')[skipBrkts ? 0 : 1]);
-      scores = int(split(database[skipBrkts ? 15 : 16], ','));
-      asserts = int(database[17]);
-      testLOC = int(split(database[18], ',')[skipBrkts ? 0 : 1]);
-      rankTQ = int(split(database[19], ',')[skipBrkts ? 0 : 1]);
+      clonesType2 = int(split(database[1], ','));
+      clonesType25 = int(split(database[2], ','));
+      CCsNE = sort(int(split(database[3], ',')));
+      CCsE = sort(int(split(database[4], ',')));
+      riskUCNE = int(split(database[5], ','));
+      riskUCE = int(split(database[6], ','));
+      ranksUC = int(split(database[7], ','));
+      USs = sort(int(split(database[8], ',')));
+      riskUS = int(split(database[9], ','));
+      rankUS = int(database[10]);
+      linesOfCode = int(split(database[skipBrkts ? 11 : 12], ','));
+      rankLOC = int(split(database[13], ',')[skipBrkts ? 0 : 1]);
+      clonesType1 = int(split(database[skipBrkts ? 14 : 15], ','));
+      rankDUP = int(split(database[16], ',')[skipBrkts ? 0 : 1]);
+      scores = int(split(database[skipBrkts ? 17 : 18], ','));
+      asserts = int(database[19]);
+      testLOC = int(split(database[20], ',')[skipBrkts ? 0 : 1]);
+      rankTQ = int(split(database[21], ',')[skipBrkts ? 0 : 1]);
       
       int totalUCNE = sum(riskUCNE);
       int totalUCE = sum(riskUCE);

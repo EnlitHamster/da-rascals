@@ -193,6 +193,12 @@ float avg(int[] vals) {
   return (float) sum / (float) vals.length;
 }
 
+float sum(float[] vals) {
+  float sum = 0.0;
+  for (float f : vals) sum += f;
+  return sum;
+}
+
 /**
  * Simmple graph layout system
  * http://processingjs.nihongoresources.com/graphs

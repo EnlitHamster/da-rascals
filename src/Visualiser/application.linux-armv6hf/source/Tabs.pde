@@ -25,11 +25,20 @@ abstract class Tab {
 
 class PiesTab extends Tab {
   
+  RadioButton anaMode;
+  boolean save_check;
+  
+  public PiesTab() {save_check = false;}
+  
   public void setup() {
-    vizSize(460, 630); 
+    vizSize(460, 660); 
+    anaMode = new RadioButton(20, height - 100, 20, "Ana safe mode");
+    if (save_check) anaMode.check();
   }
   
-  public void draw() {  
+  public void draw() {
+    anaMode.draw();
+    
     fill(0);
     textFont(font, 20);
     textAlign(CENTER);
@@ -61,9 +70,16 @@ class PiesTab extends Tab {
     fill(colorsLOC[1]);  rect(left, 490, 20, 20);
     fill(colorsLOC[2]);  rect(left, 520, 20, 20);    
     
-    pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
-    pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
-    pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
+    if (anaMode.isChecked()) {
+      float[] risks = exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE;
+      makeBlock(width/4 - 100, 80, 200, 200, risks, sum(risks), colors4);
+      makeBlock(width/4 - 100, 340, 200, 200, activeBundle.percRiskUS, sum(activeBundle.percRiskUS), colors4); 
+      makeBlock(3*width/4 - 100, 80, 200, 200, activeBundle.percLOC, sum(activeBundle.percLOC), colorsLOC);
+    } else {
+      pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
+      pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
+      pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
+    }
   }
 
   private void pieChart(int x, int y, float[] data, color[] colors) {
@@ -73,6 +89,13 @@ class PiesTab extends Tab {
       float angle = radians(p2d(data[i]));
       arc(x, y, 200, 200, lastAngle, lastAngle + angle);
       lastAngle += angle;
+    }
+  }
+  
+  public void mousePressed() {
+    if (anaMode.hover()) {
+      save_check = !save_check;
+      anaMode.check(); 
     }
   }
   
@@ -111,7 +134,7 @@ class ScoresTab extends Tab {
     textAlign(RIGHT);
     
     text(activeBundle.linesOfCode[0] + String.format(" (%4.2f%c)", (float) activeBundle.linesOfCode[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 60);
-    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.clonesType1 * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
+    text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.clonesType1[0] * 100 / (float) activeBundle.linesOfCode[3], '%'), width - 20, 100);
     text(activeBundle.clonesType1 + String.format(" (%4.2f%c)", (float) activeBundle.asserts * 100 / (float) activeBundle.testLOC, '%'), width - 20, 300);
     
     printPercs(exceptions.isChecked() ? activeBundle.riskUCE : activeBundle.riskUCNE, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, 180);
@@ -229,9 +252,14 @@ class ScoresTab extends Tab {
 class DataTab extends Tab {
   
   Button openCloneViz;
+  RadioButton strict;
   String file;
+  boolean save_check;
   
-  public DataTab(String file) {this.file = file;}
+  public DataTab(String file) {
+    this.file = file;
+    save_check = false;
+  }
   
   private void printStatHeads(int descWidth, int dataWidth, int h) {
     textFont(fontIt, 12);
@@ -264,12 +292,15 @@ class DataTab extends Tab {
   }
   
   public void setup () {
-    vizSize(520, 490);
-    openCloneViz = new Button(20, 380, 160, 20, "Open clones visualizer");
+    vizSize(520, 530);
+    openCloneViz = new Button(20, 400, 160, 20, "Open clones visualizer");
+    strict = new RadioButton(20, height - 100, 20, "Strict Type II clones");
+    if (save_check) strict.check();
   }
   
   public void draw() {
     openCloneViz.draw();
+    strict.draw();
     
     fill(0);
     textFont(fontBd, 12); 
@@ -282,9 +313,10 @@ class DataTab extends Tab {
     text("Token count", 20, 100);
     text("Cyclomatic complexity", 20, 140);
     text("Unit Size", 20, 220);
-    text("Clones", 20, 300);
-    text("Asserts", 20, 340);
-    text("Lines of test", 20, 360);
+    text("Clones Type I", 20, 320);
+    text("Clones Type II", 20, 340);
+    text("Asserts", 20, 360);
+    text("Lines of test", 20, 380);
     
     textAlign(CENTER);
     textFont(fontIt, 12);
@@ -302,8 +334,11 @@ class DataTab extends Tab {
     printStatHeads(descWidth, dataWidth, 140);
     printStatHeads(descWidth, dataWidth, 220);
     
-    text("type 1", descWidth + dataWidth/4, 300);
-    text("type 2", descWidth + 3*dataWidth/4, 300);
+    text("#units", descWidth + dataWidth/10, 300);
+    text("#clones", descWidth + 3*dataWidth/10, 300);
+    text("#classes", descWidth + 5*dataWidth/10, 300);
+    text("max clone", descWidth + 7*dataWidth/10, 300);
+    text("max class", descWidth + 9*dataWidth/10, 300);
     
     textFont(font, 12); 
     
@@ -341,26 +376,51 @@ class DataTab extends Tab {
     text(activeBundle.USs[(int) (lenUS * 0.65)], descWidth + 5*dataWidth/8, 280);
     text(activeBundle.USs[(int) (lenUS * 0.95)], descWidth + 7*dataWidth/8, 280);
     
-    text(activeBundle.clonesType1, descWidth + dataWidth/4, 320);
-    text(activeBundle.clonesType2, descWidth + 3*dataWidth/4, 320);
+    text(activeBundle.clonesType1[0], descWidth + dataWidth/10, 320);
+    text(activeBundle.clonesType1[4], descWidth + 3*dataWidth/10, 320);
+    text(activeBundle.clonesType1[1], descWidth + 5*dataWidth/10, 320);
+    text(activeBundle.clonesType1[2], descWidth + 7*dataWidth/10, 320);
+    text(activeBundle.clonesType1[3], descWidth + 9*dataWidth/10, 320);
     
-    text(activeBundle.asserts, descWidth + dataWidth/2, 340);
-    text(activeBundle.testLOC, descWidth + dataWidth/2, 360);
+    if (strict.isChecked()) {
+      text(activeBundle.clonesType2[0], descWidth + dataWidth/10, 340);
+      text(activeBundle.clonesType2[4], descWidth + 3*dataWidth/10, 340);
+      text(activeBundle.clonesType2[1], descWidth + 5*dataWidth/10, 340);
+      text(activeBundle.clonesType2[2], descWidth + 7*dataWidth/10, 340);
+      text(activeBundle.clonesType2[3], descWidth + 9*dataWidth/10, 340);
+    } else {
+      text(activeBundle.clonesType25[0], descWidth + dataWidth/10, 340);
+      text(activeBundle.clonesType25[4], descWidth + 3*dataWidth/10, 340);
+      text(activeBundle.clonesType25[1], descWidth + 5*dataWidth/10, 340);
+      text(activeBundle.clonesType25[2], descWidth + 7*dataWidth/10, 340);
+      text(activeBundle.clonesType25[3], descWidth + 9*dataWidth/10, 340);
+    }
+    
+    text(activeBundle.asserts, descWidth + dataWidth/2, 360);
+    text(activeBundle.testLOC, descWidth + dataWidth/2, 380);
   }
   
   // C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\
   void mousePressed() {
+    if (strict.hover()) {
+      save_check = !save_check; 
+      strict.check();
+    }
+    
     if (openCloneViz.hover()) {
       try {
         Path src1 = Paths.get(file + (brackets.isChecked() ? "_1b.clones" : "_1nb.clones"));
-        Path src2 = Paths.get(file + "_2.clones");
+        Path src2 = Paths.get(file + (strict.isChecked() ? "_2.clones" : "_2.5.clones"));
         Path obj1 = Paths.get("..\\Clone Visualisation_Data\\type1.txt");
         Path obj2 = Paths.get("..\\Clone Visualisation_Data\\type2.txt");
+        //Path obj1 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type1.txt");
+        //Path obj2 = Paths.get("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation_Data\\type2.txt");
         
         Files.copy(src1, obj1, StandardCopyOption.REPLACE_EXISTING);
         Files.copy(src2, obj2, StandardCopyOption.REPLACE_EXISTING);
         
         File file = new File("..\\Clone Visualisation.exe");
+        //File file = new File("C:\\Users\\sandr\\Documents\\University\\SE\\Series1\\src\\Visualiser\\Clone Visualisation.exe");
         Runtime.getRuntime().exec(file.getAbsolutePath());
       } catch (IOException e) {
         e.printStackTrace();
@@ -395,10 +455,16 @@ class DataTab extends Tab {
 class DistribsTab extends Tab {
   
   RadioButton logaritmic;
+  boolean save_check;
+  
+  public DistribsTab() {
+    save_check = false;
+  }
   
   public void setup() {
     vizSize(520, 660);
     logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
+    if (save_check) logaritmic.check();
   }
   
   public void draw() {
@@ -416,7 +482,10 @@ class DistribsTab extends Tab {
   }
   
   public void mousePressed() {
-    if (logaritmic.hover()) logaritmic.check();
+    if (logaritmic.hover()) {
+      save_check = !save_check;
+      logaritmic.check();
+    }
   }
   
   int distributionMagnitude(int[] data) {
@@ -436,11 +505,12 @@ class GraphTab extends Tab {
   
   private String baseFile;
   
-  GraphTab(String bf) {baseFile = bf;}
+  GraphTab(String bf) {
+    baseFile = bf;
+  }
   
   void setup() {
     vizSize(500, 300);
-    
     generateIntra = new Button(width/4 - 80, 80, 160, 20, "Direct intra-coupling");
     generateInter = new Button(width*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
     generateIntraV = new Button(width/4 - 80, 110, 160, 20, "Intra-coupling");

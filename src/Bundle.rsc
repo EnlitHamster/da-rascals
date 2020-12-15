@@ -284,15 +284,16 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	print("File generated: ");
 	println(outputFile);
 	
+	list[loc] files = getFiles(projectLoc);
 	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
 	println("Generating Type I clones - Without brackets");
-	printClones(bundle.clones1NB, bundle.DUPNB, outputFolder + "<fileName>_1nb.clones");
+	printClones(files, bundle.clones1NB, bundle.DUPNB, outputFolder + "<fileName>_1nb.clones");
 	println("Generating Type I clones - With brackets");
-	printClones(bundle.clones1B, bundle.DUPB, outputFolder + "<fileName>_1b.clones");
+	printClones(files, bundle.clones1B, bundle.DUPB, outputFolder + "<fileName>_1b.clones");
 	println("Generating Type II clones");
-	printClones(bundle.clones2, bundle.DUP2, outputFolder + "<fileName>_2.clones");
+	printClones(files, bundle.clones2, bundle.DUP2, outputFolder + "<fileName>_2.clones");
 	println("Generating Type II.5 clones");
-	printClones(bundle.clones25, bundle.DUP25, outputFolder + "<fileName>_2.5.clones");
+	printClones(files, bundle.clones25, bundle.DUP25, outputFolder + "<fileName>_2.5.clones");
 }
 
 str parseScore(int rank) {
@@ -433,10 +434,10 @@ void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool s
 	println("Generating clones...");
 	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts, strict);
 	
-	printClones(clnSnps, total, outputFile);
+	printClones(files, clnSnps, total, outputFile);
 }
 
-void printClones(MapSnippets clnSnps, num total, loc outputFile) {
+void printClones(list[loc] files, MapSnippets clnSnps, num total, loc outputFile) {
 	list[CloneClass] clones = [];
 	
 	println("Generating clone classes...");
