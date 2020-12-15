@@ -40,3 +40,21 @@ Dump/
 src/Visualiser/Input/
 
 *.vlw
+
+src/Visualiser/application.linux-arm64/
+
+src/Visualiser/application.linux-armv6hf/
+
+src/Visualiser/application.linux32/
+
+src/Visualiser/application.linux64/
+
+src/Visualiser/application.windows32/
+
+src/Visualiser/application.windows64/
+
+src/Visualiser/Clone Visualisation_Data/
+
+src/Visualiser/MonoBleedingEdge/
+
+src/Visualiser/Output/
