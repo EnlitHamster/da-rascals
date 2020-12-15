@@ -25,11 +25,19 @@ abstract class Tab {
 
 class PiesTab extends Tab {
   
-  public void setup() {
-    vizSize(460, 630); 
+  RadioButton anaMode;
+  
+  public PiesTab() {
+    anaMode = new RadioButton(20, height - 100, 20, "Ana safe mode");
   }
   
-  public void draw() {  
+  public void setup() {
+    vizSize(460, 660); 
+  }
+  
+  public void draw() {
+    anaMode.draw();
+    
     fill(0);
     textFont(font, 20);
     textAlign(CENTER);
@@ -61,9 +69,16 @@ class PiesTab extends Tab {
     fill(colorsLOC[1]);  rect(left, 490, 20, 20);
     fill(colorsLOC[2]);  rect(left, 520, 20, 20);    
     
-    pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
-    pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
-    pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
+    if (anaMode.isChecked()) {
+      float[] risks = exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE;
+      makeBlock(width/4 - 100, 80, 200, 200, risks, sum(risks), colors4);
+      makeBlock(width/4 - 100, 340, 200, 200, activeBundle.percRiskUS, sum(activeBundle.percRiskUS), colors4); 
+      makeBlock(3*width/4 - 100, 80, 200, 200, activeBundle.percLOC, sum(activeBundle.percLOC), colorsLOC);
+    } else {
+      pieChart(width/4, 180, exceptions.isChecked() ? activeBundle.percRiskUCE : activeBundle.percRiskUCNE, colors4);
+      pieChart(width/4, 440, activeBundle.percRiskUS, colors4);
+      pieChart(3*width/4, 180, activeBundle.percLOC, colorsLOC); 
+    }
   }
 
   private void pieChart(int x, int y, float[] data, color[] colors) {
@@ -74,6 +89,10 @@ class PiesTab extends Tab {
       arc(x, y, 200, 200, lastAngle, lastAngle + angle);
       lastAngle += angle;
     }
+  }
+  
+  public void mousePressed() {
+    if (anaMode.hover()) anaMode.check(); 
   }
   
 }
@@ -232,7 +251,11 @@ class DataTab extends Tab {
   RadioButton strict;
   String file;
   
-  public DataTab(String file) {this.file = file;}
+  public DataTab(String file) {
+    this.file = file;
+    openCloneViz = new Button(20, 400, 160, 20, "Open clones visualizer");
+    strict = new RadioButton(20, height - 100, 20, "Strict Type II clones");
+  }
   
   private void printStatHeads(int descWidth, int dataWidth, int h) {
     textFont(fontIt, 12);
@@ -266,8 +289,6 @@ class DataTab extends Tab {
   
   public void setup () {
     vizSize(520, 530);
-    openCloneViz = new Button(20, 400, 160, 20, "Open clones visualizer");
-    strict = new RadioButton(20, height - 100, 20, "Strict Type II clones");
   }
   
   public void draw() {
@@ -424,9 +445,12 @@ class DistribsTab extends Tab {
   
   RadioButton logaritmic;
   
+  public DistribsTab() {
+    logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
+  }
+  
   public void setup() {
     vizSize(520, 660);
-    logaritmic = new RadioButton(20, height - 100, 20, "Logaritmic distributions");
   }
   
   public void draw() {
@@ -464,17 +488,18 @@ class GraphTab extends Tab {
   
   private String baseFile;
   
-  GraphTab(String bf) {baseFile = bf;}
-  
-  void setup() {
-    vizSize(500, 300);
-    
+  GraphTab(String bf) {
+    baseFile = bf;
     generateIntra = new Button(width/4 - 80, 80, 160, 20, "Direct intra-coupling");
     generateInter = new Button(width*3/4 - 80, 80, 160, 20, "Direct inter-coupling");
     generateIntraV = new Button(width/4 - 80, 110, 160, 20, "Intra-coupling");
     generateCbO = new Button(width*3/4 - 80, 110, 160, 20, "Coupling between Objects");
     generateFanIn = new Button(width/4 - 80, 140, 160, 20, "Fan In");
     generateAll = new Button(width*3/4 - 80, 140, 160, 20, "Generate All");
+  }
+  
+  void setup() {
+    vizSize(500, 300);
   }
   
   void draw() {
