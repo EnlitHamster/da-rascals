@@ -518,12 +518,17 @@ list[str] tokenizer(str code) {
 
 TokenCount getTokenStats(list[list[Token]] tokens) {
 	TokenCount stats = <0, 0, 0, 0>;
+	int _len = size(tokens);
+	int _i = 1;
 	for (token <- tokens) {
+		print("Harvesting token stats <_i>/<_len>...");
+		_i += 1;
 		TokenCount statsIn = getTokenStats(token);
 		stats.ids += statsIn.ids;
 		stats.literals += statsIn.literals;
 		stats.methods += statsIn.methods;
 		stats.total += statsIn.total;
+		println(" Done.");
 	}
 	return stats;
 }

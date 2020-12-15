@@ -15,6 +15,7 @@ import TheTokening;
 // Rascal base imports
 import Set;
 import List;
+import Map;
 
 import IO;
 import String;
@@ -87,7 +88,12 @@ CloneStats getClonesStats(MapSnippets clones) {
 	int biggestClass = 0;
 	int cloneInsts = 0;
 
+	int _len = size(clones);
+	int _i = 1;
+
 	for (key <- clones) {
+		print("Harvesting clone stats <_i>/<_len>...");
+		_i += 1;
 		cloneClasses += 1;
 		int nClones = 0;
 		for (isnp <- clones[key]) {
@@ -99,18 +105,19 @@ CloneStats getClonesStats(MapSnippets clones) {
 		if (nClones > biggestClass)
 			biggestClass = nClones;
 		cloneInsts += nClones;
+		println(" Done.");
 	}
 	
 	return <cloneClasses, biggestClone, biggestClass, cloneInsts>;
 }
 
-Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts, int strict) {
+Bundle bundle(loc projectLoc, bool prnt, int thresholdType1Clones, int thresholdType2Clones, int skipBrkts, int strict) {
 	// Saving the project files/ASTs as they are used by all metric calculators
 	list[loc] projectFiles = getFiles(projectLoc);
 	list[Declaration] asts = getASS(projectFiles);
 	
 	// VOLUME
-	if (print) println("=== VOLUME LOGS");
+	if (prnt) println("=== VOLUME LOGS");
 	
 	LineCount LOCNB = NLC();
 	LineCount LOCB = NLC();
@@ -118,35 +125,35 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	int rankLOCB = -1;
 	
 	if (skipBrkts % 2 == 0) {
-		LOCNB = countLinesFiles(projectFiles, print, true);
-		rankLOCNB = getLocRank(LOCNB.code, print);
+		LOCNB = countLinesFiles(projectFiles, prnt, true);
+		rankLOCNB = getLocRank(LOCNB.code, prnt);
 	}
 	
 	if (skipBrkts > 0) {
-		LOCB = countLinesFiles(projectFiles, print, false);
-		rankLOCB = getLocRank(LOCB.code, print);
+		LOCB = countLinesFiles(projectFiles, prnt, false);
+		rankLOCB = getLocRank(LOCB.code, prnt);
 	}
 	
 	// UNIT COMPLEXITY
-	if (print) println("=== UNIT COMPLEXITY LOGS");
+	if (prnt) println("=== UNIT COMPLEXITY LOGS");
 	
 	list[CC] CCs = calcAllCC(asts);
 	
 	map[str,int] riskCCsNoExp = rankCCsRisk(CCs, false);
 	map[str,int] riskCCsExp = rankCCsRisk(CCs, true);
 	
-	int rankUCNoExp = rankComplexity(riskCCsNoExp, print);
-	int rankUCExp = rankComplexity(riskCCsExp, print);
+	int rankUCNoExp = rankComplexity(riskCCsNoExp, prnt);
+	int rankUCExp = rankComplexity(riskCCsExp, prnt);
 	
 	// UNIT SIZE
-	if (print) println("=== UNIT SIZE LOGS");
+	if (prnt) println("=== UNIT SIZE LOGS");
 	
 	list[int] unitSizes = getUnitsLoc(asts);
 	map[str,int] riskUnitSizes = rankSizeRisk(unitSizes);
-	int rankUS = rankUnitSize(riskUnitSizes, print);
+	int rankUS = rankUnitSize(riskUnitSizes, prnt);
 	
 	// DUPLICATES
-	if (print) println("=== DUPLICATES LOGS");
+	if (prnt) println("=== DUPLICATES LOGS");
 	
 	int duplicatesNB = -1;
 	int duplicatesB = -1;
@@ -161,13 +168,13 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	
 	if (skipBrkts % 2 == 0) {
 		<clones1NB, duplicatesNB> = getClones(projectFiles, 1, thresholdType1Clones, true, false);
-		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), print);
+		rankDUPNB = getDuplicationRank(toReal(duplicatesNB) / toReal(LOCNB.code), prnt);
 		stats1NB = getClonesStats(clones1NB);
 	}
 	
 	if (skipBrkts > 0) {
 		<clones1B, duplicatesB> = getClones(projectFiles, 1, thresholdType1Clones, false, false);
-		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), print);
+		rankDUPB = getDuplicationRank(toReal(duplicatesB) / toReal(LOCB.code), prnt);
 		stats1B = getClonesStats(clones1B);
 	}
 	
@@ -181,8 +188,14 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	
 	if (strict % 2 == 0) {
 		list[list[Token]] tokens = [];
-		for (fLoc <- projectFiles)
+		int _len = size(projectFiles);
+		int _i = 1;
+		for (fLoc <- projectFiles) {
+			print("Tokening file <_i>/<_len>...");
+			_i += 1;
 			tokens += [tokenizer(readFileSnippets(fLoc), true)];
+			println(" Done.");
+		}
 		<clones2, duplicates2> = getClonesType2(tokens, thresholdType2Clones);
 		stats2 = getClonesStats(clones2);
 		tknStats = getTokenStats(tokens);
@@ -190,8 +203,14 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	
 	if (strict > 0) {
 		list[list[Token]] tokens = [];
-		for (fLoc <- projectFiles)
+		int _len = size(projectFiles);
+		int _i = 1;
+		for (fLoc <- projectFiles) {
+			print("Tokening file <_i>/<_len>...");
+			_i += 1;
 			tokens += [tokenizer(readFileSnippets(fLoc), false)];
+			println(" Done.");
+		}
 		<clones25, duplicates25> = getClonesType2(tokens, thresholdType2Clones);
 		stats25 = getClonesStats(clones25);
 		if (strict == 1)
@@ -199,14 +218,16 @@ Bundle bundle(loc projectLoc, bool print, int thresholdType1Clones, int threshol
 	}
 	
 	// TEST QUALITY
+	if (prnt) println("=== TEST LOGS");
+	
 	list[loc] asserts = getAsserts(asts);
 	int aLOCNB = -1;
 	int aLOCB = -1;
 	int rankASSNB = -1;
 	int rankASSB = -1;
 	
-	if (skipBrkts % 2 == 0) <rankASSNB, aLOCNB> = getTestQualityMetric(asserts, print, true);
-	if (skipBrkts > 0) <rankASSB, aLOCB> = getTestQualityMetric(asserts, print, false);
+	if (skipBrkts % 2 == 0) <rankASSNB, aLOCNB> = getTestQualityMetric(asserts, prnt, true);
+	if (skipBrkts > 0) <rankASSB, aLOCB> = getTestQualityMetric(asserts, prnt, false);
 	
 	// SYSTEM-LEVEL
 	
@@ -284,16 +305,16 @@ void printBundle(loc projectLoc, loc outputFolder, int threshold1, int threshold
 	print("File generated: ");
 	println(outputFile);
 	
-	list[loc] files = getFiles(projectLoc);
+	map[str, list[str]] fileLines = mapFiles(getFiles(projectLoc));
 	printCouplingGraphs(getASS(projectLoc), outputFolder + "<fileName>");
 	println("Generating Type I clones - Without brackets");
-	printClones(files, bundle.clones1NB, bundle.DUPNB, outputFolder + "<fileName>_1nb.clones");
+	printClones(fileLines, bundle.clones1NB, bundle.DUPNB, outputFolder + "<fileName>_1nb.clones");
 	println("Generating Type I clones - With brackets");
-	printClones(files, bundle.clones1B, bundle.DUPB, outputFolder + "<fileName>_1b.clones");
+	printClones(fileLines, bundle.clones1B, bundle.DUPB, outputFolder + "<fileName>_1b.clones");
 	println("Generating Type II clones");
-	printClones(files, bundle.clones2, bundle.DUP2, outputFolder + "<fileName>_2.clones");
+	printClones(fileLines, bundle.clones2, bundle.DUP2, outputFolder + "<fileName>_2.clones");
 	println("Generating Type II.5 clones");
-	printClones(files, bundle.clones25, bundle.DUP25, outputFolder + "<fileName>_2.5.clones");
+	printClones(fileLines, bundle.clones25, bundle.DUP25, outputFolder + "<fileName>_2.5.clones");
 }
 
 str parseScore(int rank) {
@@ -305,7 +326,7 @@ str parseScore(int rank) {
 }
 
 void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, bool skipBrkts, bool strict) {
-	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1, strict);
+	Bundle bundle = bundle(projectLoc, print, threshold1, threshold2, skipBrkts ? 0 : 1, strict ? 0 : 1);
 	
 	LineCount bLOC = skipBrkts ? bundle.LOCNB : bundle.LOCB;
 	int bDUP = skipBrkts ? bundle.DUPNB : bundle.DUPB;
@@ -326,8 +347,8 @@ void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, boo
 
 	println("=== SOURCE-LEVEL METRICS");
 	println("LOC metric: <LOC>");
-	println("\> <bundle.TLOC> number of tokens");
 	println("\> <bLOC.code> lines of code\t(<toReal(bLOC.code) * 100 / toReal(bLOC.total)>%)");
+	println("\> <bundle.TLOC.total> number of tokens");
 	println("\nUNIT COMPLEXITY metric (with|without exception handling): <UCE> | <UCNE>");
 	println("\> <bundle.riskCCsE[LOW_RISK]> | <bundle.riskCCsNE[LOW_RISK]> low risk units\t(<toReal(bundle.riskCCsE[LOW_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[LOW_RISK]) * 100 / toReal(totalCCsNE)>%)");
 	println("\> <bundle.riskCCsE[MID_RISK]> | <bundle.riskCCsNE[MID_RISK]> medium risk units\t(<toReal(bundle.riskCCsE[MID_RISK]) * 100 / toReal(totalCCsE)>% | <toReal(bundle.riskCCsNE[MID_RISK]) * 100 / toReal(totalCCsNE)>%)");
@@ -340,13 +361,13 @@ void printBundle(loc projectLoc, int threshold1, int threshold2, bool print, boo
 	println("\> <bundle.riskUS[VERY_HIGH_RISK]> very high risk units\t(<toReal(bundle.riskUS[VERY_HIGH_RISK]) * 100 / toReal(totalUS)>%)");
 	println("\nDUPLICATION metric: <DUP>");
 	println("\> <bDUP> type 1 duplicate lines");
-	println("\> <bundle.DUP2> type 2 duplicate lines");
+	println("\> <bundle.DUP2> type 2 duplicate tokens");
 	println("\> <toReal(bDUP) * 100 / toReal(bLOC.code)>% ratio of duplicates of type 1");
 	println("\> <toReal(bundle.DUP2) * 100 / toReal(bundle.TLOC.total)>% ratio of duplicates of type 2");
 	println("\> type 1: <stats1.cloneClasses> clone classes and <stats1.cloneInsts> clones");
-	println("\> type 1: <stats1.biggestClass> biggest class (#instances) and <stats1.biggestClone> biggest clone (#lines)");
+	println("\> type 1: biggest class: <stats1.biggestClass> instances and biggest clone: <stats1.biggestClone> lines");
 	println("\> type 2: <bundle.statsDUP2.cloneClasses> clone classes and <bundle.statsDUP2.cloneInsts> clones");
-	println("\> type 2: <bundle.statsDUP2.biggestClass> biggest class (#instances) and <bundle.statsDUP2.biggestClone> biggest clone (#lines)");
+	println("\> type 2: biggest class: <bundle.statsDUP2.biggestClass> instances and biggest clone: <bundle.statsDUP2.biggestClone> tokens");
 	println("\nTEST DENSITY metric: <ASS>");
 	println("\> <bundle.asserts> number of assertions / <skipBrkts ? bundle.aLOCNB : bundle.aLOCB> test LOC");
 	println("COUPLING metrics:");
@@ -433,18 +454,17 @@ void printClones(list[loc] files, loc outputFile, int typ, int threshold, bool s
 	
 	println("Generating clones...");
 	<clnSnps, total> = getClones(files, typ, threshold, skipBrkts, strict);
+	map[str, list[str]] fileLines = mapFiles(files);
 	
-	printClones(files, clnSnps, total, outputFile);
+	printClones(fileLines, clnSnps, total, outputFile);
 }
 
-void printClones(list[loc] files, MapSnippets clnSnps, num total, loc outputFile) {
+void printClones(map[str, list[str]] fileLines, MapSnippets clnSnps, num total, loc outputFile) {
 	list[CloneClass] clones = [];
 	
 	println("Generating clone classes...");
 	clones = getCloneClasses(clnSnps);
 	
-	println("Mapping file lines...");
-	map[str, list[str]] fileLines = mapFiles(files);
 	str output = "";
 	println("Generating output...");
 	for (cloneClass <- clones) {
@@ -460,10 +480,17 @@ void printClones(list[loc] files, MapSnippets clnSnps, num total, loc outputFile
 }
 
 private map[str, list[str]] mapFiles(list[loc] files) {
+	println("Mapping file lines...");
 	map[str, list[str]] mFiles = ();
-	for (file <- files)
+	int _len = size(files);
+	int _i = 1;
+	for (file <- files) {
+		print("Mapping file lines <_i>/<_len>...");
+		_i += 1;
 		if (file.uri notin mFiles)
 			mFiles[file.uri] = readFileLines(file);
+		println(" Done.");
+	}
 	return mFiles;
 }
 
